@@ -79,8 +79,6 @@ def run_slurm(slurm_script):
     proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE, universal_newlines=True)
     stdout_value, stderr_value = proc.communicate()
-    if stdout_value == "":
-        raise Exception("sbatch command not found")
     slurm_id = str(re.findall(p_id, stdout_value)[0])
     if stderr_value == "Error":
         return None
