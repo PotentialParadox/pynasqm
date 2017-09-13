@@ -1,0 +1,13 @@
+module load intel/2016.0.109
+
+for i in $(seq 1 1)
+do
+    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"
+    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"
+    TRAJ="$((${FIRST_COUNT} + ${i}))"
+    for FRAME in $(seq 1 10)
+    do
+        $AMBERHOME/bin/sander -O -i nasqm_abs_${TRAJ}_${FRAME}.in -o nasqm_abs_${TRAJ}_${FRAME}.out -c ground_snap.${TRAJ} -p m1.prmtop -r nasqm_abs_${TRAJ}_${FRAME}.rst -x nasqm_abs_${TRAJ}_${FRAME}.nc &
+    done
+done
+wait

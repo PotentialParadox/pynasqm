@@ -3,7 +3,7 @@ Functions used to interface the NASQM automation routines with
 the Slurm wrapper
 '''
 import math
-import pynasqm.slurm
+import pynasqm.slurm as slurm
 
 def create_slurm_header(user_input):
     '''

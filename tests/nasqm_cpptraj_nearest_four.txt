@@ -1,0 +1,6 @@
+parm m1.prmtop
+solvent !:1
+trajin ground_snap.1
+closest 4 :1 closestout closest_1.txt
+run
+quit
