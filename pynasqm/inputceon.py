@@ -98,13 +98,17 @@ class InputCeon:
         else:
             sed_inplace('input.ceon', r'printcharges=\d*', 'printcharges=0')
 
-    def set_periodic(self, periodic):
+    def set_periodic(self, periodic, constant_value):
         '''
         Sets the appropriate boundary condition values for priodic or non-periodic conditions
         '''
         if periodic is True:
-            sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=1')
-            sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=1')
+            if constant_value == 1:
+                sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=1')
+                sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=0')
+            if constant_value == 2:
+                sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=2')
+                sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=1')
             sed_inplace(self.amber_input, r'qm_ewald\s*=\s*\d+', 'qm_ewald=1')
             sed_inplace(self.amber_input, r'qm_pme\s*=\s*\d+', 'qm_pme=1')
         if periodic is False:

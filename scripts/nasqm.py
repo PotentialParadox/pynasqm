@@ -285,7 +285,7 @@ def main():
 
     # Create the input_ceon object
     input_ceon = InputCeon(amber_input='md_qmmm_amb.in')
-    input_ceon.set_periodic(user_input.is_qmmm)
+    input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
 
     start_time = time.time()
 

@@ -18,6 +18,9 @@ class UserInput:
         # Change here whether you are working on your personal computer
         # or an HPC with SLUM
         self.is_hpc = pynasqm.utils.str2bool(data["is_hpc"])
+        # If periodic what type of constant value are you using?
+        # 1-constant volume, 2-constant pressure
+        self.constant_value = int(data["constant_value"])
         # Are you performing tully surface hopping
         self.is_tully = pynasqm.utils.str2bool(data["is_tully"])
         # How many nodes will you be working on?
