@@ -108,13 +108,15 @@ def write_spectra_flu_input(user_input):
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
     fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex)
-    stripped_fl_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
-                                         user_input.time_step,
+    # The timestep needs to be adjusted for the number of frames skipped
+    time_step = user_input.time_step * user_input.n_steps_to_print_exc
+    fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
+                                         time_step,
                                          user_input.fluorescence_time_delay)
-    stripped_fl_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
-                                          user_input.time_step,
+    fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
+                                          time_step,
                                           user_input.fluorescence_time_truncation)
-    open('spectra_flu.input', 'w').write(stripped_fl_string)
+    open('spectra_flu.input', 'w').write(fluor_string)
 
 
 def write_omega_vs_time(n_trajectories, n_states=1):
