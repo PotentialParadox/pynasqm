@@ -19,7 +19,7 @@
 # What do you want to set as your default walltime?
     "walltime": "01:00:00",
 # Whats queue do you want the job to go to
-    "qos": "roitbert-b",
+    "qos": "roitberg-b",
 # Do you want to run ground state dynamics
     "run_ground_state_dynamics": "False",
 # Do you want to run the trajectories used for the abjorption specta
