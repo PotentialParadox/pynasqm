@@ -54,7 +54,7 @@ def update_closest(user_input, input_ceon):
     '''
     for i in range(1, len(input_ceon)+1):
         mask = ''
-        if user_input.number_nearest_solvents is None:
+        if user_input.number_nearest_solvents == 0:
             mask = "':1'"
         else:
             script = closest_script(user_input, i)

@@ -116,7 +116,7 @@ class UserInput:
         # We will default to include all solvent residues within self.nearest_radius
         # angstroms from the molecule of interest, if this is None, then
         # we will use the nearest number of solvents
-        self.number_nearest_solvents = None
+        self.number_nearest_solvents = int(data["number_nearest_solvents"])
 
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)

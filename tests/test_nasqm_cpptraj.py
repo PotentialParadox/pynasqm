@@ -127,7 +127,7 @@ def test_update_closest_none(input_ceon, userinput):
     Test to make sure program doesn't fail when
     userinput.number_nearest_solvent = None
     '''
-    userinput.number_nearest_solvents = None
+    userinput.number_nearest_solvents = 0
     test = [input_ceon.copy('test_inputceon.in')]
     nasqm_cpptraj.update_closest(userinput, test)
     result = test[0].get_mask()
