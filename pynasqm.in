@@ -12,11 +12,12 @@
     "number_nodes": "1",
 # How many processors will be on a node?
     "processors_per_node": "4",
-# How much memory per node
+# How much memory per node, provide string
     "memory_per_node": "2000mb",
 # What is the maximum amount of jobs you want to run at once?
     "max_jobs": "4",
 # What do you want to set as your default walltime?
+# 0h:0m:0s
     "walltime": "01:00:00",
 # Whats queue do you want the job to go to
     "qos": "roitberg-b",
@@ -45,33 +46,33 @@
 # from the initial ground state trajectory to run the
 # new excited state dynamics
     "n_snapshots_ex": "4",
-# Change here the time step that will be shared by
+# Change here the time step, in ps, that will be shared by
 # each trajectory
     "time_step": "0.5",
-# Change here the runtime of the initial ground state MD
+# Change here the runtime, in ps, of the initial ground state MD
     "ground_state_run_time": "10",
 # Change here how often you want to print the ground state trajectory
     "n_steps_to_print_gs": "50",
-# Change here the runtime for the the trajectories
+# Change here the runtime in PS for the the trajectories
 # used to create calculated the absorption
     "abs_run_time": "5",
 # Change here how often you want to print the absorption trajectories
     "n_steps_to_print_abs": "50",
-# Change here the runtime for the the trajectories
+# Change here the runtime, in ps, for the the trajectories
 # used to create calculated the fluorescence
-    "exc_run_time": "50",
+    "exc_run_time": "10",
 # Change here the number of excited states you
 # with to have in the CIS calculation
     "n_exc_states_propagate": "1",
 # Change here the initial state
     "exc_state_init": "1",
 # Change here how often you want to print the excited state trajectories
-    "n_steps_to_print_exc": "50",
+    "n_steps_to_print_exc": "10",
 # Some time will be needed for the molecule to equilibrate
 # from jumping from the ground state to the excited state.
 # We don't want to include this data in the calculation
-# of the fluorescence. We therefore set a time delay.
-    "fluorescence_time_delay": "2",
+# of the fluorescence. We therefore set a time delay in fs.
+    "fluorescence_time_delay": "2000",
 # Truncation will remove so many fs off the back of the trajectory
     "fluorescence_time_truncation": "0",
 # These are your email options for the slurm interface
