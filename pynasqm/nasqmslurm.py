@@ -47,10 +47,10 @@ def build_snapshot_command(amber, n_trajectories, amber_calls_per_trajectory):
     command += "    for FRAME in $(seq 1 {})\n".format(amber_calls_per_trajectory)
     command += "    do\n"
     command += "        $AMBERHOME/bin/sander -O -i"
-    command += " {}${{TRAJ}}_${{FRAME}}.in -o {}".format(amber.input_roots[0],
-                                                         amber.output_roots[0])
+    command += " {}${{TRAJ}}.in -o {}".format(amber.input_roots[0],
+                                              amber.output_roots[0])
     command += "${TRAJ}_${FRAME}.out -c "
-    command += "{}.${{TRAJ}} -p m1.prmtop -r ".format(amber.coordinate_files[0])
+    command += "{}${{TRAJ}}.${{FRAME}} -p m1.prmtop -r ".format(amber.coordinate_files[0])
     command += "{}${{TRAJ}}_${{FRAME}}.rst -x {}".format(amber.output_roots[0],
                                                          amber.output_roots[0]) \
                +"${TRAJ}_${FRAME}.nc &\n" \

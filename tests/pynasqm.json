@@ -1,6 +1,7 @@
 {
     "is_qmmm": "True",
     "is_hpc": "False",
+    "constant_value": "1",
     "is_tully": "True",
     "number_nodes": "1",
     "processors_per_node": "4",
@@ -29,6 +30,7 @@
     "fluorescence_time_delay": "2",
     "fluorescence_time_truncation": "0",
     "email" : "dtracy.uf@gmail.com",
-    "email_options" : "3"
+    "email_options" : "3",
+    "number_nearest_solvents" : "0"
 
 }

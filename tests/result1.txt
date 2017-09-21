@@ -20,7 +20,7 @@ do
     TRAJ="$((${FIRST_COUNT} + ${i}))"
     for FRAME in $(seq 1 10)
     do
-        $AMBERHOME/bin/sander -O -i nasqm_abs_${TRAJ}_${FRAME}.in -o nasqm_abs_${TRAJ}_${FRAME}.out -c ground_snap.${TRAJ} -p m1.prmtop -r nasqm_abs_${TRAJ}_${FRAME}.rst -x nasqm_abs_${TRAJ}_${FRAME}.nc &
+        $AMBERHOME/bin/sander -O -i nasqm_abs_${TRAJ}.in -o nasqm_abs_${TRAJ}_${FRAME}.out -c nasqm_abs_${TRAJ}.${FRAME} -p m1.prmtop -r nasqm_abs_${TRAJ}_${FRAME}.rst -x nasqm_abs_${TRAJ}_${FRAME}.nc &
     done
 done
 wait

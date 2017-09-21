@@ -132,11 +132,10 @@ def test_build_snapshot_1(amber):
     '''
     amber.input_roots = ["nasqm_abs_"]
     amber.output_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["nasqm_abs_"]
     n_trajectories = 1
     n_frames = 10
     result = nasqm_slurm.build_snapshot_command(amber, n_trajectories, n_frames)
-    open("result.txt", 'w').write(result)
     test = open("nasqm_slurm_build_1_10.txt").read()
     assert result == test
 
@@ -146,7 +145,7 @@ def test_build_snapshot_2(amber):
     '''
     amber.input_roots = ["nasqm_abs_"]
     amber.output_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["nasqm_abs_"]
     n_trajectories = 2
     n_frames = 20
     result = nasqm_slurm.build_snapshot_command(amber, n_trajectories, n_frames)
@@ -160,7 +159,7 @@ def test_slurm_trajectory_file_35_snaps(userinput):
     multiple whole trajectories with remainder and snapshots
     '''
     amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["nasqm_abs_"]
     amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 35
