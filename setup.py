@@ -10,5 +10,7 @@ setup(
    install_requires=['numpy', 'matplotlib'], #external packages as dependencies
    scripts=[
             'scripts/nasqm.py',
+            'scripts/hist_spectra_lifetime.py',
+            'scripts/naesmd_spectra_plotter.py',
            ]
 )
