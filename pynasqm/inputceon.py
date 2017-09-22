@@ -4,7 +4,7 @@ FIXME This should be refactored in oredered to be testable
 '''
 import re
 from pynasqm.sed import sed_inplace, sed_global
-from pynasqm.periodic_table import periodic_table
+from pynasqm.periodictable import periodic_table
 
 class InputCeon:
     """
