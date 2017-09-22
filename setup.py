@@ -12,5 +12,6 @@ setup(
             'scripts/nasqm.py',
             'scripts/hist_spectra_lifetime.py',
             'scripts/naesmd_spectra_plotter.py',
+            'scripts/find_spectra_shift.py',
            ]
 )
