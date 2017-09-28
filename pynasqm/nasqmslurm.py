@@ -39,13 +39,13 @@ def build_snapshot_command(amber, n_trajectories, amber_calls_per_trajectory):
     Returns the command for the slurm script
     '''
     command = "module load intel/2016.0.109\n\n"
-    command += "for i in $(seq 1 {})\n".format(n_trajectories)
-    command += "do\n" \
-               '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
-               '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
-               '    TRAJ="$((${FIRST_COUNT} + ${i}))"\n'
-    command += "    for FRAME in $(seq 1 {})\n".format(amber_calls_per_trajectory)
-    command += "    do\n"
+    command += "for FRAME in $(seq 1 {})\n".format(amber_calls_per_trajectory)
+    command += "do\n"
+    command += "    for i in $(seq 1 {})\n".format(n_trajectories)
+    command += "    do\n"\
+               '        MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
+               '        FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
+               '        TRAJ="$((${FIRST_COUNT} + ${i}))"\n'
     command += "        $AMBERHOME/bin/sander -O -i"
     command += " {}${{TRAJ}}.in -o {}".format(amber.input_roots[0],
                                               amber.output_roots[0])
@@ -55,8 +55,8 @@ def build_snapshot_command(amber, n_trajectories, amber_calls_per_trajectory):
                                                          amber.output_roots[0]) \
                +"${TRAJ}_${FRAME}.nc &\n" \
                +"    done\n" \
-               +"done\n" \
-               +"wait\n"
+               +"    wait\n" \
+               +"done\n"
     return command
 
 def build_command(amber, n_trajectories, n_snaps_per_trajectory):
