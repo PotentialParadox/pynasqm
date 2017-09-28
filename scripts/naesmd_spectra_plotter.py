@@ -38,7 +38,7 @@ if args.x_units == 0:
 else:
     plt.xlabel('Wavelength, nm')
 
-if my_utils.str2bool(args.absorbance):
+if pynasqm.utils.str2bool(args.absorbance):
     ylabel = 'Normalized Absorbance'
 else:
     ylabel = 'Normalized Fluorescence'
