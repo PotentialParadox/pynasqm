@@ -79,4 +79,6 @@
     "email" : "dtracy.uf@gmail.com",
 # Additive Choice: 1-Begin, 2-End, 4-Fail
     "email_options" : "3"
+# Number of solvents closest to molecule to include in qm
+    "number_nearest_solvents" : "0"
 
