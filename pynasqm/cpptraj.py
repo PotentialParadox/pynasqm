@@ -22,7 +22,7 @@ def create_restarts(amber_input, output, step=None):
     open('convert_to_crd.in', 'w').write(ctc)
     subprocess.run(['cpptraj', '-i', 'convert_to_crd.in'])
 
-def closest_script(user_input, snap_id):
+def closest_script(user_input, snap_id, mask=":1"):
     '''
     Creates a script to identify near solvents to later
     be included in the QM calculation
@@ -31,9 +31,9 @@ def closest_script(user_input, snap_id):
     script = "parm m1.prmtop\n" \
              "solvent !:1\n" \
              "trajin ground_snap.{}\n" \
-             "closest {} :1 closestout closest_{}.txt\n" \
+             "closest {} {} closestout closest_{}.txt\n" \
              "run\n" \
-             "quit\n".format(snap_id, nearest, snap_id)
+             "quit\n".format(snap_id, nearest, mask, snap_id)
     return script
 
 def read_closest(input_stream):
