@@ -70,18 +70,35 @@ def wait_for_job_finish(slurm_id):
         if not re.search(p_id, stdout_value):
             condition = False
 
-def run_slurm(slurm_script):
+def run_slurm(slurm_script1, slurm_script2=None):
     '''
     Run the slurm script
     '''
-    open('nasqm.sbatch', 'w').write(slurm_script)
-    p_id = re.compile(r'\d+')
-    proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, universal_newlines=True)
-    stdout_value, stderr_value = proc.communicate()
-    slurm_id = str(re.findall(p_id, stdout_value)[0])
-    if stderr_value == "Error":
-        return None
-    print("Submitted Job: ", slurm_id)
-    wait_for_job_finish(slurm_id)
-    print("Job: ", slurm_id, "completed")
+    slurm_id1 = None
+    slurm_id2 = None
+    if slurm_script1:
+        open('nasqm1.sbatch', 'w').write(slurm_script1)
+        p_id = re.compile(r'\d+')
+        proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, universal_newlines=True)
+        stdout_value, stderr_value = proc.communicate()
+        slurm_id1 = str(re.findall(p_id, stdout_value)[0])
+        if stderr_value == "Error":
+            return None
+        print("Submitted Job: ", slurm_id1)
+    if slurm_script2:
+        open('nasqm2.sbatch', 'w').write(slurm_script2)
+        p_id = re.compile(r'\d+')
+        proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, universal_newlines=True)
+        stdout_value, stderr_value = proc.communicate()
+        slurm_id2 = str(re.findall(p_id, stdout_value)[0])
+        if stderr_value == "Error":
+            return None
+        print("Submitted Job: ", slurm_id2)
+    if slurm_script1:
+        wait_for_job_finish(slurm_id1)
+        print("Job: ", slurm_id1, "completed")
+    if slurm_script1:
+        wait_for_job_finish(slurm_id2)
+        print("Job: ", slurm_id2, "completed")
