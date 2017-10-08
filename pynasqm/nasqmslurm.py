@@ -3,6 +3,7 @@ Functions used to interface the NASQM automation routines with
 the Slurm wrapper
 '''
 import math
+import os
 import pynasqm.slurm as slurm
 
 def create_slurm_header(user_input):
@@ -90,7 +91,4 @@ def run_nasqm_slurm_files(slurm_files):
     '''
     Run the files produced by slurm_trajectory_files
     '''
-    if slurm_files[0]:
-        slurm.run_slurm(slurm_files[0])
-    if slurm_files[1]:
-        slurm.run_slurm(slurm_files[1])
+    slurm.run_slurm(slurm_files[0], slurm_files[1])
