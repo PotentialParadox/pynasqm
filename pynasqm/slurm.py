@@ -79,7 +79,7 @@ def run_slurm(slurm_script1, slurm_script2=None):
     if slurm_script1:
         open('nasqm1.sbatch', 'w').write(slurm_script1)
         p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
+        proc = subprocess.Popen(['sbatch nasqm1.sbatch'], shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout_value, stderr_value = proc.communicate()
         slurm_id1 = str(re.findall(p_id, stdout_value)[0])
@@ -89,7 +89,7 @@ def run_slurm(slurm_script1, slurm_script2=None):
     if slurm_script2:
         open('nasqm2.sbatch', 'w').write(slurm_script2)
         p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm.sbatch'], shell=True, stdout=subprocess.PIPE,
+        proc = subprocess.Popen(['sbatch nasqm2.sbatch'], shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout_value, stderr_value = proc.communicate()
         slurm_id2 = str(re.findall(p_id, stdout_value)[0])
