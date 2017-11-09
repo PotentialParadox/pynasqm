@@ -85,7 +85,7 @@ def run_slurm(slurm_script1, slurm_script2=None):
         slurm_id1 = str(re.findall(p_id, stdout_value)[0])
         if stderr_value == "Error":
             return None
-        print("Submitted Job: ", slurm_id1)
+        print("Submitted nasqm1.sbatch Job: ", slurm_id1)
     if slurm_script2:
         open('nasqm2.sbatch', 'w').write(slurm_script2)
         p_id = re.compile(r'\d+')
@@ -95,10 +95,12 @@ def run_slurm(slurm_script1, slurm_script2=None):
         slurm_id2 = str(re.findall(p_id, stdout_value)[0])
         if stderr_value == "Error":
             return None
-        print("Submitted Job: ", slurm_id2)
+        print("Submitted nasqm2.sbatch Job: ", slurm_id2)
     if slurm_script1:
+        print("Waiting for nasqm1.sbatch")
         wait_for_job_finish(slurm_id1)
         print("Job: ", slurm_id1, "completed")
-    if slurm_script1:
+    if slurm_script2:
+        print("Waiting for nasqm2.sbatch")
         wait_for_job_finish(slurm_id2)
         print("Job: ", slurm_id2, "completed")
