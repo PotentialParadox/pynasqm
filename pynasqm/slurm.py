@@ -99,6 +99,6 @@ def run_slurm(slurm_script1, slurm_script2=None):
     if slurm_script1:
         wait_for_job_finish(slurm_id1)
         print("Job: ", slurm_id1, "completed")
-    if slurm_script1:
+    if slurm_script2:
         wait_for_job_finish(slurm_id2)
         print("Job: ", slurm_id2, "completed")
