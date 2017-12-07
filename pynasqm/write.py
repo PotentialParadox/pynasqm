@@ -69,54 +69,60 @@ def accumulate_flu_spectra(n_trajectories):
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
     n_states = 1
-    output_stream = io.StringIO()
+    flu_list = []
     for i in range(n_trajectories):
+        output_stream = io.StringIO()
         amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
-    output_string = output_stream.getvalue()
-    output_stream.close()
-    return output_string
+        output_string = output_stream.getvalue()
+        flu_list.append(output_string)
+        output_stream.close()
+    return flu_list
 
 def accumulate_abs_spectra(n_snapshots_gs, n_frames, n_states=20):
     '''
     Reads the data from the amber output files and writes the data to spectra_abs.input
     '''
-    output_stream = io.StringIO()
+    abs_list = []
     for traj in range(n_snapshots_gs):
+        output_stream = io.StringIO()
         for frame in range(n_frames):
             amber_out = "nasqm_abs_{}_{}.out".format(traj+1, frame+1)
             input_stream = open(amber_out, 'r')
             find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
             input_stream.close()
-    output_string = output_stream.getvalue()
-    output_stream.close()
-    return output_string
+        output_string = output_stream.getvalue()
+        output_stream.close()
+        abs_list.append(output_string)
+    return abs_list
 
 def write_spectra_abs_input(user_input):
     '''
     Writes the approriately formatted data to spectra_abs.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    abs_string = accumulate_abs_spectra(user_input.n_snapshots_gs, user_input.n_frames_abs,
-                                        user_input.n_abs_exc)
-    open('spectra_abs.input', 'w').write(abs_string)
+    for trajectory in range(user_input.n_snapshots_gs):
+        abs_strings = accumulate_abs_spectra(user_input.n_snapshots_gs, user_input.n_frames_abs,
+                                                  user_input.n_abs_exc)
+        open('spectra_abs_{}.input'.format(trajectory), 'w').write(abs_strings[trajectory])
 
 def write_spectra_flu_input(user_input):
     '''
     Writes the approriately formatted data to spectra_flu.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex)
+    fluor_strings = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
-    fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
-                                         time_step,
-                                         user_input.fluorescence_time_delay)
-    fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
-                                          time_step,
-                                          user_input.fluorescence_time_truncation)
-    open('spectra_flu.input', 'w').write(fluor_string)
+    for i in range(user_input.n_snapshots_ex):
+        fluor_strings[i] = strip_timedelay(fluor_strings[i], 1,
+                                            time_step,
+                                            user_input.fluorescence_time_delay)
+        fluor_strings[i] = truncate_spectra(fluor_strings[i], 1,
+                                            time_step,
+                                            user_input.fluorescence_time_truncation)
+        open('spectra_flu_{}.input'.format(i), 'w').write(fluor_strings[i])
 
 
 def write_omega_vs_time(n_trajectories, n_states=1):
