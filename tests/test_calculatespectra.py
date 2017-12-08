@@ -4,7 +4,7 @@ A unit tester for calculatespectra
 import pytest
 import os
 import numpy as np
-from pynasqm.calculatespectra import average_spectras, np_to_string
+from pynasqm.calculatespectra import average_spectra, np_to_string
 
 def setup_module(module):
     '''
@@ -25,7 +25,7 @@ def test_average_spectras():
     '''
     spectra_type = 0 # abs
     number_trajectories = 2
-    results = average_spectras(spectra_type, number_trajectories)
+    results = average_spectra(spectra_type, number_trajectories)
     answer = np.array([[2.79, 444.3877687393, 0.00679938765, 0.00110222205, 0.00679938765],
                        [2.81, 441.2248665707, 0.01893529445, 0.0006000568, 0.01893529445],
                        [2.83, 438.1066695345, 0.0490790883, 0.0002592882, 0.0490790883]])

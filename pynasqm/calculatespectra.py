@@ -35,7 +35,7 @@ def print_line(fo, ev_energy, nm_energy, weighted_state_intensities, total_inten
     fo.write(line)
 
 
-def average_spectras(spectra_type, number_trajectories):
+def average_spectra(spectra_type, number_trajectories):
     # Average the spectras
     file_root = ""
     if spectra_type == 0:
