@@ -35,6 +35,33 @@ def print_line(fo, ev_energy, nm_energy, weighted_state_intensities, total_inten
     fo.write(line)
 
 
+def average_spectras(spectra_type, number_trajectories):
+    # Average the spectras
+    file_root = ""
+    if spectra_type == 0:
+        file_root = "spectra_abs"
+    elif spectra_type == 1:
+        file_root = "spectra_flu"
+
+    data_list = []
+    for traj in range(number_trajectories):
+        file_name = "{}_{}.output".format(file_root, traj)
+        data_list.append(np.loadtxt(file_name))
+    data = np.array(data_list)
+    data_average = np.average(data, axis=0)
+    return data_average
+
+
+def np_to_string(data):
+    data_string = ""
+    for line in data:
+        data_string += "{: 8.3f}".format(line[0])
+        for element in line[1:]:
+            data_string += "{: 18.10f}".format(element)
+        data_string += "\n"
+    return data_string
+
+
 def calculate_spectra(n_states, n_gauss, fwhm, n_bins, x_min, x_max, file_in, file_out):
 
     divisor = 0.02
