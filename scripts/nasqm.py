@@ -61,8 +61,9 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
         amber.output_roots = [output_root]
         amber.coordinate_files = [amber_restart_root]
         amber_calls_per_trajectory = 1
+        job_name = user_input.job_name + "_" + output_root
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
-                                                         output_root, n_new_trajectories,
+                                                         job_name, n_new_trajectories,
                                                          amber_calls_per_trajectory)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
     else:
@@ -123,8 +124,9 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
         amber.output_roots = [nasqm_abs]
         amber.coordinate_files = [nasqm_abs]
         amber_calls_per_trajectory = n_frames
+        job_name = user_input.job_name + "_" + nasqm_abs
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
-                                                         nasqm_abs, n_trajectories,
+                                                         job_name, n_trajectories,
                                                          amber_calls_per_trajectory)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
     else:
