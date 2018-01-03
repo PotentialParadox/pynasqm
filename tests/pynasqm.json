@@ -3,6 +3,7 @@
     "is_hpc": "False",
     "constant_value": "1",
     "is_tully": "True",
+    "job_name": "test_job",
     "number_nodes": "1",
     "processors_per_node": "4",
     "memory_per_node": "2000mb",
