@@ -8,7 +8,6 @@ import pynasqm.utils
 
 class UserInput:
     '''
-
     '''
     def __init__(self, file_name="pynasqm.in"):
         self.file_name = file_name
@@ -31,6 +30,8 @@ class UserInput:
         self.memory_per_node = data["memory_per_node"]
         # What is the maximum amount of jobs you want to run at once?
         self.max_jobs = int(data["max_jobs"])
+        # Prefix of the scheduler job name
+        self.job_name = data["job_name"]
         # What do you want to set as your default walltime?
         self.walltime = data["walltime"]
         # Whats queue do you want the job to go to
@@ -141,4 +142,5 @@ class UserInput:
         new_filename = "{}.json".format(self.file_name[:-3])
         open(new_filename, 'w').write(new_string)
         with open(new_filename, 'r') as data_file:
-            return json.load(data_file)
+return json.load(data_file)
+

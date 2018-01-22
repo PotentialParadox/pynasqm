@@ -8,6 +8,8 @@
     "constant_value": "1",
 # Are you performing tully surface hopping?
     "is_tully": "True",
+# The prefix for you job names in the hpc subscription files
+    "job_name": "test_job",
 # How many nodes will you be working on?
     "number_nodes": "1",
 # How many processors will be on a node?
