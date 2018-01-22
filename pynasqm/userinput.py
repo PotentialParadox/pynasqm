@@ -142,5 +142,5 @@ class UserInput:
         new_filename = "{}.json".format(self.file_name[:-3])
         open(new_filename, 'w').write(new_string)
         with open(new_filename, 'r') as data_file:
-return json.load(data_file)
+            return json.load(data_file)
 
