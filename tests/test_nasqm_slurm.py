@@ -166,8 +166,6 @@ def test_slurm_trajectory_file_35_snaps(userinput):
     amber_calls_per_trajectory = 10
     result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories,
                                                 amber_calls_per_trajectory)
-    open("result0.txt", 'w').write(result[0])
-    open("result1.txt", 'w').write(result[1])
     test_0 = open("nasqm_slurm_32_10.txt", 'r').read()
     test_1 = open("nasqm_slurm_3_10.txt", 'r').read()
     assert result == (test_0, test_1)
