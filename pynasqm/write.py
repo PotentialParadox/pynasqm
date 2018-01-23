@@ -4,6 +4,7 @@ Functions that write outputs of the NASQM script
 import subprocess
 import io
 import numpy as np
+import pynasqm.utils
 from pynasqm.amberout import find_nasqm_excited_state, find_excited_energies
 
 
@@ -22,10 +23,12 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
     Remove the data from the equilibration time given by time_delay
     Time is in fs
     '''
-    data = np.fromstring(spectra_string, sep=' ')
-    n_rows = int(len(data) / 2)
+    row1 = spectra_string.split('\n', 1)[0]
+    row1_data = np.fromstring(row1, sep=" ")
+    n_columns = len(row1_data)
+    data = np.fromstring(spectra_string, sep=" ")
+    n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
-    n_columns = 2
     data = data.reshape((n_rows, n_columns))
     n_rows_to_remove_traj = int(time_delay / time_step)
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
@@ -38,17 +41,20 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
         if i % n_elements_traj >= n_rows_to_remove_traj:
             data2[data2_ri][:] = data_point[:]
             data2_ri += 1
-    return numpy_to_specta_string(data2)
+    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
+    return answer
 
 def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
     '''
     Truncate the spectra by a given time
     Time is in fs
     '''
-    data = np.fromstring(spectra_string, sep=' ')
-    n_rows = int(len(data) / 2)
+    row1 = spectra_string.split('\n', 1)[0]
+    row1_data = np.fromstring(row1, sep=" ")
+    n_columns = len(row1_data)
+    data = np.fromstring(spectra_string, sep=" ")
+    n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
-    n_columns = 2
     data = data.reshape((n_rows, n_columns))
     n_rows_to_remove_traj = int(time_delay / time_step)
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
@@ -61,7 +67,8 @@ def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
         if i % n_elements_traj < n_elements_traj - n_rows_to_remove_traj:
             data2[data2_ri][:] = data_point[:]
             data2_ri += 1
-    return numpy_to_specta_string(data2)
+    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
+    return answer
 
 
 def accumulate_flu_spectra(n_trajectories):
@@ -74,6 +81,7 @@ def accumulate_flu_spectra(n_trajectories):
         amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+        input_stream.close()
     output_string = output_stream.getvalue()
     output_stream.close()
     return output_string
@@ -111,8 +119,8 @@ def write_spectra_flu_input(user_input):
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
     fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
-                                         time_step,
-                                         user_input.fluorescence_time_delay)
+                                   time_step,
+                                   user_input.fluorescence_time_delay)
     fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
                                           time_step,
                                           user_input.fluorescence_time_truncation)
