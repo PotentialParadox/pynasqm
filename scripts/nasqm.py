@@ -212,7 +212,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     input_ceon.set_exc_state_propagate(user_input.n_abs_exc)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
     input_ceon.set_exc_state_init(0)
-    input_ceon.set_verbosity(0)
+    input_ceon.set_verbosity(1)
     input_ceon.set_time_step(user_input.time_step)
     input_ceon.set_random_velocities(True)
     run_simulation_from_trajectory('nasqm_ground', 'nasqm_abs_', user_input.n_frames_gs,
