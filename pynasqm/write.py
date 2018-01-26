@@ -71,11 +71,10 @@ def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
     return answer
 
 
-def accumulate_flu_spectra(n_trajectories):
+def accumulate_flu_spectra(n_trajectories, n_states=10):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
-    n_states = 1
     output_stream = io.StringIO()
     for i in range(n_trajectories):
         amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
@@ -91,15 +90,25 @@ def accumulate_abs_spectra(n_snapshots_gs, n_frames, n_states=20):
     Reads the data from the amber output files and writes the data to spectra_abs.input
     '''
     output_stream = io.StringIO()
-    for traj in range(n_snapshots_gs):
-        for frame in range(n_frames):
-            amber_out = "nasqm_abs_{}_{}.out".format(traj+1, frame+1)
-            input_stream = open(amber_out, 'r')
-            find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
-            input_stream.close()
+    for i in range(n_snapshots_gs):
+        amber_outfile = 'nasqm_abs_' + str(i+1) + ".out"
+        input_stream = open(amber_outfile, 'r')
+        find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+        input_stream.close()
     output_string = output_stream.getvalue()
     output_stream.close()
     return output_string
+
+    # output_stream = io.StringIO()
+    # for traj in range(n_snapshots_gs):
+    #     for frame in range(n_frames):
+    #         amber_out = "nasqm_abs_{}_{}.out".format(traj+1, frame+1)
+    #         input_stream = open(amber_out, 'r')
+    #         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+    #         input_stream.close()
+    # output_string = output_stream.getvalue()
+    # output_stream.close()
+    # return output_string
 
 def write_spectra_abs_input(user_input):
     '''
@@ -115,7 +124,8 @@ def write_spectra_flu_input(user_input):
     Writes the approriately formatted data to spectra_flu.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex)
+    fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex,
+                                          n_states=user_input.n_exc_states_propagate_ex_param)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
     fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
