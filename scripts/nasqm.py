@@ -209,7 +209,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_abs)
-    input_ceon.set_exc_state_propagate(0)
+    input_ceon.set_exc_state_propagate(user_input.n_abs_exc)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
     input_ceon.set_exc_state_init(0)
     input_ceon.set_verbosity(0)
