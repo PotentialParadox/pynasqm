@@ -2,8 +2,8 @@ import argparse
 from pynasqm.calculatespectra import calculate_spectra
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--input", "-i", help="The input file", default="spectra_flu.input")
-parser.add_argument("--output", "-o", help="The output file", default="spectra_flu.output")
+parser.add_argument("--input", "-i", help="The input file", default=None)
+parser.add_argument("--output", "-o", help="The output file", default=None)
 parser.add_argument("--number_states", help="The number of excited states you want to extract",
                     default=1, type=int)
 parser.add_argument("--number_gauss", help="The number of gaussians", default=100, type=int)
