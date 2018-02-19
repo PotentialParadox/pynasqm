@@ -46,7 +46,7 @@ def test_closest_script_3(userinput):
     test = open('nasqm_cpptraj_nearest_three.txt', 'r').read()
     assert result == test
 
-def test_closest_script_4():
+def test_closest_script_4(userinput):
     '''
     Test to see if program is capable of building a script
     to include the nearest four solvent molecules
@@ -57,7 +57,7 @@ def test_closest_script_4():
     test = open('nasqm_cpptraj_nearest_four.txt', 'r').read()
     assert result == test
 
-def test_closest_script_5_snap_2():
+def test_closest_script_5_snap_2(userinput):
     '''
     Test to see if it can build a script to include
     the nearest 5 but from the 2nd ground snapshot
@@ -132,3 +132,4 @@ def test_update_closest_none(input_ceon, userinput):
     nasqm_cpptraj.update_closest(userinput, test)
     result = test[0].get_mask()
     assert result == "':1'"
+
