@@ -24,7 +24,7 @@ if args.absorbance is False and args.inputfile == None:
 if args.absorbance == True and args.inputfile == None:
     args.inputfile = "spectra_abs.out"
 
-color_code = ['r', 'g', 'b', 'y', 'm']
+color_code = ['r', 'g', 'b', 'y', 'm', 'c', 'k']
 
 data = np.loadtxt(args.inputfile)
 
