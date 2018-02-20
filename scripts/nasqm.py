@@ -61,7 +61,11 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
         amber.output_roots = [output_root]
         amber.coordinate_files = [amber_restart_root]
         amber_calls_per_trajectory = 1
-        job_name = user_input.job_name + "_" + output_root
+        if output_root == 'nasqm_abs_':
+            job_suffix = '_a_'
+        elif output_root == 'nasqm_flu_':
+            job_suffix = '_f_'
+        job_name = user_input.job_name + "_" + job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          job_name, n_new_trajectories,
                                                          amber_calls_per_trajectory)
@@ -124,7 +128,7 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
         amber.output_roots = [nasqm_abs]
         amber.coordinate_files = [nasqm_abs]
         amber_calls_per_trajectory = n_frames
-        job_name = user_input.job_name + "_" + nasqm_abs
+        job_name = user_input.job_name + "_ac_"
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          job_name, n_trajectories,
                                                          amber_calls_per_trajectory)
