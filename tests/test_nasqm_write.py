@@ -64,7 +64,6 @@ def test_accumulate_flu_spectra():
     Tests 2 small nasqm_flu trajectories
     '''
     results = nasqm_write.accumulate_flu_spectra(n_trajectories=2, n_states=1)
-    open("result7.txt", 'w').write(os.getcwd())
     assert results == '    2.90923255131416E+00    9.08120295476811E-01\n'\
                       '    2.90923255131440E+00    9.08120295476795E-01\n'\
                       '    2.90576054156170E+00    9.12245042622513E-01\n'\
