@@ -28,7 +28,10 @@ def build_trajectory_command(amber, n_trajectories):
     command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(amber.input_roots[0],
                                                                         amber.output_roots[0])
     command += "${ID}.out -c "
-    command += "{}.${{ID}} -p m1.prmtop -r ".format(amber.coordinate_files[0])
+    if amber.from_restart:
+        command += "{}${{ID}}.rst -p m1.prmtop -r ".format(amber.coordinate_files[0])
+    else:
+        command += "{}.${{ID}} -p m1.prmtop -r ".format(amber.coordinate_files[0])
     command += "{}${{ID}}.rst -x {}".format(amber.output_roots[0], amber.output_roots[0]) \
                +"${ID}.nc &\n" \
                +"done\n" \

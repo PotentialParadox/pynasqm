@@ -10,13 +10,14 @@ class Amber:
     A class to control calls to amber
     '''
     def __init__(self, input_roots=None, output_roots=None, coordinate_files=None,
-                 prmtop_files=None, restart_roots=None, export_roots=None):
+                 prmtop_files=None, restart_roots=None, export_roots=None, from_restarts=False):
         self.input_roots = input_roots
         self.output_roots = output_roots
         self.coordinate_files = coordinate_files
         self.prmtop_files = prmtop_files
         self.restart_roots = restart_roots
         self.export_roots = export_roots
+        self.from_restarts = from_restarts
 
     def run_amber_worker(self, conjoined_list):
         '''
