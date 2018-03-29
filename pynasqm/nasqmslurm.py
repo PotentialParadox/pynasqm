@@ -26,7 +26,7 @@ def build_trajectory_command(amber, n_trajectories):
                '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
                '    ID="$((${FIRST_COUNT} + ${i}))"\n'
     command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(amber.input_roots[0],
-                                                                        amber.output_roots[0])
+                                                                           amber.output_roots[0])
     command += "${ID}.out -c "
     if amber.from_restart:
         command += "{}${{ID}}.rst -p m1.prmtop -r ".format(amber.coordinate_files[0])
@@ -69,8 +69,7 @@ def build_command(amber, n_trajectories, n_snaps_per_trajectory):
     '''
     if n_snaps_per_trajectory > 1:
         return build_snapshot_command(amber, n_trajectories, n_snaps_per_trajectory)
-    else:
-        return build_trajectory_command(amber, n_trajectories)
+    return build_trajectory_command(amber, n_trajectories)
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories, amber_calls_per_trajectory):
     '''
