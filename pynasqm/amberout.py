@@ -150,12 +150,12 @@ def find_total_energies(input_stream):
         energy_list.append(float(result))
     return np.array(energy_list[:-2])
 
-def find_mulliken(input_stream, state):
+def find_mulliken(input_stream):
     '''
     This is designed for a single point calculation
     Returns the numpy array of the mulliken charges for a given state
     '''
-    p_start = re.compile(r"\(0 - ground\)       {}".format(state))
+    p_start = re.compile(r"Mulliken .*Charges")
     p_end = re.compile("Total Mulliken Charge")
     p_float = re.compile(r'-?\d+\.\d+E?\-?\+?\d*')
     list_charges = []
@@ -167,7 +167,8 @@ def find_mulliken(input_stream, state):
                 search_result = re.findall(p_float, line2)
                 if not len(search_result) == 0:
                     list_charges.append(float(search_result[0]))
-    n_atoms = int(len(list_charges) / 2)
+            break
+    n_atoms = int(len(list_charges))
     charges = np.array(list_charges[0:n_atoms])
     return charges
 
