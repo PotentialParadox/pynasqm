@@ -22,6 +22,22 @@ def create_restarts(amber_input, output, step=None):
     open('convert_to_crd.in', 'w').write(ctc)
     subprocess.run(['cpptraj', '-i', 'convert_to_crd.in'])
 
+def update_closest(user_input, input_ceon):
+    '''
+    Updates the masks to include the closest residues to the
+    molecule of interest
+    '''
+    for i in range(1, len(input_ceon)+1):
+        mask = ''
+        if user_input.number_nearest_solvents == 0:
+            mask = "':1'"
+        else:
+            script = closest_script(user_input, i)
+            run_cpptraj_script(script)
+            closest_out = open("closest_{}.txt".format(i), 'r')
+            mask += get_closest_solvent_mask(closest_out)
+        set_mask_in_input(input_ceon, mask, i)
+
 def closest_script(user_input, snap_id):
     '''
     Creates a script to identify near solvents to later
@@ -37,6 +53,23 @@ def closest_script(user_input, snap_id):
              "quit\n".format(snap_id, nearest, mask, snap_id)
     return script
 
+def set_mask_in_input(input_ceon, mask, trajectory_index):
+    trajectory = trajectory_index - 1
+    input_ceon[trajectory].set_mask(mask)
+
+def run_cpptraj_script(script):
+    script_file = "cpptraj.traj"
+    open(script_file, 'w').write(script)
+    subprocess.run(['cpptraj', '-i', script_file])
+
+def get_closest_solvent_mask(closest_out):
+    ids = read_closest(closest_out)
+    mask = "':1"
+    for index in ids:
+        mask += ",{0:.0f}".format(index)
+    mask += "'"
+    return mask
+
 def read_closest(input_stream):
     '''
     Read the residue ID's of the nearest solvents to
@@ -47,25 +80,3 @@ def read_closest(input_stream):
     search_results = re.findall(p_id, closest_file)
     id_array = [float(id_string) for id_string in search_results]
     return np.array(id_array)
-
-def update_closest(user_input, input_ceon):
-    '''
-    Updates the masks to include the closest residues to the
-    molecule of interest
-    '''
-    for i in range(1, len(input_ceon)+1):
-        mask = ''
-        if user_input.number_nearest_solvents == 0:
-            mask = "':1'"
-        else:
-            script = closest_script(user_input, i)
-            script_file = "closest_{}.traj".format(i)
-            open(script_file, 'w').write(script)
-            subprocess.run(['cpptraj', '-i', script_file])
-            closest_out = open("closest_{}.txt".format(i), 'r')
-            ids = read_closest(closest_out)
-            mask = "':1"
-            for index in ids:
-                mask += ",{0:.0f}".format(index)
-            mask += "'"
-        input_ceon[i-1].set_mask(mask)
