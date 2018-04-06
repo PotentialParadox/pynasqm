@@ -42,6 +42,7 @@ class Amber:
     def __init__(self):
         self.input_roots = None
         self.output_roots = None
+        self.from_restart = False
 
 @pytest.fixture
 def amber():
@@ -117,6 +118,7 @@ def test_slurm_trajectory_file_33(userinput):
     amber.input_roots = ["nasqm_abs_"]
     amber.coordinate_files = ["ground_snap"]
     amber.output_roots = ["nasqm_abs_"]
+    amber.from_restart = False
     title = "MyJob"
     n_trajectories = 33
     n_snaps_per_trajectory = 1
