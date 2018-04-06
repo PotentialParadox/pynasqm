@@ -77,7 +77,6 @@ def accumulate_flu_spectra(n_trajectories, n_states=10):
     """
     output_stream = io.StringIO()
     for i in range(n_trajectories):
-        output_stream = io.StringIO()
         amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
