@@ -79,8 +79,10 @@
 # These are your email options for the slurm interface
     "email" : "dtracy.uf@gmail.com",
 # Additive Choice: 1-Begin, 2-End, 4-Fail
-    "email_options" : "3",
+    "email_options": "3",
+# Amber mask identifying the center
+    "mask_for_center": ":1",
 # Number of the closest solvents to the solute that you
 # wish to include in the qm calculation
-    "number_nearest_solvents" : "0"
+    "number_nearest_solvents": "0"
 

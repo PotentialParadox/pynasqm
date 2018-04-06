@@ -4,6 +4,7 @@ Functions that write outputs of the NASQM script
 import subprocess
 import io
 import numpy as np
+import pynasqm.utils
 from pynasqm.amberout import find_nasqm_excited_state, find_excited_energies
 
 
@@ -22,10 +23,12 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
     Remove the data from the equilibration time given by time_delay
     Time is in fs
     '''
-    data = np.fromstring(spectra_string, sep=' ')
-    n_rows = int(len(data) / 2)
+    row1 = spectra_string.split('\n', 1)[0]
+    row1_data = np.fromstring(row1, sep=" ")
+    n_columns = len(row1_data)
+    data = np.fromstring(spectra_string, sep=" ")
+    n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
-    n_columns = 2
     data = data.reshape((n_rows, n_columns))
     n_rows_to_remove_traj = int(time_delay / time_step)
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
@@ -38,17 +41,20 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
         if i % n_elements_traj >= n_rows_to_remove_traj:
             data2[data2_ri][:] = data_point[:]
             data2_ri += 1
-    return numpy_to_specta_string(data2)
+    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
+    return answer
 
 def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
     '''
     Truncate the spectra by a given time
     Time is in fs
     '''
-    data = np.fromstring(spectra_string, sep=' ')
-    n_rows = int(len(data) / 2)
+    row1 = spectra_string.split('\n', 1)[0]
+    row1_data = np.fromstring(row1, sep=" ")
+    n_columns = len(row1_data)
+    data = np.fromstring(spectra_string, sep=" ")
+    n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
-    n_columns = 2
     data = data.reshape((n_rows, n_columns))
     n_rows_to_remove_traj = int(time_delay / time_step)
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
@@ -61,41 +67,49 @@ def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
         if i % n_elements_traj < n_elements_traj - n_rows_to_remove_traj:
             data2[data2_ri][:] = data_point[:]
             data2_ri += 1
-    return numpy_to_specta_string(data2)
+    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
+    return answer
 
 
-def accumulate_flu_spectra(n_trajectories):
+def accumulate_flu_spectra(n_trajectories, n_states=10):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
-    n_states = 1
-    flu_list = []
+    output_stream = io.StringIO()
     for i in range(n_trajectories):
         output_stream = io.StringIO()
         amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
-        output_string = output_stream.getvalue()
-        flu_list.append(output_string)
-        output_stream.close()
-    return flu_list
+        input_stream.close()
+    output_string = output_stream.getvalue()
+    output_stream.close()
+    return output_string
 
 def accumulate_abs_spectra(n_snapshots_gs, n_frames, n_states=20):
     '''
     Reads the data from the amber output files and writes the data to spectra_abs.input
     '''
-    abs_list = []
-    for traj in range(n_snapshots_gs):
-        output_stream = io.StringIO()
-        for frame in range(n_frames):
-            amber_out = "nasqm_abs_{}_{}.out".format(traj+1, frame+1)
-            input_stream = open(amber_out, 'r')
-            find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
-            input_stream.close()
-        output_string = output_stream.getvalue()
-        output_stream.close()
-        abs_list.append(output_string)
-    return abs_list
+    output_stream = io.StringIO()
+    for i in range(n_snapshots_gs):
+        amber_outfile = 'nasqm_abs_' + str(i+1) + ".out"
+        input_stream = open(amber_outfile, 'r')
+        find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+        input_stream.close()
+    output_string = output_stream.getvalue()
+    output_stream.close()
+    return output_string
+
+    # output_stream = io.StringIO()
+    # for traj in range(n_snapshots_gs):
+    #     for frame in range(n_frames):
+    #         amber_out = "nasqm_abs_{}_{}.out".format(traj+1, frame+1)
+    #         input_stream = open(amber_out, 'r')
+    #         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+    #         input_stream.close()
+    # output_string = output_stream.getvalue()
+    # output_stream.close()
+    # return output_string
 
 def write_spectra_abs_input(user_input):
     '''
@@ -112,17 +126,17 @@ def write_spectra_flu_input(user_input):
     Writes the approriately formatted data to spectra_flu.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    fluor_strings = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex)
+    fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex,
+                                          n_states=user_input.n_exc_states_propagate_ex_param)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
-    for i in range(user_input.n_snapshots_ex):
-        fluor_strings[i] = strip_timedelay(fluor_strings[i], 1,
-                                            time_step,
-                                            user_input.fluorescence_time_delay)
-        fluor_strings[i] = truncate_spectra(fluor_strings[i], 1,
-                                            time_step,
-                                            user_input.fluorescence_time_truncation)
-        open('spectra_flu_{}.input'.format(i), 'w').write(fluor_strings[i])
+    fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
+                                   time_step,
+                                   user_input.fluorescence_time_delay)
+    fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
+                                          time_step,
+                                          user_input.fluorescence_time_truncation)
+    open('spectra_flu.input', 'w').write(fluor_string)
 
 
 def write_omega_vs_time(n_trajectories, n_states=1):

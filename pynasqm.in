@@ -76,9 +76,11 @@
 # Truncation will remove so many fs off the back of the trajectory
     "fluorescence_time_truncation": "0",
 # These are your email options for the slurm interface
-    "email" : "dtracy.uf@gmail.com",
+    "email": "dtracy.uf@gmail.com",
 # Additive Choice: 1-Begin, 2-End, 4-Fail
-    "email_options" : "3",
-# Number of solvents closest to molecule to include in qm
-    "number_nearest_solvents" : "0"
+    "email_options": "3",
+# The amber mask to determine the center of your system
+    "mask_for_center": ":1",
+# Number of solvents closest to mask to include in qm
+    "number_nearest_solvents": "0"
 

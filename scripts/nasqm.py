@@ -61,7 +61,11 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
         amber.output_roots = [output_root]
         amber.coordinate_files = [amber_restart_root]
         amber_calls_per_trajectory = 1
-        job_name = user_input.job_name + "_" + output_root
+        if output_root == 'nasqm_abs_':
+            job_suffix = '_a_'
+        elif output_root == 'nasqm_flu_':
+            job_suffix = '_f_'
+        job_name = user_input.job_name + "_" + job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          job_name, n_new_trajectories,
                                                          amber_calls_per_trajectory)
@@ -84,6 +88,52 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
         amber.restart_roots = trajectory_roots
         amber.export_roots = trajectory_roots
         amber.run_amber(user_input.processors_per_node)
+
+def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
+    '''
+    Run n_new_trajectories simulations using nasqm_root as the basis for the generation of the
+    inital geometries. This will output data to output_root+str(i). Restart_step is the
+    number of steps between the snapshots of the trajectory you are using as your geometries
+    generator.
+    '''
+    amber_restart_root = 'nasqm_abs_'
+    input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
+    nasqm_cpptraj.update_closest(user_input, input_ceons)
+    if user_input.is_hpc:
+        amber = Amber()
+        amber.input_roots = [output_root]
+        amber.output_roots = [output_root]
+        amber.coordinate_files = [amber_restart_root]
+        amber.from_restart = True
+        amber_calls_per_trajectory = 1
+        if output_root == 'nasqm_abs_':
+            job_suffix = '_a_'
+        elif output_root == 'nasqm_flu_':
+            job_suffix = '_f_'
+        job_name = user_input.job_name + job_suffix
+        slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
+                                                         job_name, n_new_trajectories,
+                                                         amber_calls_per_trajectory)
+        nasqm_slurm.run_nasqm_slurm_files(slurm_files)
+    else:
+        snap_restarts = []
+        trajectory_roots = []
+        if n_new_trajectories == 1:
+            snap_restarts.append("{}{}.rst".format(amber_restart_root, 1))
+            trajectory_roots.append("{}{}".format(output_root, 1))
+        else:
+            for i in range(n_new_trajectories):
+                snap_restarts.append("{}{}.rst".format(amber_restart_root, str(i+1)))
+                trajectory_roots.append(output_root + str(i + 1))
+        amber = Amber()
+        amber.input_roots = trajectory_roots
+        amber.output_roots = trajectory_roots
+        amber.coordinate_files = snap_restarts
+        amber.prmtop_files = ["m1.prmtop"]*len(trajectory_roots)
+        amber.restart_roots = trajectory_roots
+        amber.export_roots = trajectory_roots
+        amber.run_amber(user_input.processors_per_node)
+
 
 def create_amber_inputs_abs_snaps(n_trajectories, n_frames):
     '''
@@ -124,7 +174,7 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
         amber.output_roots = [nasqm_abs]
         amber.coordinate_files = [nasqm_abs]
         amber_calls_per_trajectory = n_frames
-        job_name = user_input.job_name + "_" + nasqm_abs
+        job_name = user_input.job_name + "_ac_"
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          job_name, n_trajectories,
                                                          amber_calls_per_trajectory)
@@ -209,10 +259,10 @@ def run_absorption_trajectories(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_abs)
-    input_ceon.set_exc_state_propagate(0)
+    input_ceon.set_exc_state_propagate(user_input.n_abs_exc)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
     input_ceon.set_exc_state_init(0)
-    input_ceon.set_verbosity(0)
+    input_ceon.set_verbosity(1)
     input_ceon.set_time_step(user_input.time_step)
     input_ceon.set_random_velocities(True)
     run_simulation_from_trajectory('nasqm_ground', 'nasqm_abs_', user_input.n_frames_gs,
@@ -241,7 +291,7 @@ def run_absorption_collection(user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
     write_spectra_abs_input(user_input)
-    clean_up_abs(user_input.is_tully, user_input.n_snapshots_gs, user_input.n_frames_abs)
+    # clean_up_abs(user_input.is_tully, user_input.n_snapshots_gs, user_input.n_frames_abs)
 
 
 def run_excited_state_trajectories(input_ceon, user_input):
@@ -257,10 +307,8 @@ def run_excited_state_trajectories(input_ceon, user_input):
     input_ceon.set_verbosity(1)
     input_ceon.set_time_step(user_input.time_step)
     input_ceon.set_random_velocities(False)
-    input_root = "nasqm_ground"
     output_root = "nasqm_flu_"
-    run_simulation_from_trajectory(input_root, output_root, user_input.n_frames_gs,
-                                   user_input.n_snapshots_ex, user_input, input_ceon)
+    run_flu_from_abs(output_root, user_input.n_snapshots_ex, user_input, input_ceon)
 
 def run_fluorescence_collection(user_input):
     '''
@@ -318,3 +366,4 @@ def main():
     print("Job finished in %s seconds" % (end_time - start_time))
 
 main()
+

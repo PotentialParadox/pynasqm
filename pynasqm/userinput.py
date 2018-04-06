@@ -8,7 +8,6 @@ import pynasqm.utils
 
 class UserInput:
     '''
-
     '''
     def __init__(self, file_name="pynasqm.in"):
         self.file_name = file_name
@@ -118,6 +117,7 @@ class UserInput:
         # We will default to include all solvent residues within self.nearest_radius
         # angstroms from the molecule of interest, if this is None, then
         # we will use the nearest number of solvents
+        self.mask_for_center = data["mask_for_center"]
         self.number_nearest_solvents = int(data["number_nearest_solvents"])
 
         ## Derived Values
@@ -144,3 +144,4 @@ class UserInput:
         open(new_filename, 'w').write(new_string)
         with open(new_filename, 'r') as data_file:
             return json.load(data_file)
+
