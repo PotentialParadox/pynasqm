@@ -8,10 +8,16 @@ class ClosestReader:
     '''
 
     def __init__(self, closest_output):
-        self.closest_output = closest_output
+        self.closest_output = self._to_stream(closest_output)
         self.atoms = None
         self.residues = None
         self._read_closest()
+
+    @staticmethod
+    def _to_stream(possible_string):
+        if isinstance(possible_string, str):
+            return open(possible_string, 'r')
+        return possible_string
 
     def _read_closest(self):
         '''
