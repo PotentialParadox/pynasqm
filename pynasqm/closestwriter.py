@@ -7,6 +7,7 @@ class ClosestWriter:
         self.solvent_mask = "!:1"
         self.focus_mask = ":1"
         self.trajouts = self._default_trajout()
+        self.script_files = []
 
     @staticmethod
     def _list(trajins):
@@ -26,6 +27,7 @@ class ClosestWriter:
     def write(self):
         for i in range(self._number_trajectories()):
             script_filename = "closest_{}.traj".format(i+1)
+            self.script_files.append(script_filename)
             script = self._closest_script(self.trajins[i], self.trajouts[i])
             open(script_filename, 'w').write(script)
 
