@@ -28,7 +28,8 @@ def test_mask_updater():
     test_name = "mask_updater.in"
     new_input_ceon = original_input_ceons.copy(test_name)
     input_ceons = [new_input_ceon]
-    updater = SolventMaskUpdater(input_ceons, user_input)
+    outputs = ['closest_1.txt']
+    updater = SolventMaskUpdater(input_ceons, user_input, outputs)
     updater.update_masks()
     result = open(test_name, 'r').read()
     answer_file = "test_mask_updater.in"
