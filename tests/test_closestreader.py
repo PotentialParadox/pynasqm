@@ -25,7 +25,7 @@ def closest_output():
     '''
     Create a test user input
     '''
-    return open("closest_1.txt", 'r')
+    return open("closest_reader_1.txt", 'r')
 
 def test_atoms(closest_output):
     '''
