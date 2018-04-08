@@ -28,5 +28,5 @@ def test_nmr_writer():
     answer_file = "nmr_write_test.dist"
     writer.write_to(result_file)
     result = open(result_file, 'r').read()
-    answer = open(result_file, 'r').read()
-
+    answer = open(answer_file, 'r').read()
+    assert result == answer
