@@ -161,6 +161,29 @@ class InputCeon:
         '''
         self.log += open('input.ceon', 'r').read()
 
+    def set_nmr_directory(self, nmr_directory):
+        p_nmropt = re.compile(r'nmropt\s*=\s*\d+')
+        p_ifqnt = re.compile(r"ifqnt\s*=\s*\d*")
+        p_disang = re.compile('DISANG\s*=*')
+        is_nmropt = None
+        is_disang = None
+        file_string = None
+        with open(self.amber_input, 'r') as file_in:
+            file_string = file_in.read()
+            is_nmropt = re.search(p_nmropt, file_string)
+            is_disang = re.search(p_disang, file_string)
+        if is_nmropt:
+            sed_inplace(self.amber_input, p_nmropt, 'nmropt=1')
+        else:
+            sed_inplace(self.amber_input, 'ifqnt\s*=\s*\d*', 'nmropt=1,\n  ifqnt=1')
+        if is_disang:
+            sed_inplace(self.amber_input, p_disang, 'DISANG={}\n'.format(nmr_directory))
+        else:
+            file_string = open(self.amber_input, 'r').read()
+            file_string = file_string + 'DISANG={}\n'.format(nmr_directory)
+            open(self.amber_input, 'w').write(file_string)
+
+
 
 
 def set_inpcrd(coordinates, file_name):
@@ -205,3 +228,6 @@ def get_xyz_coordinates(file_stream):
                                                                  float(l_coords[2]),
                                                                  float(l_coords[3]))
     return coords
+
+
+
