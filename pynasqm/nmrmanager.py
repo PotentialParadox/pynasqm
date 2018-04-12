@@ -4,12 +4,12 @@ from pynasqm.nmrwriter import NMRWriter
 
 class NMRManager:
 
-    def __init__(self, input_ceons, user_input, closest_outputs):
+    def __init__(self, input_ceons, user_input, closest_outputs, dist_files=[]):
         self._input_ceons = input_ceons
         self._user_input = user_input
         self._closest_outputs = closest_outputs
         self._number_trajectories = self._get_number_trajectories()
-        self._dist_files = []
+        self._dist_files = dist_files
 
     def update(self):
         self.write_dist_files()
@@ -25,8 +25,9 @@ class NMRManager:
             NMRWriter(restricted_atoms, desired_distance).write_to(file_name)
 
     def update_inputs(self):
+        print(self._input_ceons)
         for trajectory in range(self._number_trajectories):
-            self._input_ceons[trajectory].update_nmr(self._dist_files[trajectory])
+            self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
 
     @staticmethod
     def _create_dist_file_name(index):
