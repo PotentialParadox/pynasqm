@@ -14,6 +14,8 @@ from pynasqm.write import (write_omega_vs_time,
 from pynasqm.userinput import UserInput
 import pynasqm.nasqmslurm as nasqm_slurm
 import pynasqm.cpptraj as nasqm_cpptraj
+from pynasqm.closestrunner import ClosestRunner
+from pynasqm.solventmaskupdater import SolventMaskUpdater
 
 
 def run_nasqm(root_name, coordinate_file=None, pmemd_available=False):
@@ -52,7 +54,10 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
     nasqm_cpptraj.create_restarts(amber_input=nasqm_root,
                                   output=amber_restart_root, step=restart_step)
     input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
-    nasqm_cpptraj.update_closest(user_input, input_ceons)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories)
+    closest_outputs = closest_runner.create_closest_outputs()
+    mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
+    mask_updater.update_masks()
     if user_input.is_hpc:
         if n_new_trajectories == 1:
             subprocess.run(['mv', 'ground_snap', 'ground_snap.1'])
@@ -98,7 +103,10 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
     '''
     amber_restart_root = 'nasqm_abs_'
     input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
-    nasqm_cpptraj.update_closest(user_input, input_ceons)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories)
+    closest_outputs = closest_runner.create_closest_outputs()
+    mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
+    mask_updater.update_masks()
     if user_input.is_hpc:
         amber = Amber()
         amber.input_roots = [output_root]
@@ -154,7 +162,10 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
     nasqm_abs = "nasqm_abs_"
     amber_inputs = create_amber_inputs_abs_snaps(n_trajectories, n_frames)
     input_ceons = create_inputceon_copies(input_ceon, nasqm_abs, n_trajectories)
-    nasqm_cpptraj.update_closest(user_input, input_ceons)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_trajectories)
+    closest_outputs = closest_runner.create_closest_outputs()
+    mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
+    mask_updater.update_masks()
     for i in input_ceons:
         i.set_n_steps(0)
     for i in range(n_trajectories):

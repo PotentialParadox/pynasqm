@@ -7,18 +7,11 @@ class SolventMaskUpdater:
         self._input_ceons = input_ceons
         self._user_input = user_input
         self._closest_outputs = closest_outputs
-        self._trajins = self._default_trajins()
         self._masks = None
 
     def update_masks(self):
         self._create_masks(self._closest_outputs)
         self._set_masks_in_input()
-
-    def _default_trajins(self):
-        trajins = []
-        for i in range(1, self._number_trajectories()+1):
-            trajins.append("ground_snap.{}".format(i))
-        return trajins
 
     def _create_masks(self, outputs):
         masks = []
