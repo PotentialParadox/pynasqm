@@ -55,7 +55,8 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
     nasqm_cpptraj.create_restarts(amber_input=nasqm_root,
                                   output=amber_restart_root, step=restart_step)
     input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
-    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories,
+                                   user_input.mask_for_center)
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
@@ -107,7 +108,8 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
     '''
     amber_restart_root = 'nasqm_abs_'
     input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
-    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories,
+                                   user_input.mask_for_center)
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
@@ -168,7 +170,8 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
     nasqm_abs = "nasqm_abs_"
     amber_inputs = create_amber_inputs_abs_snaps(n_trajectories, n_frames)
     input_ceons = create_inputceon_copies(input_ceon, nasqm_abs, n_trajectories)
-    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_trajectories)
+    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_trajectories,
+                                   user_input.mask_for_center)
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
