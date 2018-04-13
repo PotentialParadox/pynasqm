@@ -33,4 +33,7 @@
   qm_pme=0,
   nae=1
  /
+ &wt
+ type='END'
+ /
 DISANG=./rest_1.dist
