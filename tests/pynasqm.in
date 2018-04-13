@@ -86,4 +86,4 @@
 # wish to include in the qm calculation
     "number_nearest_solvents": "0",
 # Distance you wish the solvent to restricted to
-    "desired_distance": "0"
+    "restrain_solvents": "False"

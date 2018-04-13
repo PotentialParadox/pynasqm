@@ -121,11 +121,9 @@ class UserInput:
         self.number_nearest_solvents = int(data["number_nearest_solvents"])
 
         try:
-            self.desired_distance = float(data["desired_distance"])
-            if self.desired_distance == 0:
-                self.desired_distance = None
+            self.restrain_solvents = pynasqm.utils.str2bool(data["restrain_solvents"])
         except KeyError:
-            self.desired_distance = None
+            self.restrain_solvents = False
 
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)

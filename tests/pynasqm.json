@@ -34,4 +34,4 @@
     "email_options": "3",
     "mask_for_center": ":1",
     "number_nearest_solvents": "0",
-    "desired_distance": "0"}
+    "restrain_solvents": "False"}

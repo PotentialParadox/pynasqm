@@ -60,7 +60,7 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
-    if user_input.desired_distance != None:
+    if user_input.restrain_solvents is True:
         NMRManager(input_ceons, user_input, closest_outputs).update()
 
     if user_input.is_hpc:
@@ -113,7 +113,7 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
-    if user_input.desired_distance != None:
+    if user_input.restrain_solvents is True:
         NMRManager(input_ceons, user_input, closest_outputs).update()
     if user_input.is_hpc:
         amber = Amber()
@@ -175,7 +175,7 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
-    if user_input.desired_distance != None:
+    if user_input.restrain_solvents is True:
         NMRManager(input_ceons, user_input, closest_outputs).update()
     for i in input_ceons:
         i.set_n_steps(0)
