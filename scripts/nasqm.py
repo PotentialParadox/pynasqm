@@ -290,22 +290,6 @@ def run_absorption_trajectories(input_ceon, user_input):
     run_simulation_from_trajectory('nasqm_ground', 'nasqm_abs_', user_input.n_frames_gs,
                                    user_input.n_snapshots_gs, user_input, input_ceon)
 
-def run_absorption_snapshots(input_ceon, user_input):
-    '''
-    Once the ground state trajectory file are made, we need can calculate the absorption
-    snapshots.
-    '''
-    print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Snapshots !!!!!!!!!!!!!!!!!!!!")
-    input_ceon.set_n_steps(0)
-    input_ceon.set_exc_state_propagate(user_input.n_abs_exc)
-    input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
-    input_ceon.set_exc_state_init(0)
-    input_ceon.set_verbosity(1)
-    input_ceon.set_time_step(user_input.time_step)
-    run_abs_snapshots(n_trajectories=user_input.n_snapshots_gs,
-                      n_frames=user_input.n_frames_abs, user_input=user_input,
-                      input_ceon=input_ceon)
-
 def run_absorption_collection(user_input):
     '''
     Parse the output data from amber for absorption energies and create a spectra_abs.input
@@ -368,8 +352,6 @@ def main():
         run_ground_state_dynamics(input_ceon, user_input)
     if user_input.run_absorption_trajectories:
         run_absorption_trajectories(input_ceon, user_input)
-    if user_input.run_absorption_snapshots:
-        run_absorption_snapshots(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
     if user_input.run_excited_state_trajectories:

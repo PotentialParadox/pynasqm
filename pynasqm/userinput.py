@@ -41,9 +41,6 @@ class UserInput:
         # Do you want to run the trajectories used for the abjorption specta
         self.run_absorption_trajectories = pynasqm.utils.str2bool(
             data["run_absorption_trajectories"])
-        # Do you want to run the single point snapshots from these
-        # absorption
-        self.run_absorption_snapshots = pynasqm.utils.str2bool(data["run_absorption_snapshots"])
         # Do you want to collect the data from the absorption calculations?
         self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
         # Do you want to run the exctied state trajectories?
