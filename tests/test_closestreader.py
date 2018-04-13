@@ -43,7 +43,7 @@ def test_residues(closest_output):
     result = closests.residues
     np.testing.assert_array_equal(result, np.array([400, 456, 152]))
 
-def test_residues(closest_output):
+def test_distances(closest_output):
     '''
     Test the reading of residues from closest_1.txt
     '''
