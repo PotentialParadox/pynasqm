@@ -42,3 +42,12 @@ def test_residues(closest_output):
     closests = ClosestReader(closest_output)
     result = closests.residues
     np.testing.assert_array_equal(result, np.array([400, 456, 152]))
+
+def test_residues(closest_output):
+    '''
+    Test the reading of residues from closest_1.txt
+    '''
+    closests = ClosestReader(closest_output)
+    result = closests.distances
+    print(result)
+    np.testing.assert_almost_equal(result, np.array([2.4660, 2.6087, 2.6091]))

@@ -11,6 +11,7 @@ class ClosestReader:
         self.closest_output = self._to_stream(closest_output)
         self.atoms = None
         self.residues = None
+        self.distances = None # in ascending order
         self._read_closest()
 
     @staticmethod
@@ -27,12 +28,16 @@ class ClosestReader:
         closest_array = self._construct_closest_arrary()
         self._update_atoms(closest_array)
         self._update_residues(closest_array)
+        self._update_distances(closest_array)
 
     def _update_atoms(self, closest_array):
         self.atoms = closest_array[:, 3].astype(int)
 
     def _update_residues(self, closest_array):
         self.residues = closest_array[:, 1].astype(int)
+
+    def _update_distances(self, closest_array):
+        self.distances = closest_array[:, 2].astype(float)
 
     def _construct_closest_arrary(self):
         closest_file = self.closest_output.read()
