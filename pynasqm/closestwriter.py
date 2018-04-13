@@ -1,11 +1,11 @@
 class ClosestWriter:
 
-    def __init__(self, trajins, number_nearest):
+    def __init__(self, trajins, number_nearest, focus_mask=":1"):
         self.trajins = self._list(trajins)
         self.number_nearest = number_nearest
         self.prmtop = "m1.prmtop"
         self.solvent_mask = "!:1"
-        self.focus_mask = ":1"
+        self.focus_mask = focus_mask
         self.trajouts = self._default_trajout()
         self.script_files = []
 
