@@ -4,44 +4,46 @@ Determine the shift between two spectra
 import math
 import numpy as np
 
-def find_ev_max(A):
-    '''
-    Find the eV value corresponding to the maximum intensity
-    '''
+def find_row_of_max(A):
     max_value = -math.inf
-    max_ev = 0
-    for i in range(len(A)):
-        if A[i, 2] > max_value:
-            max_value = A[i, 2]
-            max_ev = A[i, 0]
-    return max_ev
+    max_row = -1
+    for row, value in enumerate(A[:,-1]):
+        if value > max_value:
+            max_value = value
+            max_row = row
+    return max_row
 
 
-def find_nm_max(A):
+def ev_energy(A, row):
     '''
-    Find the nm value corresponding to the maximum intensity
+    Find the eV value corresponding to the row
     '''
-    max_value = -math.inf
-    max_nm = 0
-    for i in range(len(A)):
-        if A[i, 2] > max_value:
-            max_value = A[i, 2]
-            max_nm = A[i, 1]
-    return max_nm
+    return A[row,0]
 
 
-def find_shift(A, unit):
+def nm_energy(A, row):
+    '''
+    Find the nm value corresponding to the row
+    '''
+    return A[row,1]
+
+
+def find_shift(file1, file2, units):
     '''
     Find the eV shift between two spectra
     '''
-    spectra_1 = A[:,0:3]
-    spectra_2 = A[:,[0, 1, 3]]
-    unit_1 = None
-    unit_2 = None
-    if unit == "ev":
-        unit_1 = find_ev_max(spectra_1)
-        unit_2 = find_ev_max(spectra_2)
-    if unit == "nm":
-        unit_1 = find_nm_max(spectra_1)
-        unit_2 = find_nm_max(spectra_2)
-    return float("{:16.8f}".format(unit_2 - unit_1))
+    DATA1 = np.loadtxt(file1)
+    DATA2 = np.loadtxt(file2)
+    max1 = find_row_of_max(DATA1)
+    max2 = find_row_of_max(DATA2)
+    energy1 = None
+    energy2 = None
+    if units == "ev":
+        energy1 = ev_energy(DATA1, max1)
+        energy2 = ev_energy(DATA2, max2)
+    elif units == "nm":
+        energy1 = nm_energy(DATA1, max1)
+        energy2 = nm_energy(DATA2, max2)
+    return energy2 - energy1
+
+
