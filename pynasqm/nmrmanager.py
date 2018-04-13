@@ -19,7 +19,10 @@ class NMRManager:
         for trajectory in range(self._get_number_trajectories()):
             closest_output = self._closest_outputs[trajectory]
             restricted_atoms = self._get_restricted_atoms(closest_output)
-            desired_distance = self._user_input.desired_distance
+            desired_distance = self._get_max_distance(closest_output)
+            if desired_distance > 12:
+                raise ValueError("Desired distance greater than 12, "\
+                                 "possibly to many nearest solvent")
             file_name = self._create_dist_file_name(trajectory)
             self._dist_files.append(file_name)
             NMRWriter(restricted_atoms, desired_distance).write_to(file_name)
@@ -27,6 +30,12 @@ class NMRManager:
     def update_inputs(self):
         for trajectory in range(self._number_trajectories):
             self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
+
+    @staticmethod
+    def _get_max_distance(closest_output):
+        reader = ClosestReader(closest_output)
+        distances = reader.distances
+        return distances[-1] + 0.2
 
     @staticmethod
     def _create_dist_file_name(index):
