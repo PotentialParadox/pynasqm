@@ -25,7 +25,6 @@ class NMRManager:
             NMRWriter(restricted_atoms, desired_distance).write_to(file_name)
 
     def update_inputs(self):
-        print(self._input_ceons)
         for trajectory in range(self._number_trajectories):
             self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
 
