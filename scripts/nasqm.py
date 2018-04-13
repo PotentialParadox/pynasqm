@@ -16,6 +16,7 @@ import pynasqm.nasqmslurm as nasqm_slurm
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
+from pynasqm.nmrmanager import NMRManager
 
 
 def run_nasqm(root_name, coordinate_file=None, pmemd_available=False):
@@ -58,6 +59,9 @@ def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringina
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
+    if user_input.desired_distance != None:
+        NMRManager(input_ceons, user_input, closest_outputs).update()
+
     if user_input.is_hpc:
         if n_new_trajectories == 1:
             subprocess.run(['mv', 'ground_snap', 'ground_snap.1'])
@@ -107,6 +111,8 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
+    if user_input.desired_distance != None:
+        NMRManager(input_ceons, user_input, closest_outputs).update()
     if user_input.is_hpc:
         amber = Amber()
         amber.input_roots = [output_root]
@@ -166,6 +172,8 @@ def run_abs_snapshots(n_trajectories, n_frames, user_input, input_ceon):
     closest_outputs = closest_runner.create_closest_outputs()
     mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
     mask_updater.update_masks()
+    if user_input.desired_distance != None:
+        NMRManager(input_ceons, user_input, closest_outputs).update()
     for i in input_ceons:
         i.set_n_steps(0)
     for i in range(n_trajectories):

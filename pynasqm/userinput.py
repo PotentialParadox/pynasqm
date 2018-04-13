@@ -120,6 +120,13 @@ class UserInput:
         self.mask_for_center = data["mask_for_center"]
         self.number_nearest_solvents = int(data["number_nearest_solvents"])
 
+        try:
+            self.desired_distance = float(data["desired_distance"])
+            if self.desired_distance == 0:
+                self.desired_distance = None
+        except KeyError:
+            self.desired_distance = None
+
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
         self.n_frames_gs = int(self.n_steps_gs / self.n_steps_to_print_gs)
