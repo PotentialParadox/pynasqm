@@ -99,15 +99,13 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
         amber.output_roots = [output_root]
         amber.coordinate_files = [amber_restart_root]
         amber.from_restart = True
-        amber_calls_per_trajectory = 1
         if output_root == 'nasqm_abs_':
             job_suffix = '_a_'
         elif output_root == 'nasqm_flu_':
             job_suffix = '_f_'
         job_name = user_input.job_name + job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
-                                                         job_name, n_new_trajectories,
-                                                         amber_calls_per_trajectory)
+                                                         job_name, n_new_trajectories)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
     else:
         snap_restarts = []
@@ -159,11 +157,9 @@ def run_ground_state_dynamics(input_ceon, user_input):
         else:
             subprocess.run(['cp', 'm1.inpcrd', 'm1.inpcrd.1'])
         number_trajectories = 1
-        amber_calls_per_trajectory = 1
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          amber.output_roots[0],
-                                                         number_trajectories,
-                                                         amber_calls_per_trajectory)
+                                                         number_trajectories)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
         subprocess.run(['mv', 'nasqm_ground1.out', 'nasqm_ground.out'])
         subprocess.run(['mv', 'nasqm_ground1.rst', 'nasqm_ground.rst'])

@@ -86,9 +86,7 @@ def test_slurm_trajectory_file_1(userinput, amber):
     amber.coordinate_files = ["ground_snap"]
     title = "MyJob"
     n_trajectories = 1
-    n_snaps_per_trajectory = 1
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories,
-                                                n_snaps_per_trajectory)
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test = open("nasqm_slurm_1.txt", 'r').read()
     assert result == (None, test)
 
@@ -103,9 +101,7 @@ def test_slurm_trajectory_file_16(userinput, amber):
     amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 16
-    n_snaps_per_trajectory = 1
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories,
-                                                n_snaps_per_trajectory)
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test = open("nasqm_slurm_16.txt", 'r').read()
     assert result == (test, None)
 
@@ -121,53 +117,7 @@ def test_slurm_trajectory_file_33(userinput):
     amber.from_restart = False
     title = "MyJob"
     n_trajectories = 33
-    n_snaps_per_trajectory = 1
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories,
-                                                n_snaps_per_trajectory)
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
     test_1 = open("nasqm_slurm_1.txt", 'r').read()
-    assert result == (test_0, test_1)
-
-def test_build_snapshot_1(amber):
-    '''
-    Test to see if the build snapshot command will one trajectory over 10 frames
-    '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.output_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["nasqm_abs_"]
-    n_trajectories = 1
-    n_frames = 10
-    result = nasqm_slurm.build_snapshot_command(amber, n_trajectories, n_frames)
-    test = open("nasqm_slurm_build_1_10.txt").read()
-    assert result == test
-
-def test_build_snapshot_2(amber):
-    '''
-    Test to see if the build snapshot command will 2 trajectory over 20 frames
-    '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.output_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["nasqm_abs_"]
-    n_trajectories = 2
-    n_frames = 20
-    result = nasqm_slurm.build_snapshot_command(amber, n_trajectories, n_frames)
-    test = open("nasqm_slurm_build_2_20.txt").read()
-    assert result == test
-
-
-def test_slurm_trajectory_file_35_snaps(userinput):
-    '''
-    Tests to see if slurm trajectory_file is capable of running
-    multiple whole trajectories with remainder and snapshots
-    '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["nasqm_abs_"]
-    amber.output_roots = ["nasqm_abs_"]
-    title = "MyJob"
-    n_trajectories = 35
-    amber_calls_per_trajectory = 10
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories,
-                                                amber_calls_per_trajectory)
-    test_0 = open("nasqm_slurm_32_10.txt", 'r').read()
-    test_1 = open("nasqm_slurm_3_10.txt", 'r').read()
     assert result == (test_0, test_1)
