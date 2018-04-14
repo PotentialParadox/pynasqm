@@ -9,6 +9,9 @@ class ClosestRunner:
         self._trajins = self._default_trajins()
         self._focus_mask = focus_mask
 
+    def set_trajins(self, trajins):
+        self._trajins = trajins
+
     def _default_trajins(self):
         trajins = []
         for i in range(1, self._n_trajectories+1):

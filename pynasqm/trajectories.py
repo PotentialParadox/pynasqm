@@ -35,14 +35,20 @@ class Trajectories:
 
     def _update_input_files(self):
         n_qm_solvents = self._user_input.number_nearest_solvents
-        center_mask = self._user_input.mask_for_center
-        closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
-                                       center_mask)
-        closest_outputs = closest_runner.create_closest_outputs()
-        mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
-        mask_updater.update_masks()
-        if self._user_input.restrain_solvents is True:
-            NMRManager(self._input_ceons, self._user_input, closest_outputs).update()
+        if n_qm_solvents > 0:
+            center_mask = self._user_input.mask_for_center
+            closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
+                                           center_mask)
+            self._update_trajins(closest_runner)
+            closest_outputs = closest_runner.create_closest_outputs()
+            mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
+            mask_updater.update_masks()
+            if self._user_input.restrain_solvents is True:
+                NMRManager(self._input_ceons, self._user_input, closest_outputs).update()
+
+    def _update_trajins(self, closest_runner):
+        pass
+
 
     def _run_on_hpc(self):
         amber = Amber()
