@@ -139,36 +139,6 @@ def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
         amber.run_amber(user_input.processors_per_node)
 
 
-def create_amber_inputs_abs_snaps(n_trajectories, n_frames):
-    '''
-    Create the amber input files for abs snapshots
-    '''
-    amber_inputs = []
-    for traj_index in range(1, n_trajectories+1):
-        for _ in range(n_frames):
-            amber_inputs.append("nasqm_abs_{}".format(traj_index))
-    return amber_inputs
-
-
-def clean_up_abs(is_tully, n_trajectories, n_frame):
-    '''
-    Removes the files created by the absorption routine
-    '''
-    base_name = 'nasqm_abs_'
-    if is_tully:
-        for i in range(n_trajectories):
-            for j in range(n_frame):
-                traj = i + 1
-                frame = j + 1
-                subprocess.run(['rm', base_name + str(traj) + '_' + str(frame) + '.out'])
-                subprocess.run(['rm', base_name + str(traj) + '_' + str(frame) + '.nc'])
-                subprocess.run(['rm', base_name + str(traj) + '_' + str(frame) + '.rst'])
-                subprocess.run(['rm', base_name + str(traj) + '.' + str(frame)])
-    else:
-        subprocess.run('rm nasqm_abs_*', shell=True)
-        subprocess.run('rm ground_snap*', shell=True)
-
-
 def run_ground_state_dynamics(input_ceon, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
@@ -235,8 +205,6 @@ def run_absorption_collection(user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
     write_spectra_abs_input(user_input)
-    # clean_up_abs(user_input.is_tully, user_input.n_snapshots_gs, user_input.n_frames_abs)
-
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''
