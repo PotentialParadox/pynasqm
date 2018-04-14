@@ -17,7 +17,55 @@ import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmrmanager import NMRManager
+from pynasqm.absorptiontrajectories import AbsTrajectories
 
+
+def main():
+    '''
+    The primary nasqm automation function call. All changable parameters can be
+    found in nasqm_user_input.py
+    '''
+
+    user_input = UserInput()
+
+    original_inputs = copy_inputs()
+    input_ceon = create_input(user_input)
+
+    start_time = time.time()
+
+    if user_input.run_ground_state_dynamics:
+        run_ground_state_dynamics(input_ceon, user_input)
+    if user_input.run_absorption_trajectories:
+        run_absorption_trajectories(input_ceon, user_input)
+    if user_input.run_absorption_collection:
+        run_absorption_collection(user_input)
+    if user_input.run_excited_state_trajectories:
+        run_excited_state_trajectories(input_ceon, user_input)
+    if user_input.run_fluorescence_collection:
+        run_fluorescence_collection(user_input)
+
+    if not user_input.is_hpc:
+        restore_inputs(original_inputs)
+    input_ceon.write_log()
+
+    end_time = time.time()
+    print("Job finished in %s seconds" % (end_time - start_time))
+
+def create_input(user_input):
+    input_ceon = InputCeon(amber_input='md_qmmm_amb.in')
+    input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
+    return input_ceon
+
+def copy_inputs():
+    input_ceon_bac = open('input.ceon', 'r').read()
+    md_qmmm_amb = open('md_qmmm_amb.in', 'r').read()
+    m1_inpcrd = open('m1.inpcrd', 'r').read()
+    return [input_ceon_bac, md_qmmm_amb, m1_inpcrd]
+
+def restore_inputs(origninal_inputs):
+    open('input.ceon', 'w').write(origninal_inputs[0])
+    open('md_qmmm_amb.in', 'w').write(origninal_inputs[1])
+    open('m1.inpcrd', 'w').write(origninal_inputs[2])
 
 def create_inputceon_copies(input_ceon, root_name, number):
     '''
@@ -28,64 +76,6 @@ def create_inputceon_copies(input_ceon, root_name, number):
         file_name = "{}{}.in".format(root_name, index)
         input_ceons.append(input_ceon.copy(file_name))
     return input_ceons
-
-def run_simulation_from_trajectory(nasqm_root, output_root, n_frames_in_oringinal, n_new_trajectories,
-                                   user_input, input_ceon):
-    '''
-    Run n_new_trajectories simulations using nasqm_root as the basis for the generation of the
-    inital geometries. This will output data to output_root+str(i). Restart_step is the
-    number of steps between the snapshots of the trajectory you are using as your geometries
-    generator.
-    '''
-    restart_step = int(n_frames_in_oringinal / n_new_trajectories)
-    amber_restart_root = 'ground_snap'
-    nasqm_cpptraj.create_restarts(amber_input=nasqm_root,
-                                  output=amber_restart_root, step=restart_step)
-    input_ceons = create_inputceon_copies(input_ceon, output_root, n_new_trajectories)
-    closest_runner = ClosestRunner(user_input.number_nearest_solvents, n_new_trajectories,
-                                   user_input.mask_for_center)
-    closest_outputs = closest_runner.create_closest_outputs()
-    mask_updater = SolventMaskUpdater(input_ceons, user_input, closest_outputs)
-    mask_updater.update_masks()
-    if user_input.restrain_solvents is True:
-        NMRManager(input_ceons, user_input, closest_outputs).update()
-
-    if user_input.is_hpc:
-        if n_new_trajectories == 1:
-            subprocess.run(['mv', 'ground_snap', 'ground_snap.1'])
-        amber = Amber()
-        amber.input_roots = [output_root]
-        amber.output_roots = [output_root]
-        amber.coordinate_files = [amber_restart_root]
-        amber_calls_per_trajectory = 1
-        if output_root == 'nasqm_abs_':
-            job_suffix = '_a_'
-        elif output_root == 'nasqm_flu_':
-            job_suffix = '_f_'
-        job_name = user_input.job_name + "_" + job_suffix
-        slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
-                                                         job_name, n_new_trajectories,
-                                                         amber_calls_per_trajectory)
-        nasqm_slurm.run_nasqm_slurm_files(slurm_files)
-    else:
-        snap_restarts = []
-        trajectory_roots = []
-        if n_new_trajectories == 1:
-            snap_restarts.append(amber_restart_root)
-            trajectory_roots.append(output_root + '1')
-        else:
-            for i in range(n_new_trajectories):
-                snap_restarts.append(amber_restart_root+"."+str(i+1))
-                trajectory_roots.append(output_root + str(i + 1))
-        amber = Amber()
-        amber.input_roots = trajectory_roots
-        amber.output_roots = trajectory_roots
-        amber.coordinate_files = snap_restarts
-        amber.prmtop_files = ["m1.prmtop"]*len(trajectory_roots)
-        amber.restart_roots = trajectory_roots
-        amber.export_roots = trajectory_roots
-        amber.run_amber(user_input.processors_per_node)
-
 
 def run_flu_from_abs(output_root, n_new_trajectories, user_input, input_ceon):
     '''
@@ -195,8 +185,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     input_ceon.set_verbosity(1)
     input_ceon.set_time_step(user_input.time_step)
     input_ceon.set_random_velocities(True)
-    run_simulation_from_trajectory('nasqm_ground', 'nasqm_abs_', user_input.n_frames_gs,
-                                   user_input.n_snapshots_gs, user_input, input_ceon)
+    AbsTrajectories(user_input, input_ceon).run()
 
 def run_absorption_collection(user_input):
     '''
@@ -235,45 +224,4 @@ def run_fluorescence_collection(user_input):
     subprocess.run('rm ground_snap*', shell=True)
 
 
-def main():
-    '''
-    The primary nasqm automation function call. All changable parameters can be
-    found in nasqm_user_input.py
-    '''
-
-    user_input = UserInput()
-
-    # Copy inputs
-    input_ceon_bac = open('input.ceon', 'r').read()
-    md_qmmm_amb = open('md_qmmm_amb.in', 'r').read()
-    m1_inpcrd = open('m1.inpcrd', 'r').read()
-
-    # Create the input_ceon object
-    input_ceon = InputCeon(amber_input='md_qmmm_amb.in')
-    input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
-
-    start_time = time.time()
-
-    if user_input.run_ground_state_dynamics:
-        run_ground_state_dynamics(input_ceon, user_input)
-    if user_input.run_absorption_trajectories:
-        run_absorption_trajectories(input_ceon, user_input)
-    if user_input.run_absorption_collection:
-        run_absorption_collection(user_input)
-    if user_input.run_excited_state_trajectories:
-        run_excited_state_trajectories(input_ceon, user_input)
-    if user_input.run_fluorescence_collection:
-        run_fluorescence_collection(user_input)
-
-    # Restore Original Inputs
-    if not user_input.is_hpc:
-        open('input.ceon', 'w').write(input_ceon_bac)
-        open('md_qmmm_amb.in', 'w').write(md_qmmm_amb)
-        open('m1.inpcrd', 'w').write(m1_inpcrd)
-    input_ceon.write_log()
-
-    end_time = time.time()
-    print("Job finished in %s seconds" % (end_time - start_time))
-
 main()
-
