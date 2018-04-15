@@ -56,11 +56,9 @@ class Trajectories:
         amber.output_roots = [self._child_root]
         amber.coordinate_files = [self._parent_restart_root]
         amber.from_restart = True
-        amber_calls_per_trajectory = 1
         job_name = self._user_input.job_name + self._job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
-                                                         job_name, self._number_trajectories,
-                                                         amber_calls_per_trajectory)
+                                                         job_name, self._number_trajectories)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
 
     def _run_on_pc(self):
