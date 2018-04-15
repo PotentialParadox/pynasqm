@@ -10,6 +10,7 @@ class FluTrajectories(Trajectories):
         self._child_root = 'nasqm_flu_'
         self._job_suffix = '_f_'
         self._parent_restart_root = 'nasqm_abs_'
+        self._amber_restart = True
 
     def _restart_name(self, index):
         if index == -1:

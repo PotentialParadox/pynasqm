@@ -12,6 +12,7 @@ class AbsTrajectories(Trajectories):
         self._parent_restart_root = 'ground_snap'
         self._parent_trajectory_root = 'nasqm_ground'
         self._number_frames_in_parent = user_input.n_frames_gs
+        self._amber_restart = False
 
     def _create_restarts_from_parent(self):
         restart_step = int(self._number_frames_in_parent / self._number_trajectories)
