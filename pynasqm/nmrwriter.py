@@ -1,7 +1,10 @@
-class NMRWriter:
+from abc import ABC, abstractmethod
 
-    def __init__(self, restricted_atoms, desired_distance):
-        self._restricted_atoms = restricted_atoms
+class NMRWriter(ABC):
+
+    def __init__(self, restricted_atoms1, restricted_atoms2, desired_distance):
+        self._restricted_atoms1 = restricted_atoms1
+        self._restricted_atoms1 = restricted_atoms2
         self._peak_number = 0
         self._spectrum_number = 0
         self._force_positions = self._default_positions(desired_distance)
@@ -15,18 +18,25 @@ class NMRWriter:
 
     def _create_string(self):
         file_string = "&rst\n"
-        file_string += "ixpk={}, nxpk={}, iat={},{},\n".format(self._peak_number,
-                                                               self._spectrum_number,
-                                                               self._restricted_atoms[0],
-                                                               self._restricted_atoms[1])
-        file_string += "r1={:.2f}, r2={:.2f}, r3={:.2f}, r4={:.2f},\n".format(self._force_positions[0],
-                                                                              self._force_positions[1],
-                                                                              self._force_positions[2],
-                                                                              self._force_positions[3])
-        file_string += "rk2={:.1f}, rk3={:.1f},\n".format(self._force_constants[0],
-                                                          self._force_constants[1])
+        file_string += self._atom_indexes_string()
+        file_string += self._postions_string()
+        file_string += self._force_constants_string()
         file_string += "/\n"
         return file_string
+
+    def _postions_string(self):
+        return "r1={:.2f}, r2={:.2f}, r3={:.2f}, r4={:.2f},\n".format(self._force_positions[0],
+                                                                     self._force_positions[1],
+                                                                     self._force_positions[2],
+                                                                     self._force_positions[3])
+
+    def _force_constants_string(self):
+        return "rk2={:.1f}, rk3={:.1f},\n".format(self._force_constants[0], self._force_constants[1])
+
+    @abstractmethod
+    def _atom_indexes_string(self):
+        pass
+
 
     def write_to(self, file_name):
         file_string = self._create_string()
