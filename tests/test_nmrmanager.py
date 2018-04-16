@@ -24,6 +24,7 @@ def test_write_dist_files():
     user_input = types.SimpleNamespace()
     user_input.mask_for_center = "@1"
     user_input.desired_distance = 4
+    user_input.number_nearest_solvents = 1
     closest_outputs = ["closest_1.txt"]
     writer = NMRManager(input_ceons, user_input, closest_outputs)
     result_file = "rst_1.dist"
