@@ -20,13 +20,28 @@ def teardown_module(module):
     '''
     os.chdir("..")
 
-def test_nmr_writer():
-    restricted_atoms1 = [4055]
-    restricted_atoms2 = [4065]
+def test_nmr_writer1():
+    restricted_atoms1 = [[4055]]
+    restricted_atoms2 = [[4065]]
     desired_distance = 4
     writer = NMRSingleSingle(restricted_atoms1, restricted_atoms2, desired_distance)
-    result_file = "nmr_singlesingle.dist"
-    answer_file = "nmr_singlesingle_test.dist"
+    result_file = "nmr_singlesingle1.dist"
+    answer_file = "nmr_singlesingle_test1.dist"
+    writer.write_to(result_file)
+    result = open(result_file, 'r').read()
+    answer = open(answer_file, 'r').read()
+    assert result == answer
+
+def test_nmr_writer2():
+    '''
+    When we have 2 atoms with want to restrict
+    '''
+    restricted_atoms1 = [[4055],[4055]]
+    restricted_atoms2 = [[4065],[4066]]
+    desired_distance = 4
+    writer = NMRSingleSingle(restricted_atoms1, restricted_atoms2, desired_distance)
+    result_file = "nmr_singlesingle2.dist"
+    answer_file = "nmr_singlesingle_test2.dist"
     writer.write_to(result_file)
     result = open(result_file, 'r').read()
     answer = open(answer_file, 'r').read()

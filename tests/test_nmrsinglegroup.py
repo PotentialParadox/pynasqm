@@ -21,8 +21,8 @@ def teardown_module(module):
     os.chdir("..")
 
 def test_nmr_writer():
-    restricted_atoms1 = [4055]
-    restricted_atoms2 = [4065, 4066]
+    restricted_atoms1 = [[4055]]
+    restricted_atoms2 = [[4065, 4066]]
     desired_distance = 4
     writer = NMRSingleGroup(restricted_atoms1, restricted_atoms2, desired_distance)
     result_file = "nmr_singlegroup.dist"
