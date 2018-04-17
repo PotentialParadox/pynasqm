@@ -23,7 +23,10 @@ class RestrictedAtoms:
             atoms = ResidueConverter(self._parmtop, self._trajin).residue_to_atoms(atoms_or_residues[0])
         if mask_reader.type() == 'atom':
             atoms = atoms_or_residues
-        return atoms * len(self.solvent_atoms)
+        list_atoms = []
+        for _ in range(len(self.solvent_atoms)):
+            list_atoms.append(atoms)
+        return list_atoms
 
     def _get_restricted_solvent_atoms(self):
         reader = ClosestReader(self._closest_output)
