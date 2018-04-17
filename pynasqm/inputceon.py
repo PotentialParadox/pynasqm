@@ -164,8 +164,8 @@ class InputCeon:
     def set_nmr_directory(self, nmr_directory):
         p_nmropt = re.compile(r'nmropt\s*=\s*\d+')
         p_ifqnt = re.compile(r"ifqnt\s*=\s*\d*")
-        p_disang = re.compile('DISANG\s*=*')
-        p_wt = re.compile('\&wt')
+        p_disang = re.compile(r'DISANG\s*=*')
+        p_wt = re.compile(r'\&wt')
         is_nmropt = None
         is_disang = None
         file_string = None
@@ -177,7 +177,7 @@ class InputCeon:
         if is_nmropt:
             sed_inplace(self.amber_input, p_nmropt, 'nmropt=1')
         else:
-            sed_inplace(self.amber_input, r'ifqnt\s*=\s*\d*', 'nmropt=1,\n  ifqnt=1')
+            sed_inplace(self.amber_input, p_ifqnt, 'nmropt=1,\n  ifqnt=1')
         if not is_wp:
             file_string = open(self.amber_input, 'r').read()
             file_string = file_string + " &wt\n type='END'\n /\n"
