@@ -12,6 +12,9 @@ class ClosestRunner:
     def set_trajins(self, trajins):
         self._trajins = trajins
 
+    def get_trajins(self):
+        return self._trajins
+
     def _default_trajins(self):
         trajins = []
         for i in range(1, self._n_trajectories+1):

@@ -47,12 +47,12 @@ class Trajectories(ABC):
             mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
             mask_updater.update_masks()
             if self._user_input.restrain_solvents is True:
+                trajins = closest_runner.get_trajins()
+                parmtop = 'm1.prmtop'
                 NMRManager(self._input_ceons, self._user_input, closest_outputs).update()
 
-    @abstractmethod
     def _update_trajins(self, closest_runner):
         pass
-
 
     def _run_on_hpc(self):
         amber = Amber()
