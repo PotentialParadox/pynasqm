@@ -14,7 +14,6 @@ class ResidueConverter:
         self._write_script(script)
         self._run()
         answer = self._extract_atoms()
-        print(answer)
         return answer
 
     def _extract_atoms(self):
@@ -41,4 +40,6 @@ class ResidueConverter:
 
     @staticmethod
     def _create_resmask(residue):
+        if isinstance(residue, str):
+            return residue
         return ":{}".format(residue)
