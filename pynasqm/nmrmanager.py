@@ -1,14 +1,16 @@
 import re
 from pynasqm.closestreader import ClosestReader
 from pynasqm.nmrwriterfactory import NMRWriterFactory
+from pynasqm.maskreader import MaskReader
+from pynasqm.residueconverter import ResidueConverter
 
 class NMRManager:
 
-    def __init__(self, input_ceons, user_input, closest_outputs, dist_files=[]):
+    def __init__(self, input_ceons, closest_outputs, restricted_atoms, dist_files=[]):
         self._input_ceons = input_ceons
-        self._user_input = user_input
         self._closest_outputs = closest_outputs
         self._number_trajectories = self._get_number_trajectories()
+        self._restricted_atoms = restricted_atoms
         self._dist_files = dist_files
 
     def update(self):
@@ -18,8 +20,8 @@ class NMRManager:
     def write_dist_files(self):
         for trajectory in range(self._get_number_trajectories()):
             closest_output = self._closest_outputs[trajectory]
-            restricted_atoms1 = self._get_restricted_solute_atoms()
-            restricted_atoms2 = self._get_restricted_solvent_atoms(closest_output)
+            restricted_atoms1 = self._restricted_atoms[trajectory].solute_atoms
+            restricted_atoms2 = self._restricted_atoms[trajectory].solvent_atoms
             desired_distance = self._get_max_distance(closest_output)
             if desired_distance > 12:
                 raise ValueError("Desired distance greater than 12, "\
@@ -34,11 +36,6 @@ class NMRManager:
         for trajectory in range(self._number_trajectories):
             self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
 
-    def _get_restricted_solute_atoms(self):
-        atoms_of_interest_mask = self._user_input.mask_for_center
-        atoms_of_interest = self._extract_atom_from_mask(atoms_of_interest_mask)
-        return [atoms_of_interest] * self._user_input.number_nearest_solvents
-
     @staticmethod
     def _get_max_distance(closest_output):
         reader = ClosestReader(closest_output)
@@ -48,19 +45,6 @@ class NMRManager:
     @staticmethod
     def _create_dist_file_name(index):
         return "rst_{}.dist".format(index+1)
-
-    @staticmethod
-    def _extract_atom_from_mask(mask):
-        if mask[0] != '@':
-            raise AttributeError("Mask for center must refer to an atom "\
-                                 "for restricted dynamics")
-        return [mask[1:]]
-
-    @staticmethod
-    def _get_restricted_solvent_atoms(closest_output):
-        reader = ClosestReader(closest_output)
-        residues = reader.residues
-        return [[atoms[0]]]
 
 
     def _get_number_trajectories(self):

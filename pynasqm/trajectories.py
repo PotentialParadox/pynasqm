@@ -4,6 +4,7 @@ from pynasqm.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmrmanager import NMRManager
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
+from pynasqm.restrictedatoms import RestrictedAtoms
 
 class Trajectories(ABC):
 
@@ -48,8 +49,16 @@ class Trajectories(ABC):
             mask_updater.update_masks()
             if self._user_input.restrain_solvents is True:
                 trajins = closest_runner.get_trajins()
-                parmtop = 'm1.prmtop'
-                NMRManager(self._input_ceons, self._user_input, closest_outputs).update()
+                parmtop = "m1.prmtop"
+                restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
+                NMRManager(self._input_ceons, self._user_input, closest_outputs, restricted_atoms).update()
+
+    def _get_list_restricted_atoms(self, parmtop, trajins, closest_outputs):
+        center_mask = self._user_input.mask_for_center
+        list_restricted_atoms = []
+        for traj in self._number_trajectories:
+            list_restricted_atoms.append(RestrictedAtoms(parmtop, trajins[traj], center_mask,
+                                                         closest_outputs[traj]))
 
     def _update_trajins(self, closest_runner):
         pass
