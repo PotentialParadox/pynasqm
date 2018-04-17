@@ -24,7 +24,7 @@
  &qmmm
   scfconv=1.0000E-10,
   verbosity=3,
-  qmmask=':1,400,456,152',
+  qmmask=':1',
   diag_routine=1,
   qmcharge=0,
   qm_theory='AM1',
@@ -33,6 +33,7 @@
   qm_pme=0,
   nae=1
  /
-DISANG=./rest_1.dist
-
-
+ &wt
+ type='END'
+ /
+DISANG=./rst_1.dist

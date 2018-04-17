@@ -26,7 +26,11 @@ def test_write_dist_files():
     user_input.desired_distance = 4
     user_input.number_nearest_solvents = 1
     closest_outputs = ["closest_1.txt"]
-    writer = NMRManager(input_ceons, user_input, closest_outputs)
+    restricted_atoms = types.SimpleNamespace()
+    restricted_atoms.solvent_atoms = [[2041]]
+    restricted_atoms.solute_atoms = [[1]]
+    atom_array = [restricted_atoms]
+    writer = NMRManager(input_ceons, closest_outputs, atom_array)
     result_file = "rst_1.dist"
     writer.write_dist_files()
     result = open(result_file, 'r').read()
@@ -34,26 +38,20 @@ def test_write_dist_files():
     answer = open(answer_file, 'r').read()
     assert result == answer
 
-def test_residue_mask_error():
-    input_ceons = ["md_qmmm.in"]
-    user_input = types.SimpleNamespace()
-    user_input.mask_for_center = ":1"
-    user_input.desired_distance = 4
-    closest_outputs = ["closest_1.txt"]
-    manager = NMRManager(input_ceons, user_input, closest_outputs)
-    with pytest.raises(Exception):
-        manager.write_dist_files()
-
 def test_update_inputs():
     amber_input_name = "md_qmmm_amb.in"
     original_input_ceons = InputCeon(amber_input_name)
-    test_name = "mask_updater.in"
+    test_name = "nmr_manager.in"
     new_input_ceon = original_input_ceons.copy(test_name)
     input_ceons = [new_input_ceon]
-    user_input = types.SimpleNamespace()
-    user_input.mask_for_center = "@1"
-    user_input.desired_distance = 4
+    restricted_atoms = types.SimpleNamespace()
+    restricted_atoms.solvent_atoms = [[2041]]
+    restricted_atoms.solute_atoms = [[1]]
+    atom_array = [restricted_atoms]
     closest_outputs = ["closest_1.txt"]
-    dist_file_input = ['rst_1.dist']
-    manager = NMRManager(input_ceons, user_input, closest_outputs, dist_files=dist_file_input)
+    dist_file_input = ['./rst_1.dist']
+    manager = NMRManager(input_ceons, closest_outputs, atom_array, dist_files=dist_file_input)
     manager.update_inputs()
+    answer = open("nmr_manager_test.in", 'r').read()
+    result = open(test_name, 'r').read()
+    assert result == answer
