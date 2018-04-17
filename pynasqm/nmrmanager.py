@@ -59,7 +59,7 @@ class NMRManager:
     @staticmethod
     def _get_restricted_solvent_atoms(closest_output):
         reader = ClosestReader(closest_output)
-        atoms = reader.atoms
+        residues = reader.residues
         return [[atoms[0]]]
 
 

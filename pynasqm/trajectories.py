@@ -1,10 +1,11 @@
+from abc import ABC, abstractmethod
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmrmanager import NMRManager
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
 
-class Trajectories:
+class Trajectories(ABC):
 
     def __init__(self, user_input, input_ceon, number_trajectories=1):
         self._user_input = user_input
@@ -24,6 +25,7 @@ class Trajectories:
         else:
             self._run_on_pc()
 
+    @abstractmethod
     def _create_restarts_from_parent(self):
         pass
 
@@ -47,6 +49,7 @@ class Trajectories:
             if self._user_input.restrain_solvents is True:
                 NMRManager(self._input_ceons, self._user_input, closest_outputs).update()
 
+    @abstractmethod
     def _update_trajins(self, closest_runner):
         pass
 
