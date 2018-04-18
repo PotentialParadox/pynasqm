@@ -49,5 +49,4 @@ def test_distances(closest_output):
     '''
     closests = ClosestReader(closest_output)
     result = closests.distances
-    print(result)
     np.testing.assert_almost_equal(result, np.array([2.4660, 2.6087, 2.6091]))
