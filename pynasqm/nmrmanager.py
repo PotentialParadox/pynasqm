@@ -34,7 +34,6 @@ class NMRManager:
 
     def update_inputs(self):
         for trajectory in range(self._number_trajectories):
-            print("dist_file", self._dist_files[trajectory])
             self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
 
     @staticmethod

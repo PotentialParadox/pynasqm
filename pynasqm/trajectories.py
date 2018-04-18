@@ -26,7 +26,6 @@ class Trajectories(ABC):
         else:
             self._run_on_pc()
 
-    @abstractmethod
     def _create_restarts_from_parent(self):
         pass
 
@@ -51,14 +50,15 @@ class Trajectories(ABC):
                 trajins = closest_runner.get_trajins()
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-                NMRManager(self._input_ceons, self._user_input, closest_outputs, restricted_atoms).update()
+                NMRManager(self._input_ceons, closest_outputs, restricted_atoms).update()
 
     def _get_list_restricted_atoms(self, parmtop, trajins, closest_outputs):
         center_mask = self._user_input.mask_for_center
         list_restricted_atoms = []
-        for traj in self._number_trajectories:
+        for traj in range(self._number_trajectories):
             list_restricted_atoms.append(RestrictedAtoms(parmtop, trajins[traj], center_mask,
                                                          closest_outputs[traj]))
+        return list_restricted_atoms
 
     def _update_trajins(self, closest_runner):
         pass
@@ -97,10 +97,9 @@ class Trajectories(ABC):
                 trajectory_roots.append(self._trajectory_name(i))
         return snap_restarts, trajectory_roots
 
+    @abstractmethod
     def _restart_name(self, index):
-        if index == -1:
-            index = 1
-        return "{}{}.rst".format(self._parent_restart_root, index+1)
+        pass
 
     def _trajectory_name(self, index):
         if index == -1:
