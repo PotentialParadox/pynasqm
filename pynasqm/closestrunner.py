@@ -3,10 +3,10 @@ import subprocess
 
 class ClosestRunner:
 
-    def __init__(self, number_nearest_solvents, number_trajectories, focus_mask=":1"):
+    def __init__(self, number_nearest_solvents, number_trajectories, trajins, focus_mask=":1"):
         self._n_solvents = number_nearest_solvents
         self._n_trajectories = number_trajectories
-        self._trajins = self._default_trajins()
+        self._trajins = trajins
         self._focus_mask = focus_mask
 
     def set_trajins(self, trajins):
@@ -14,12 +14,6 @@ class ClosestRunner:
 
     def get_trajins(self):
         return self._trajins
-
-    def _default_trajins(self):
-        trajins = []
-        for i in range(1, self._n_trajectories+1):
-            trajins.append("ground_snap.{}".format(i))
-        return trajins
 
     def create_closest_outputs(self):
         writer = ClosestWriter(self._trajins, self._n_solvents, self._focus_mask)
