@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import os.path
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmrmanager import NMRManager
@@ -40,9 +41,10 @@ class Trajectories(ABC):
         n_qm_solvents = self._user_input.number_nearest_solvents
         if n_qm_solvents > 0:
             center_mask = self._user_input.mask_for_center
+            trajins = self._trajins()
+            self._check_trajins(trajins)
             closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
-                                           center_mask)
-            self._update_trajins(closest_runner)
+                                           trajins, center_mask)
             closest_outputs = closest_runner.create_closest_outputs()
             mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
             mask_updater.update_masks()
@@ -50,7 +52,15 @@ class Trajectories(ABC):
                 trajins = closest_runner.get_trajins()
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
+                print(restricted_atoms)
                 NMRManager(self._input_ceons, closest_outputs, restricted_atoms).update()
+
+    @staticmethod
+    def _check_trajins(trajins):
+        for trajin in trajins:
+            if not os.path.isfile(trajin):
+                raise RuntimeError("{} was not found, make sure you ran the previous step: \n"\
+                                   "ground_state->absorption->fluorescence".format(trajin))
 
     def _get_list_restricted_atoms(self, parmtop, trajins, closest_outputs):
         center_mask = self._user_input.mask_for_center
@@ -60,8 +70,13 @@ class Trajectories(ABC):
                                                          closest_outputs[traj]))
         return list_restricted_atoms
 
-    def _update_trajins(self, closest_runner):
-        pass
+    def _trajins(self):
+        trajins = []
+        if self._number_trajectories == 1:
+            return ["ground_snap"]
+        for i in range(1, self._number_trajectories+1):
+            trajins.append("ground_snap.{}".format(i))
+        return trajins
 
     def _run_on_hpc(self):
         amber = Amber()
