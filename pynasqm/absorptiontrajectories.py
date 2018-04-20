@@ -15,10 +15,10 @@ class AbsTrajectories(Trajectories):
         self._amber_restart = False
 
     def _create_restarts_from_parent(self):
+        self._check_trajins(["nasqm_ground.nc"])
         restart_step = int(self._number_frames_in_parent / self._number_trajectories)
         nasqm_cpptraj.create_restarts(amber_input=self._parent_trajectory_root,
                                       output=self._parent_restart_root, step=restart_step)
-
 
     def _restart_name(self, index):
         if index == -1:
