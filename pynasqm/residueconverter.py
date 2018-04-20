@@ -17,12 +17,12 @@ class ResidueConverter:
         return answer
 
     def _extract_atoms(self):
-        atominfo_stream = open(self._outputfile, 'r')
-        lines = atominfo_stream.readlines()[1:]
-        atoms = []
-        for line in lines:
-            atoms.append(int(line.split()[0]))
-        return atoms
+        with open(self._outputfile, 'r') as atominfo_stream:
+            lines = atominfo_stream.readlines()[1:]
+            atoms = []
+            for line in lines:
+                atoms.append(int(line.split()[0]))
+            return atoms
 
     def _run(self):
         call(['cpptraj', '-i', self._scriptfile, '-o', 'atominfo.log'])
