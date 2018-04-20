@@ -52,7 +52,6 @@ class Trajectories(ABC):
                 trajins = closest_runner.get_trajins()
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-                print(restricted_atoms)
                 NMRManager(self._input_ceons, closest_outputs, restricted_atoms).update()
 
     @staticmethod
@@ -118,5 +117,5 @@ class Trajectories(ABC):
 
     def _trajectory_name(self, index):
         if index == -1:
-            index = 1
+            index = 0
         return "{}{}".format(self._child_root, index+1)
