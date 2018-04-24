@@ -17,8 +17,8 @@ class FluTrajectories(Trajectories):
             return "{}{}.rst".format(self._parent_restart_root, 1)
         return "{}{}.rst".format(self._parent_restart_root, index+1)
 
-    def _update_trajins(self, closest_runner):
+    def _trajins(self):
         trajins = []
         for i in range(1, self._number_trajectories +1):
             trajins.append("{}{}.rst".format(self._parent_restart_root, i))
-        closest_runner.set_trajins(trajins)
+        return trajins

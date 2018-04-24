@@ -24,3 +24,11 @@ class AbsTrajectories(Trajectories):
         if index == -1:
             return self._parent_restart_root
         return "{}.{}".format(self._parent_restart_root, index+1)
+
+    def _trajins(self):
+        trajins = []
+        if self._number_trajectories == 1:
+            return ["ground_snap"]
+        for i in range(1, self._number_trajectories+1):
+            trajins.append("ground_snap.{}".format(i))
+        return trajins
