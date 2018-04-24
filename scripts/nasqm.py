@@ -81,6 +81,7 @@ def run_ground_state_dynamics(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_gs)
+    input_ceon.set_quantum(False)
     input_ceon.set_exc_state_propagate(0)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_gs)
     input_ceon.set_exc_state_init(0)
@@ -122,6 +123,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_abs)
+    input_ceon.set_quantum(True)
     input_ceon.set_exc_state_propagate(user_input.n_abs_exc)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
     input_ceon.set_exc_state_init(0)
@@ -144,6 +146,7 @@ def run_excited_state_trajectories(input_ceon, user_input):
     from those at the excited state
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
+    input_ceon.set_quantum(True)
     input_ceon.set_n_steps(user_input.n_steps_exc)
     input_ceon.set_exc_state_propagate(user_input.n_exc_states_propagate_ex_param)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)

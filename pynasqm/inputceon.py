@@ -40,6 +40,15 @@ class InputCeon:
             sed_inplace(self.amber_input, r'irest\s*=\s*\d+', 'irest=0')
             sed_inplace(self.amber_input, r'ntx\s*=\s*\d+', 'ntx=1')
 
+    def set_quantum(self, is_quantum):
+        '''
+        Set the number of steps between print outs
+        '''
+        if is_quantum:
+            sed_inplace(self.amber_input, r'ifqnt=\s*\d*', 'ifqnt=1')
+        else:
+            sed_inplace(self.amber_input, r'ifqnt=\s*\d*', 'ifqnt=0')
+
     def set_n_steps_to_print(self, n_steps_to_print):
         '''
         Set the number of steps between print outs
