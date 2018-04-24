@@ -69,13 +69,9 @@ class Trajectories(ABC):
                                                          closest_outputs[traj]))
         return list_restricted_atoms
 
+    @abstractmethod
     def _trajins(self):
-        trajins = []
-        if self._number_trajectories == 1:
-            return ["ground_snap"]
-        for i in range(1, self._number_trajectories+1):
-            trajins.append("ground_snap.{}".format(i))
-        return trajins
+        pass
 
     def _run_on_hpc(self):
         amber = Amber()
