@@ -34,6 +34,10 @@
   nae=1
  /
  &wt
+ type='DUMPFREQ', istep1=100,
+ /
+ &wt
  type='END'
  /
 DISANG=./rst_1.dist
+DUMPAVE=./rst_1.eq
