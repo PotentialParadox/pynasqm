@@ -56,13 +56,11 @@ def create_input(user_input):
 def copy_inputs():
     input_ceon_bac = open('input.ceon', 'r').read()
     md_qmmm_amb = open('md_qmmm_amb.in', 'r').read()
-    m1_inpcrd = open('m1.inpcrd', 'r').read()
-    return [input_ceon_bac, md_qmmm_amb, m1_inpcrd]
+    return [input_ceon_bac, md_qmmm_amb]
 
 def restore_inputs(origninal_inputs):
     open('input.ceon', 'w').write(origninal_inputs[0])
     open('md_qmmm_amb.in', 'w').write(origninal_inputs[1])
-    open('m1.inpcrd', 'w').write(origninal_inputs[2])
 
 def create_inputceon_copies(input_ceon, root_name, number):
     '''
