@@ -6,6 +6,8 @@ from pynasqm.nmrmanager import NMRManager
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
+from pynasqm.trajdistance import TrajDistance
+from pynasqm.closestreader import ClosestReader
 
 class Trajectories(ABC):
 
@@ -52,7 +54,19 @@ class Trajectories(ABC):
                 trajins = closest_runner.get_trajins()
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-                NMRManager(self._input_ceons, closest_outputs, restricted_atoms).update()
+                distances = self._get_distances(parmtop, trajins, closest_outputs)
+                NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update()
+
+    def _get_distances(self, parmtop, trajins, closest_outputs):
+        center_mask = self._user_input.mask_for_center
+        added_buffer = 0.2
+        list_distances = []
+        for traj in range(self._number_trajectories):
+            residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
+            trajdist = TrajDistance(parmtop, center_mask)
+            distances = [trajdist(trajins[traj], residue) for residue in residues]
+            list_distances.append(max(distances)+added_buffer)
+        return list_distances
 
     @staticmethod
     def _check_trajins(trajins):

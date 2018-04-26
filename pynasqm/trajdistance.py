@@ -13,7 +13,6 @@ class TrajDistance:
         subprocess.call(['cpptraj', '-i', call_file, 'distance.dat', '-o', 'distance.log'])
         return self.read_distance()
 
-
     def _create_string(self, trajin, solvent_mask):
         traj_string = "parm {}\n".format(self._parmtop)
         traj_string += "trajin {}\n".format(trajin)
