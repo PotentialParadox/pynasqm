@@ -30,6 +30,7 @@ def main():
 
     start_time = time.time()
 
+    input_ceon.set_n_steps_to_mcrd(userinput.n_steps_to_print_mcrd)
     if user_input.run_ground_state_dynamics:
         run_ground_state_dynamics(input_ceon, user_input)
     if user_input.run_absorption_trajectories:

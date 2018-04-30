@@ -85,6 +85,12 @@ class UserInput:
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
 
+        # Change here how often you want to print to mcrd files
+        try:
+            self.n_steps_to_print_mcrd = int(data["n_steps_to_print_mcrd"])
+        except KeyError:
+            self.n_steps_to_print_mcrd = 1000
+
         # Change here the number of excited states you
         # with to have in the CIS calculation
         self.n_exc_states_propagate_ex_param = int(data["n_exc_states_propagate"])
@@ -123,14 +129,16 @@ class UserInput:
             self.restrain_solvents = False
 
         ## Derived Values
-        self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
+        self.n_steps_gs = int(self.ground_state_run_time / self.time_step)
         self.n_frames_gs = int(self.n_steps_gs / self.n_steps_to_print_gs)
-        self.n_steps_abs = int(self.abs_run_time / self.time_step * 1000)
+        self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_to_print_mcrd)
+        self.n_steps_abs = int(self.abs_run_time / self.time_step)
         # We will do absorption calculation on all
         # steps printed out, so 1 would do absorption
         # for each step during the run_abs_snapshot step
         self.n_frames_abs = int(self.n_steps_abs / self.n_steps_to_print_abs)
-        self.n_steps_exc = int(self.exc_run_time / self.time_step * 1000)
+        self.n_mcrd_frames_gs = int(self.n_steps_abs / self.n_steps_to_print_mcrd)
+        self.n_steps_exc = int(self.exc_run_time / self.time_step)
 
 
 

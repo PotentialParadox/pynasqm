@@ -56,6 +56,12 @@ class InputCeon:
         sed_inplace('input.ceon', r'out_data_steps=\d*', 'out_data_steps=' + str(n_steps_to_print))
         sed_inplace(self.amber_input, r'ntpr=\s*\d*', 'ntpr=' + str(n_steps_to_print))
 
+    def set_n_steps_to_mcrd(self, n_steps_to_print):
+        '''
+        Set the number of steps between print outs
+        '''
+        sed_inplace(self.amber_input, r'ntwx=\s*\d*', 'ntwx=' + str(n_steps_to_print))
+
     def write_log(self):
         '''
         Write a log of all our changes
