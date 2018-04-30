@@ -25,7 +25,7 @@ class NMRManager:
             desired_distance = self._distances[trajectory]
             if desired_distance > 12:
                 raise ValueError("Desired distance greater than 12, "\
-                                 "possibly to many nearest solvent")
+                                 "possibly too many nearest solvent")
             file_name = self._create_dist_file_name(trajectory)
             self._dist_files.append(file_name)
             nmrfactory = NMRWriterFactory(restricted_atoms1, restricted_atoms2, desired_distance)

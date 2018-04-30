@@ -25,13 +25,13 @@ class NMRWriterFactory:
                                   self._desired_distance)
 
     def _is_singlesingle(self):
-        return len(self._restricted_atoms1) == 1 and len(self._restricted_atoms2) == 1
+        return len(self._restricted_atoms1[0]) == 1 and len(self._restricted_atoms2[0]) == 1
 
     def _is_singlegroup(self):
-        return len(self._restricted_atoms1) == 1 and len(self._restricted_atoms2) > 1
+        return len(self._restricted_atoms1[0]) == 1 and len(self._restricted_atoms2[0]) > 1
 
     def _is_groupsingle(self):
-        return len(self._restricted_atoms1) > 1 and len(self._restricted_atoms2) == 1
+        return len(self._restricted_atoms1[0]) > 1 and len(self._restricted_atoms2[0]) == 1
 
     def _is_groupgroup(self):
-        return len(self._restricted_atoms1) > 1 and len(self._restricted_atoms2) > 1
+        return len(self._restricted_atoms1[0]) > 1 and len(self._restricted_atoms2[0]) > 1
