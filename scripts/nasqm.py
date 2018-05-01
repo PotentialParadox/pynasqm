@@ -30,7 +30,6 @@ def main():
 
     start_time = time.time()
 
-    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_mcrd)
     if user_input.run_ground_state_dynamics:
         run_ground_state_dynamics(input_ceon, user_input)
     if user_input.run_absorption_trajectories:
@@ -52,6 +51,7 @@ def main():
 def create_input(user_input):
     input_ceon = InputCeon(amber_input='md_qmmm_amb.in')
     input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
+    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_mcrd)
     return input_ceon
 
 def copy_inputs():
