@@ -83,7 +83,7 @@ class UserInput:
 
         # Change here how often you want to print to the mcrds
         try:
-            self.n_steps_print_mcrd = int(data["n_steps_to_print_abs"])
+            self.n_steps_print_mcrd = int(data["n_steps_to_print_mcrd"])
         except KeyError:
             self.n_steps_print_mcrd = 100
 
