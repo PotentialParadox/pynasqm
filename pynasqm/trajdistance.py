@@ -6,7 +6,7 @@ class TrajDistance:
         self._parmtop = parmtop
         self._solute_mask = solute_mask
 
-    def __call__(self, trajin, solvent_mask, index=''):
+    def __call__(self, trajin, solvent_mask, index=0):
         file_name = 'distance_{}.dat'.format(index+1)
         traj_string = self._create_string(trajin, solvent_mask, file_name)
         call_file = 'traj_dist_{}.in'.format(index+1)
