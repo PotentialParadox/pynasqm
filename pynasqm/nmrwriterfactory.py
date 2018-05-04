@@ -21,7 +21,7 @@ class NMRWriterFactory:
             return NMRSingleGroup(self._restricted_atoms1, self._restricted_atoms2,
                                   self._desired_distance)
         if self._is_groupgroup():
-            return NMRSingleGroup(self._restricted_atoms1, self._restricted_atoms2,
+            return NMRGroupGroup(self._restricted_atoms1, self._restricted_atoms2,
                                   self._desired_distance)
 
     def _is_singlesingle(self):
