@@ -65,7 +65,7 @@ class Trajectories(ABC):
             residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
             trajdist = TrajDistance(parmtop, center_mask)
             distances = [trajdist(trajins[traj], residue, traj) for residue in residues]
-            list_distances.append(max(distances)+added_buffer)
+            list_distances.append(distances+added_buffer)
         return list_distances
 
     @staticmethod

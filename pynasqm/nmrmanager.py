@@ -22,14 +22,15 @@ class NMRManager:
         for trajectory in range(self._get_number_trajectories()):
             restricted_atoms1 = self._restricted_atoms[trajectory].solute_atoms
             restricted_atoms2 = self._restricted_atoms[trajectory].solvent_atoms
-            desired_distance = self._distances[trajectory]
-            if desired_distance > 20:
-                raise ValueError("Desired distance {} for traj {} greater than 20, "\
-                                 "possibly too many nearest solvent".format(desired_distance,
-                                                                            trajectory+1))
+            desired_distances = self._distances[trajectory]
+            for distance in desired_distances:
+                if distance > 20:
+                    raise ValueError("Desired distance {} for traj {} greater than 20, "\
+                                     "possibly too many nearest solvent".format(distance,
+                                                                                trajectory+1))
             file_name = self._create_dist_file_name(trajectory)
             self._dist_files.append(file_name)
-            nmrfactory = NMRWriterFactory(restricted_atoms1, restricted_atoms2, desired_distance)
+            nmrfactory = NMRWriterFactory(restricted_atoms1, restricted_atoms2, desired_distances)
             nmrwriter = nmrfactory.get_writer()
             nmrwriter.write_to(file_name)
 

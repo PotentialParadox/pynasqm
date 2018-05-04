@@ -30,7 +30,7 @@ def test_write_dist_files():
     restricted_atoms.solvent_atoms = [[2041]]
     restricted_atoms.solute_atoms = [[1]]
     atom_array = [restricted_atoms]
-    distances = [2.81]
+    distances = [[2.81]]
     writer = NMRManager(input_ceons, closest_outputs, atom_array, distances)
     result_file = "rst_1.dist"
     writer.write_dist_files()

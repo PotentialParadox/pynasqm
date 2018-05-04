@@ -23,7 +23,7 @@ def teardown_module(module):
 def test_nmr_writer():
     restricted_atoms1 = [[4055, 4056]]
     restricted_atoms2 = [[4065]]
-    desired_distance = 4
+    desired_distance = [4]
     writer = NMRGroupSingle(restricted_atoms1, restricted_atoms2, desired_distance)
     result_file = "nmr_groupsingle.dist"
     answer_file = "nmr_groupsingle_test.dist"
