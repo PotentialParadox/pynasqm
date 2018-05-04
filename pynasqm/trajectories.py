@@ -24,10 +24,17 @@ class Trajectories(ABC):
         self._create_restarts_from_parent()
         self._create_inputceon_copies()
         self._update_input_files()
+        self._print_header("Running Dynamics")
         if self._user_input.is_hpc:
             self._run_on_hpc()
         else:
             self._run_on_pc()
+
+    @staticmethod
+    def _print_header(header):
+        print(50*"*")
+        print(15 * " " + header)
+        print(50*"*")
 
     def _create_restarts_from_parent(self):
         pass
@@ -64,8 +71,8 @@ class Trajectories(ABC):
         for traj in range(self._number_trajectories):
             residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
             trajdist = TrajDistance(parmtop, center_mask)
-            distances = [trajdist(trajins[traj], residue, traj) for residue in residues]
-            list_distances.append(distances+added_buffer)
+            distances = [trajdist(trajins[traj], residue, traj) + added_buffer for residue in residues]
+            list_distances.append(distances)
         return list_distances
 
     @staticmethod
