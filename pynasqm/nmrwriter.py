@@ -11,7 +11,7 @@ class NMRWriter(ABC):
         self._force_constants = self._default_constants()
 
     def _default_positions(self, desired_distance):
-        return [1, 2, desired_distance, 12]
+        return [1, 2, desired_distance, desired_distance+5]
 
     def _default_constants(self):
         return [0, 200]
