@@ -6,14 +6,12 @@ def get_fortran_nml(filename, nml):
     '''
     p_start = re.compile(r"\&{}".format(nml))
     p_end = re.compile(r"\&end")
-    nml_block = ""
+    nml_block = []
     with open(filename, 'r') as fin:
         for lines in fin:
             if re.search(p_start, lines):
                 for lines2 in fin:
                     if re.search(p_end, lines2):
                         break
-                    nml_block += "{}".format(lines2)
+                    nml_block.append(lines2)
     return nml_block
-
-print(get_fortran_nml('input.ceon', 'coord'))
