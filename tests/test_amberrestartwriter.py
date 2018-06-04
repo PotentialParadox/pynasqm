@@ -22,7 +22,7 @@ def test_writerestart():
     restart_file = "amberrestartwriter_result.txt"
     answer_file = "amberrestartwriter_test.txt"
     header = "Cpptraj Generated Restart                                                       \n"\
-             "   12  5.0500002E+00"
+             "   5  5.0500002E+00"
     coordinates = [[33.0501556, 30.0236702, 28.7626724],
                    [30.5973835, 29.6351776, 29.3849716],
                    [29.2811470, 29.6826267, 28.6972866],
