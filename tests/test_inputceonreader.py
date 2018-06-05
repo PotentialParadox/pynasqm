@@ -18,6 +18,22 @@ def teardown_module(module):
     '''
     os.chdir("..")
 
+def test_read_header():
+    inputceon = "input_test.ceon"
+    reader = InputceonReader(inputceon)
+    result = reader.header
+    answer = ""\
+             "&qmmm\n"\
+             "  qm_theory='AM1',\n"\
+             "  scfconv=1.0000E-16,\n"\
+             "&endqmmm\n"\
+             "\n"\
+             "&moldyn\n"\
+             "   !***** General parameters\n"\
+             "   rnd_seed=1, ! seed for the random number generator\n"\
+             "&endmoldyn\n\n"
+    assert result == answer
+
 def test_read_coords():
     inputceon = "input_test.ceon"
     reader = InputceonReader(inputceon)

@@ -1,71 +1,11 @@
 &qmmm
   qm_theory='AM1',
   scfconv=1.0000E-16,
-  verbosity=1,
-  printcharges=1,
-  printdipole=0,
-  printbondorders=0,
-  density_predict=0,
-  itrmax=300,
-  diag_routine=1,
-  exst_method=2,
-  dav_guess=0,
-  ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
-  ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
-  dav_maxcyc=200,
-  calcxdens=.false.,
-  maxcyc=0,
-  ntpr=1,
-  grms_tol=1.0000E-02,
-  solvent_model=0,
-  potential_type=1,
-  ceps=10,
-  linmixparam=1,
-  cosmo_scf_ftol=1.0000E-05,
-  EF=0,
-  Ex=0.0000E+00,
-  Ez=0.0000E+00, 
-  Ey=0.0000E+00,  !1.000E-02
-  onsager_radius=2,
 &endqmmm
 
 &moldyn
    !***** General parameters
    rnd_seed=1, ! seed for the random number generator
-   bo_dynamics_flag=0, ! 0-non-BO, 1-BO [1]
-   exc_state_init=2, ! initial excited state (0 - ground state) [0]
-   n_exc_states_propagate=5, ! number of excited states [0]
-
-   !***** Dynamics parameters
-   time_init=0.d0, ! initial time, fs [0.0]
-   time_step=0.05, !time step, fs [0.1]
-   n_class_steps=1000, !number of classical steps [1]
-   n_quant_steps=4, ! number of quantum steps for each classical step [4]
-   moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
-   num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
-   rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
-
-   !***** Non-adiabatic parameters
-   quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
-   decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
-   decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
-   decoher_c=0.d0, ! decoherence parameter C [0.1]
-   dotrivial=1
-
-   !***** Thermostat parameters
-   therm_type=0, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
-   therm_temperature=10.d0, ! Thermostate temperature, K [300.0]
-   therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
-   berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
-   heating=0, ! heating (1) or equilibrated(0) [0]
-   heating_steps_per_degree=100, ! number of steps per degree during heating [100]
-
-   !***** Output & Log parameters
-   verbosity=1, ! output verbosity (0-minimal, 3-highest) [2]
-   out_data_steps=1, ! number of steps to write data [1]
-   out_coords_steps=1, ! number of steps to write the restart file [10]
-   out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
-   out_count_init=0, ! the initial count for output files [0]
 &endmoldyn
 
 &coord

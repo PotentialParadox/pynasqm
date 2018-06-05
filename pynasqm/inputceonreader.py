@@ -1,3 +1,4 @@
+import re
 import numpy as np
 from pynasqm.fortran_nml import get_fortran_nml
 
@@ -7,7 +8,17 @@ class InputceonReader:
         self.coords = self._readcoords()
         self.velocities = self._readvelocities()
         self.coeffs = self._readcoeffs()
+        self.header = self._readheader()
 
+    def _readheader(self):
+        p_coors = re.compile("&coord")
+        header = ""
+        with open(self._filename, 'r') as fin:
+            for line in fin:
+                if re.search(p_coors, line):
+                    break
+                header += line
+        return header
 
     def _readcoords(self):
         coord_block = get_fortran_nml(self._filename, 'coord')
