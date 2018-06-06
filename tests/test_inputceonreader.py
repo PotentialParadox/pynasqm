@@ -31,7 +31,7 @@ def test_read_header():
              "&moldyn\n"\
              "   !***** General parameters\n"\
              "   rnd_seed=1, ! seed for the random number generator\n"\
-             "&endmoldyn\n\n"
+             "&endmoldyn\n"
     assert result == answer
 
 def test_read_coords():

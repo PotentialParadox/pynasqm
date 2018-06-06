@@ -18,7 +18,7 @@ class InputceonReader:
                 if re.search(p_coors, line):
                     break
                 header += line
-        return header
+        return header[:-1]
 
     def _readcoords(self):
         coord_block = get_fortran_nml(self._filename, 'coord')
