@@ -24,7 +24,7 @@ if args.absorbance is False and args.inputfile == None:
 if args.absorbance == True and args.inputfile == None:
     args.inputfile = "spectra_abs.out"
 
-color_code = ['r', 'g', 'b', 'y', 'm', 'c', 'k']
+color_code = ['b', 'g', 'r', 'c', 'm', 'y', 'k', (0.1, 0.2, 0.5)]
 
 data = np.loadtxt(args.inputfile)
 
@@ -42,7 +42,6 @@ for i in range(args.number_states):
 
 if args.x_units == 0:
     plt.xlabel('Energy, eV')
-    plt.gca().invert_xaxis()
 else:
     plt.xlabel('Wavelength, nm')
 
@@ -54,7 +53,7 @@ else:
 plt.ylabel(ylabel)
 plt.title(args.title)
 plt.legend(loc=2)
-plt.savefig(args.inputfile[:-7] + '.png')
+plt.savefig(args.inputfile[:-4] + '.png')
 plt.show()
 
 
