@@ -215,48 +215,4 @@ class InputCeon:
             open(self.amber_input, 'w').write(file_string)
 
 
-def set_inpcrd(coordinates, file_name):
-    '''
-    Sets the inpcrd coordinates of amber. The input coordinates are in the format
-    of an XYZ file. Coordinates are written to file name.
-    '''
-    temp_list = coordinates.split()
-    c_list = []
-    for i, coord in enumerate(temp_list):
-        if i % 4 != 0:
-            c_list.append(float(coord))
-    n_atoms = int(len(c_list) / 3)
-    inpcrd = "MOL\n"
-    inpcrd += "    " + str(n_atoms) + "\n"
-    n_full_lines = int(n_atoms / 2)
-    for i in range(n_full_lines):
-        inpcrd += '{: 12.7f}{: 12.7f}{: 12.7f}{: 12.7f}{: 12.7f}{: 12.7f}'.format(c_list[i*6],
-                                                                                  c_list[i*6+1],
-                                                                                  c_list[i*6+2],
-                                                                                  c_list[i*6+3],
-                                                                                  c_list[i*6+4],
-                                                                                  c_list[i*6+5])
-        inpcrd += '\n'
-    open(file_name, 'w').write(inpcrd)
-
-
-def get_xyz_coordinates(file_stream):
-    '''
-    Obtain the xyz file_string from the xyz file_stream
-    '''
-    number_atoms = int(file_stream.readline())
-    file_stream.readline()
-    coords = ""
-    for _ in range(number_atoms):
-        l_coords = file_stream.readline().split()
-        try:
-            l_coords[0] = periodic_table(l_coords[0])
-        except KeyError:
-            l_coords[0] = l_coords[0]
-        coords += "{:>2}{: 16.10f}{: 16.10f}{: 16.10f}\n".format(l_coords[0], float(l_coords[1]),
-                                                                 float(l_coords[2]),
-                                                                 float(l_coords[3]))
-    return coords
-
-
 
