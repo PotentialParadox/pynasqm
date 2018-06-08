@@ -9,7 +9,7 @@ class AmberRestartWriter:
         velocity_string = ""
         coordinate_string = self._array_string(self._coordinates, coordinate_string)
         velocity_string = self._array_string(self._velocities, velocity_string)
-        file_string = "{}\n{}{}".format(self._header, coordinate_string, velocity_string)
+        file_string = "{}{}{}".format(self._header, coordinate_string, velocity_string)
         open(filename, 'w').write(file_string)
 
     def _array_string(self, array, array_string):
