@@ -85,6 +85,9 @@ class FortranNml:
         output += "&end{}\n".format(self._nml)
         return output
 
+    def set_value(self, key, value):
+        self._nml_data[key] = value
+
     @staticmethod
     def remove_last_comma(line_string):
         '''
