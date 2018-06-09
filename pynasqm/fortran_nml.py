@@ -27,17 +27,40 @@ class FortranNml:
                         nml_block.append(lines2)
         return nml_block
 
+    @staticmethod
+    def is_comment(s):
+        '''
+        String -> Bool
+        '''
+        for x in s:
+            if x != ' ' and x != '!' and x !='\t':
+                return False
+            if x == '!':
+                return True
+        return True
+
+    def remove_comment(self, s):
+        '''
+        String -> String
+        '''
+        value = s
+        if '!' in s:
+            [value, _] = s.split('!')
+        splitvalues = value.split()
+        return ''.join(splitvalues)
+
     def block_to_data(self, block_string):
         '''
         [String] -> [(label, values)]
         '''
-        return [self.split_line_string(x) for x in block_string]
+        return [self.split_line_string(x) for x in block_string if not self.is_comment(x)]
 
     def split_line_string(self, line_string):
         '''
         String -> (label, value)
         '''
-        commaless = self.remove_last_comma(line_string)
+        commentless = self.remove_comment(line_string)
+        commaless = self.remove_last_comma(commentless)
         split = commaless.split('=')
         return (split[0], split[1])
 
@@ -45,7 +68,7 @@ class FortranNml:
         '''
         [(label, values)] -> String
         '''
-        lines = ["  {}={}\n".format(x[0], x[1]) for x in self._nml_data]
+        lines = ["  {}={},\n".format(x[0], x[1]) for x in self._nml_data]
         return ''.join(lines)
 
     def __str__(self):
@@ -55,6 +78,7 @@ class FortranNml:
         output = "&{}\n".format(self._nml)
         output += self.data_to_string()
         output += "&end{}\n".format(self._nml)
+        return output
 
     @staticmethod
     def remove_last_comma(line_string):
