@@ -4,7 +4,7 @@ class FortranNml:
 
     def __init__(self, nml):
         self._nml = nml
-        self._nml_data = [] #[(label, values)]
+        self._nml_data = None
 
     def get_fortran_nml(self, filename):
         block_string = self.get_block_string(filename)
@@ -51,9 +51,14 @@ class FortranNml:
 
     def block_to_data(self, block_string):
         '''
-        [String] -> [(label, values)]
+        [String] -> {label, values}
         '''
-        return [self.split_line_string(x) for x in block_string if not self.is_comment(x)]
+        data_dictionary = dict()
+        for x in block_string:
+            if not self.is_comment(x):
+                (key, value) = self.split_line_string(x)
+                data_dictionary[key] = value
+        return data_dictionary
 
     def split_line_string(self, line_string):
         '''
@@ -68,7 +73,7 @@ class FortranNml:
         '''
         [(label, values)] -> String
         '''
-        lines = ["  {}={},\n".format(x[0], x[1]) for x in self._nml_data]
+        lines = ["  {}={},\n".format(key, self._nml_data[key]) for key in self._nml_data]
         return ''.join(lines)
 
     def __str__(self):
