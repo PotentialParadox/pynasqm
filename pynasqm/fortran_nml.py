@@ -15,14 +15,16 @@ class FortranNml:
         IO -> [String]
         Returns a list of line string of the block between the namelist labels
         '''
-        p_start = re.compile(r"\&{}".format(self._nml))
-        p_end = re.compile(r"\&end")
+        p_start = re.compile(r"^\s*\&{}".format(self._nml))
+        p_end = re.compile(r"(^\s*\&end|^\s*\/)")
         nml_block = []
         with open(filename, 'r') as fin:
             for lines in fin:
                 if re.search(p_start, lines):
                     for lines2 in fin:
                         if re.search(p_end, lines2):
+                            m = re.findall(p_end, lines2)
+                            print(m[0])
                             break
                         nml_block.append(lines2)
         return nml_block
@@ -33,9 +35,9 @@ class FortranNml:
         String -> Bool
         '''
         for x in s:
-            if x != ' ' and x != '!' and x !='\t':
+            if x != ' ' and x != '!' and x !='\t' and x != '\n':
                 return False
-            if x == '!':
+            if x == '!' or x == '\n':
                 return True
         return True
 
@@ -65,6 +67,7 @@ class FortranNml:
         String -> (label, value)
         '''
         commentless = self.remove_comment(line_string)
+        print(commentless)
         commaless = self.remove_last_comma(commentless)
         split = commaless.split('=')
         return (split[0], split[1])
