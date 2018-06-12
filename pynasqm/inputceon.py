@@ -4,6 +4,7 @@ FIXME This should be refactored in oredered to be testable
 '''
 import re
 from pynasqm.sed import sed_inplace, sed_global
+from pynasqm.inputceonmanager import InputceonManager
 from pynasqm.periodictable import periodic_table
 
 class InputCeon:
@@ -13,11 +14,16 @@ class InputCeon:
     """
     def __init__(self, amber_input):
         self.amber_input = amber_input
+        self.inputceonmanager = InputceonManager('input.ceon')
         self.path = self.find_path()
         self.input_ceon_path = self.path + "input.ceon"
         self.naesmd_init = open(self.input_ceon_path, 'r').read()
         self.amber_init = open(amber_input, 'r').read()
         self.log = ''
+
+    def set_excited_state(self, state, states_to_prop):
+        self.inputceonmanager.set_excited_state(state, states_to_prop)
+        self.inputceonmanager.write('input.ceon')
 
     def find_path(self):
         '''

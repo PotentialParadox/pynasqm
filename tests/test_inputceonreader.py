@@ -21,7 +21,7 @@ def teardown_module(module):
 def test_read_header():
     inputceon = "input_test.ceon"
     reader = InputceonReader(inputceon)
-    result = reader.header
+    result = '{}\n{}'.format(reader.qmmm, reader.moldyn)
     answer = ""\
              "&qmmm\n"\
              "  qm_theory='AM1',\n"\
@@ -29,8 +29,7 @@ def test_read_header():
              "&endqmmm\n"\
              "\n"\
              "&moldyn\n"\
-             "   !***** General parameters\n"\
-             "   rnd_seed=1, ! seed for the random number generator\n"\
+             "  rnd_seed=1,\n"\
              "&endmoldyn\n"
     assert result == answer
 

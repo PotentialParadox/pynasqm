@@ -1,27 +1,28 @@
 import re
 import numpy as np
-from pynasqm.fortran_nml import get_fortran_nml
+from pynasqm.fortran_nml import FortranNml
 
 class InputceonReader:
     def __init__(self, filename):
         self._filename = filename
+        self.qmmm = self._readqmmm()
+        self.moldyn = self._readmoldyn()
         self.coords = self._readcoords()
         self.velocities = self._readvelocities()
         self.coeffs = self._readcoeffs()
-        self.header = self._readheader()
 
-    def _readheader(self):
-        p_coors = re.compile("&coord")
-        header = ""
-        with open(self._filename, 'r') as fin:
-            for line in fin:
-                if re.search(p_coors, line):
-                    break
-                header += line
-        return header[:-1]
+    def _readqmmm(self):
+        nml = FortranNml('qmmm')
+        nml.get_fortran_nml(self._filename)
+        return nml
+
+    def _readmoldyn(self):
+        nml = FortranNml('moldyn')
+        nml.get_fortran_nml(self._filename)
+        return nml
 
     def _readcoords(self):
-        coord_block = get_fortran_nml(self._filename, 'coord')
+        coord_block = FortranNml('coord').get_block_string(self._filename)
         array = []
         for line in coord_block:
             ls = line.split()
@@ -29,7 +30,7 @@ class InputceonReader:
         return array
 
     def  _readvelocities(self):
-        v_block = get_fortran_nml(self._filename, 'veloc')
+        v_block = FortranNml('veloc').get_block_string(self._filename)
         array = []
         for line in v_block:
             ls = line.split()
@@ -37,7 +38,7 @@ class InputceonReader:
         return array
 
     def _readcoeffs(self):
-        c_block = get_fortran_nml(self._filename, 'coeff')
+        c_block = FortranNml('coeff').get_block_string(self._filename)
         array = []
         for line in c_block:
             ls = line.split()
