@@ -24,7 +24,6 @@ class FortranNml:
                     for lines2 in fin:
                         if re.search(p_end, lines2):
                             m = re.findall(p_end, lines2)
-                            print(m[0])
                             break
                         nml_block.append(lines2)
         return nml_block
@@ -67,7 +66,6 @@ class FortranNml:
         String -> (label, value)
         '''
         commentless = self.remove_comment(line_string)
-        print(commentless)
         commaless = self.remove_last_comma(commentless)
         split = commaless.split('=')
         return (split[0], split[1])
