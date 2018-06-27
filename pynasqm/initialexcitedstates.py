@@ -1,0 +1,47 @@
+import numpy as np
+import math
+import random
+
+def get_n_initial_states_w_laser_energy_and_fwhm(n, abs_spectra, laser_energy, fwhm):
+    return [choose(get_probabilities_from(abs_spectra, laser_energy, fwhm)) + 1 for _ in range(n)]
+
+def get_probabilities_from(abs_spectra, laser_energy, fwhm):
+    energies, strengths = get_energies_and_strenghts(abs_spectra)
+    return calc_probabilities(laser_energy, fwhm, energies, strengths)
+
+def calc_probabilities(laser_energy, fwhm, energies, strengths):
+    return normalize(calc_raw_probabilities(laser_energy, fwhm, energies, strengths))
+
+def normalize(v):
+    norm = np.sum(v)
+    if norm == 0:
+        return v
+    return v / norm
+
+def calc_raw_probabilities(laser_energy, fwhm, energies, strenghts):
+    return [calc_raw_probability(laser_energy, fwhm, e, s) for e, s in zip(energies, strenghts)]
+
+def calc_raw_probability(laser_energy, fwhm, energy, strength):
+    f = strength
+    s2 = pow(fwhm,2)
+    pi = math.pi
+    w = laser_energy
+    e = energy
+    return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*pi*s2))
+
+def get_energies_and_strenghts(abs_spectra):
+    return split_energies_and_strengths(get_averages(abs_spectra))
+
+def get_averages(abs_spectra):
+    return np.average(np.loadtxt(abs_spectra), axis=0)
+
+def split_energies_and_strengths(average_values):
+    return average_values[::2], average_values[1::2]
+
+def create_choice_list(probabilities, start=0):
+    if probabilities != []:
+        return [start] + create_choice_list(probabilities[1:], start + probabilities[0])
+    return [start]
+
+def choose(probabilities):
+    return len([x for x in create_choice_list(probabilities) if x < random.uniform(0,1)]) - 1
