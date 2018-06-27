@@ -1,3 +1,7 @@
+'''
+get_n_initial_states_w_laser_energy_and_fwhm generates a list of initial excited states
+using information supplied by abs_spectra, which is a file in the format with each line [e1 f1 e2 e2].
+'''
 import numpy as np
 import math
 import random
@@ -14,9 +18,7 @@ def calc_probabilities(laser_energy, fwhm, energies, strengths):
 
 def normalize(v):
     norm = np.sum(v)
-    if norm == 0:
-        return v
-    return v / norm
+    return  0 if norm == 0 else v / norm
 
 def calc_raw_probabilities(laser_energy, fwhm, energies, strenghts):
     return [calc_raw_probability(laser_energy, fwhm, e, s) for e, s in zip(energies, strenghts)]
