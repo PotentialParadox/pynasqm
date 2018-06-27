@@ -128,6 +128,15 @@ class UserInput:
         except KeyError:
             self.restrain_solvents = False
 
+        try:
+            self.laser_energy = float(data['laser_energy'])
+            self.fwhm = float(data['fwhm'])
+        except KeyError:
+            if self.run_excited_state_trajectories:
+                raise KeyError('laser energy and fwhm need for excited state runs')
+            else:
+                pass
+
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
         self.n_frames_gs = int(self.n_steps_gs / self.n_steps_to_print_gs)
