@@ -10,7 +10,7 @@ from pynasqm.amber import Amber
 from pynasqm.inputceon import InputCeon
 from pynasqm.write import (write_omega_vs_time,
                            write_nasqm_flu_energie, write_spectra_flu_input,
-                           write_spectra_abs_input)
+                           write_spectra_abs_input, write_average_coeffs)
 from pynasqm.userinput import UserInput
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.absorptiontrajectories import AbsTrajectories
@@ -49,7 +49,7 @@ def main():
     print("Job finished in %s seconds" % (end_time - start_time))
 
 def create_input(user_input):
-    input_ceon = InputCeon(amber_input='md_qmmm_amb.in')
+    input_ceon = InputCeon(amber_input='md_qmmm_amb.in', directory='./')
     input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_mcrd)
     return input_ceon
@@ -70,7 +70,7 @@ def create_inputceon_copies(input_ceon, root_name, number):
     input_ceons = []
     for index in range(1, number+1):
         file_name = "{}{}.in".format(root_name, index)
-        input_ceons.append(input_ceon.copy(file_name))
+        input_ceons.append(input_ceon.copy(file_name, "{}".format(index)))
     return input_ceons
 
 def run_ground_state_dynamics(input_ceon, user_input):
@@ -113,7 +113,7 @@ def run_ground_state_dynamics(input_ceon, user_input):
         subprocess.run(['mv', 'nasqm_ground1.nc', 'nasqm_ground.nc'])
         subprocess.run(['rm', 'md_qmmm_amb1.in'])
     else:
-        amber.run_amber()
+        amber.run_amber(number_processors=1, is_ground_state=True)
 
 def run_absorption_trajectories(input_ceon, user_input):
     '''
@@ -161,8 +161,10 @@ def run_fluorescence_collection(user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Fluorescences !!!!!!!!!!!!!!!!!!!!")
     exc_state_init = user_input.exc_state_init_ex_param
+    exc_state_prop = user_input.n_exc_states_propagate_ex_param
     write_spectra_flu_input(user_input)
     write_omega_vs_time(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
     write_nasqm_flu_energie(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
+    write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 
 main()

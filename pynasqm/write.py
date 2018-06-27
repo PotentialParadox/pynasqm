@@ -6,6 +6,7 @@ import io
 import numpy as np
 import pynasqm.utils
 from pynasqm.amberout import find_nasqm_excited_state, find_excited_energies
+from pynasqm.coeffreader import get_coeffs, get_times
 
 
 def numpy_to_specta_string(numpy_data):
@@ -77,7 +78,7 @@ def accumulate_flu_spectra(n_trajectories, n_states=10):
     """
     output_stream = io.StringIO()
     for i in range(n_trajectories):
-        amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
+        amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
         input_stream.close()
@@ -91,7 +92,7 @@ def accumulate_abs_spectra(n_snapshots_gs, n_frames, n_states=20):
     '''
     output_stream = io.StringIO()
     for i in range(n_snapshots_gs):
-        amber_outfile = 'nasqm_abs_' + str(i+1) + ".out"
+        amber_outfile = '{}/nasqm_abs_{}.out'.format(i+1, i+1)
         input_stream = open(amber_outfile, 'r')
         find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
         input_stream.close()
@@ -125,6 +126,17 @@ def write_spectra_flu_input(user_input):
                                           user_input.fluorescence_time_truncation)
     open('spectra_flu.input', 'w').write(fluor_string)
 
+def write_average_coeffs(n_trajectories, n_states=1):
+    N = n_trajectories
+    files = [open("{}/coefficient.out".format(x), 'r').read() for x in range(1, n_trajectories+1)]
+    coeffs = np.array([get_coeffs(f) for f in files])
+    n_steps = len(coeffs[0])
+    times = np.array([get_times(f) for f in files])
+    coeff_average = np.average(coeffs, axis=0)
+    print_values = np.zeros((n_steps, n_states+1))
+    print_values[:,0] = times[0]
+    print_values[:,1:] = coeff_average
+    np.savetxt('average_coefficient.out', print_values)
 
 def write_omega_vs_time(n_trajectories, n_states=1):
     '''
@@ -148,7 +160,7 @@ def write_nasqm_flu_energie(n_trajectories, n_states=1):
     state_range = range(1, n_states+1)
     output_stream = open('nasqm_flu_energies.txt', 'w')
     for i in range(n_trajectories):
-        amber_outfile = 'nasqm_flu_' + str(i+1) + ".out"
+        amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
         input_stream = open(amber_outfile, 'r')
         find_excited_energies(input_stream, output_stream, state_range)
     output_stream.close()

@@ -3,6 +3,7 @@ Class in charge of controling the input files for NASQM
 FIXME This should be refactored in oredered to be testable
 '''
 import re
+from shutil import copyfile, SameFileError
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.inputceonmanager import InputceonManager
 from pynasqm.periodictable import periodic_table
@@ -12,13 +13,10 @@ class InputCeon:
     NAESMD always uses the input.ceon file, so that will be used for the naesmd input file.
     AMBER can use any input file name, so we require it.
     """
-    def __init__(self, amber_input):
+    def __init__(self, amber_input, directory):
         self.amber_input = amber_input
         self.inputceonmanager = InputceonManager('input.ceon')
-        self.path = self.find_path()
-        self.input_ceon_path = self.path + "input.ceon"
-        self.naesmd_init = open(self.input_ceon_path, 'r').read()
-        self.amber_init = open(amber_input, 'r').read()
+        self.directory = directory
         self.log = ''
 
     def set_excited_state(self, state, states_to_prop):
@@ -73,14 +71,6 @@ class InputCeon:
         Write a log of all our changes
         '''
         open('input_ceon.log', 'w').write(self.log)
-
-    def write_backup(self):
-        '''
-        Write the backup the original input files overriding any changes we made during the
-        process
-        '''
-        open('input.ceon', 'w').write(self.naesmd_init)
-        open(self.amber_input, 'w').write(self.amber_init)
 
 
     def set_exc_state_propagate(self, n_exc_states_propagate):
@@ -169,13 +159,29 @@ class InputCeon:
         result = re.findall(p_mask, file_string)
         return result[0]
 
-    def copy(self, file_name):
+    def copy(self, directory, file_name):
         '''
         Returns a copy into the new file_name
         '''
-        old_file_string = open(self.amber_input, 'r').read()
-        open(self.path + file_name, 'w').write(old_file_string)
-        return InputCeon(self.path + file_name)
+        amber_input = "{}/{}".format(directory, file_name)
+        copyfile(self.amber_input, amber_input)
+        input_ceon = "{}/{}".format(directory, 'input.ceon')
+        try:
+            copyfile('input.ceon', input_ceon)
+        except SameFileError:
+            print("Copying inpuceon to itself, make sure to use different directories"\
+                  " for different trajectories")
+        else:
+            pass
+        parmtop = "{}/{}".format(directory, 'm1.prmtop')
+        try:
+            copyfile('m1.prmtop', parmtop)
+        except SameFileError:
+            print("Copying m1.prmtop to itself, make sure to use different directories"\
+                  " for different trajectories")
+        else:
+            pass
+        return InputCeon(file_name, directory)
 
     def log_inputceon(self):
         '''
@@ -213,7 +219,6 @@ class InputCeon:
             open(self.amber_input, 'w').write(file_string)
         if is_disang:
             sed_inplace(self.amber_input, p_disang, 'DISANG={}\n'.format(nmr_directory))
-            sed_inplace(self.amber_input, p_dumpave, 'DUMPAVE={}.eq\n'.format(nmr_directory[:-5]))
         else:
             file_string = open(self.amber_input, 'r').read()
             file_string = file_string + 'DISANG={}\n'.format(nmr_directory)

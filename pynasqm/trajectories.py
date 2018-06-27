@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 import os.path
+from os import mkdir
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmrmanager import NMRManager
@@ -36,6 +37,12 @@ class Trajectories(ABC):
         print(15 * " " + header)
         print(50*"*")
 
+    def _create_directories(self):
+        for i in range(1, self._number_trajectories + 1):
+            directory = "{}".format(i)
+            if not os.path.exists(directory):
+                mkdir(directory)
+
     def _create_restarts_from_parent(self):
         pass
 
@@ -43,7 +50,7 @@ class Trajectories(ABC):
         input_ceons = []
         for index in range(1, self._number_trajectories+1):
             file_name = "{}{}.in".format(self._child_root, index)
-            input_ceons.append(self._input_ceons[0].copy(file_name))
+            input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
         self._input_ceons = input_ceons
 
     def _update_input_files(self):
@@ -124,7 +131,7 @@ class Trajectories(ABC):
             trajectory_roots.append(self._trajectory_name(-1))
         else:
             for i in range(self._number_trajectories):
-                snap_restarts.append(self._restart_name(i))
+                snap_restarts.append("{}".format(self._restart_name(i)))
                 trajectory_roots.append(self._trajectory_name(i))
         return snap_restarts, trajectory_roots
 

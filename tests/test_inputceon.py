@@ -20,9 +20,9 @@ def teardown_module(module):
 
 def test_set_nmr_directory():
     amber_input_name = "md_qmmm_amb.in"
-    original_input_ceons = InputCeon(amber_input_name)
+    original_input_ceons = InputCeon(amber_input_name, ".")
     test_name = "nmr_directory.in"
-    new_input_ceon = original_input_ceons.copy(test_name)
+    new_input_ceon = original_input_ceons.copy(".", test_name)
     nmr_directory = "./rest_1.dist"
     new_input_ceon.set_nmr_directory(nmr_directory)
     answer_file = "test_nmr_directory.in"

@@ -24,9 +24,9 @@ def test_mask_updater():
     user_input = types.SimpleNamespace()
     user_input.number_nearest_solvents = 3
     amber_input_name = "md_qmmm_amb.in"
-    original_input_ceons = InputCeon(amber_input_name)
+    original_input_ceons = InputCeon(amber_input_name, directory='./')
     test_name = "mask_updater.in"
-    new_input_ceon = original_input_ceons.copy(test_name)
+    new_input_ceon = original_input_ceons.copy('./', test_name)
     input_ceons = [new_input_ceon]
     outputs = ['closest_1.txt']
     updater = SolventMaskUpdater(input_ceons, user_input, outputs)

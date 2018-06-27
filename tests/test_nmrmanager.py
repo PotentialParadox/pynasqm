@@ -41,9 +41,9 @@ def test_write_dist_files():
 
 def test_update_inputs():
     amber_input_name = "md_qmmm_amb.in"
-    original_input_ceons = InputCeon(amber_input_name)
+    original_input_ceons = InputCeon(amber_input_name, ".")
     test_name = "nmr_manager.in"
-    new_input_ceon = original_input_ceons.copy(test_name)
+    new_input_ceon = original_input_ceons.copy(".", test_name)
     input_ceons = [new_input_ceon]
     restricted_atoms = types.SimpleNamespace()
     restricted_atoms.solvent_atoms = [[2041]]

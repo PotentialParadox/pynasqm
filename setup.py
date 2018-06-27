@@ -14,5 +14,6 @@ setup(
             'scripts/naesmd_spectra_plotter.py',
             'scripts/find_spectra_shift.py',
             'scripts/amber_nexmd_converter.py',
+            'scripts/print_quantum_coeffs.py',
            ]
 )

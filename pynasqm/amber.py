@@ -3,6 +3,7 @@ Interface to Amber
 '''
 from multiprocessing import Pool
 import subprocess
+import os
 
 
 class Amber:
@@ -23,6 +24,8 @@ class Amber:
         '''
         Explanation for run amber parallel, needs to be private
         '''
+        directory = "{}".format(conjoined_list[6])
+        os.chdir(directory)
         input_root = conjoined_list[0]
         output_root = conjoined_list[1]
         coordinate_file = conjoined_list[2]
@@ -33,17 +36,19 @@ class Amber:
                         "{}.out".format(output_root), '-c', coordinate_file,
                         '-p', prmtop_file, '-r', "{}.rst".format(restart_root),
                         '-x', "{}.nc".format(export_root)])
+        os.chdir('..')
 
-    def run_amber(self, number_processors=1):
+    def run_amber(self, number_processors=1, is_ground_state=False):
         '''
         Multithreaded amber run
         '''
         pool = Pool(number_processors)
         conjoined_list = []
         for i in range(len(self.input_roots)):
+            directory = "./" if is_ground_state else i+1
             conjoined_list.append([self.input_roots[i], self.output_roots[i],
                                    self.coordinate_files[i], self.prmtop_files[i],
-                                   self.restart_roots[i], self.export_roots[i]])
+                                   self.restart_roots[i], self.export_roots[i], directory])
         pool.map(self.run_amber_worker, conjoined_list)
         pool.close()
         pool.join()
