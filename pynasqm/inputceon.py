@@ -15,13 +15,13 @@ class InputCeon:
     """
     def __init__(self, amber_input, directory):
         self.amber_input = amber_input
-        self.inputceonmanager = InputceonManager('input.ceon')
         self.directory = directory
+        self.inputceonmanager = InputceonManager('{}/input.ceon'.format(directory))
         self.log = ''
 
     def set_excited_state(self, state, states_to_prop):
         self.inputceonmanager.set_excited_state(state, states_to_prop)
-        self.inputceonmanager.write('input.ceon')
+        self.inputceonmanager.write()
 
     def find_path(self):
         '''
