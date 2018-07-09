@@ -148,7 +148,8 @@ class InputCeon:
         '''
         Simple setter for the mask
         '''
-        sed_inplace(self.amber_input, r"qmmask\s*=\s*'.*'", "qmmask="+mask)
+        file_path = "{}/{}".format(self.directory, self.amber_input)
+        sed_inplace(file_path, r"qmmask\s*=\s*'.*'", "qmmask="+mask)
 
     def get_mask(self):
         '''
@@ -199,31 +200,32 @@ class InputCeon:
         is_disang = None
         is_dumpave = None
         file_string = None
-        with open(self.amber_input, 'r') as file_in:
+        file_path = "{}/{}".format(self.directory, self.amber_input)
+        with open(file_path, 'r') as file_in:
             file_string = file_in.read()
             is_nmropt = re.search(p_nmropt, file_string)
             is_disang = re.search(p_disang, file_string)
             is_dumpave = re.search(p_dumpave, file_string)
             is_wp = re.search(p_wt, file_string)
         if is_nmropt:
-            sed_inplace(self.amber_input, p_nmropt, 'nmropt=1')
+            sed_inplace(file_path, p_nmropt, 'nmropt=1')
         else:
-            sed_inplace(self.amber_input, p_ifqnt, 'nmropt=1,\n  ifqnt=1')
+            sed_inplace(file_path, p_ifqnt, 'nmropt=1,\n  ifqnt=1')
         if not is_dumpave:
-            file_string = open(self.amber_input, 'r').read()
+            file_string = open(file_path, 'r').read()
             file_string = file_string + " &wt\n type='DUMPFREQ', istep1=100,\n /\n"
-            open(self.amber_input, 'w').write(file_string)
+            open(file_path, 'w').write(file_string)
         if not is_wp:
-            file_string = open(self.amber_input, 'r').read()
+            file_string = open(file_path, 'r').read()
             file_string = file_string + " &wt\n type='END'\n /\n"
             open(self.amber_input, 'w').write(file_string)
         if is_disang:
-            sed_inplace(self.amber_input, p_disang, 'DISANG={}\n'.format(nmr_directory))
+            sed_inplace(file_path, p_disang, 'DISANG={}\n'.format(nmr_directory))
         else:
-            file_string = open(self.amber_input, 'r').read()
+            file_string = open(file_path, 'r').read()
             file_string = file_string + 'DISANG={}\n'.format(nmr_directory)
             file_string = file_string + 'DUMPAVE={}.eq\n'.format(nmr_directory[:-5])
-            open(self.amber_input, 'w').write(file_string)
+            open(file_path, 'w').write(file_string)
 
 
 

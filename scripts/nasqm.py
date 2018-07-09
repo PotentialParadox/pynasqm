@@ -15,6 +15,7 @@ from pynasqm.userinput import UserInput
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
+from pynasqm.initialexcitedstates import get_energies_and_strenghts
 
 
 def main():
@@ -137,6 +138,13 @@ def run_absorption_collection(user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
     write_spectra_abs_input(user_input)
+    energies, strengths = get_energies_and_strenghts('spectra_abs.input')
+    print_energies_and_strengths(energies, strengths)
+
+def print_energies_and_strengths(energies, strengths):
+    print('Energies and Strengths')
+    for i, (e, s) in enumerate(zip(energies, strengths)):
+        print('State {}: Energy: {}, Strength: {}'.format(i+1, e, s))
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''

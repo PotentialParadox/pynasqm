@@ -21,7 +21,7 @@ class FluTrajectories(Trajectories):
     def _trajins(self):
         trajins = []
         for i in range(1, self._number_trajectories +1):
-            trajins.append("{}{}.rst".format(self._parent_restart_root, i))
+            trajins.append("{}/{}{}.rst".format(i, self._parent_restart_root, i))
         return trajins
 
     def _create_inputceon_copies(self):

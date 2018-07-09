@@ -2,6 +2,7 @@
 Functions that write outputs of the NASQM script
 """
 import subprocess
+import statistics
 import io
 import numpy as np
 import pynasqm.utils
@@ -126,10 +127,25 @@ def write_spectra_flu_input(user_input):
                                           user_input.fluorescence_time_truncation)
     open('spectra_flu.input', 'w').write(fluor_string)
 
+def coeff_error_string(unlike):
+    error_string = "Unlike Coefficients in trajectories: "
+    for u in unlike:
+        error_string += "{} ".format(u+1)
+    error_string += "\n"
+    return error_string
+
+def verify_coeffs(coeffs):
+    counts = [len(x) for x in coeffs]
+    mode = statistics.mode(counts)
+    unlike = [i for i, x in enumerate(counts) if x != mode]
+    if unlike != []:
+        raise ValueError(coeff_error_string(unlike))
+
 def write_average_coeffs(n_trajectories, n_states=1):
     N = n_trajectories
     files = [open("{}/coefficient.out".format(x), 'r').read() for x in range(1, n_trajectories+1)]
     coeffs = np.array([get_coeffs(f) for f in files])
+    verify_coeffs(coeffs)
     n_steps = len(coeffs[0])
     times = np.array([get_times(f) for f in files])
     coeff_average = np.average(coeffs, axis=0)
