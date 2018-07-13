@@ -29,10 +29,17 @@ class FluTrajectories(Trajectories):
         for index in range(1, self._number_trajectories+1):
             file_name = "{}{}.in".format(self._child_root, index)
             input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
-        init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
-                                                                   'spectra_abs.input',
-                                                                   self._user_input.laser_energy,
-                                                                   self._user_input.fwhm)
+        init_states = None
+        if doing_laser_excitation():
+            init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
+                                                                       'spectra_abs.input',
+                                                                       self._user_input.laser_energy,
+                                                                       self._user_input.fwhm)
+        else:
+            init_states = [self._user_input.exc_state_init_ex_params for _ in range(self._number_trajectories)]
         for inputceon, state in zip(input_ceons, init_states):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         self._input_ceons = input_ceons
+
+    def doing_laser_excitation(self):
+        return self._user_input.exc_state_init_ex_param == -1

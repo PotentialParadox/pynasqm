@@ -139,7 +139,7 @@ class UserInput:
 
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
-        self.n_frames_gs = int(self.n_steps_gs / self.n_steps_to_print_gs)
+
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_mcrd)
         self.n_steps_abs = int(self.abs_run_time / self.time_step * 1000)
         # We will do absorption calculation on all
