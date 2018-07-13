@@ -132,8 +132,8 @@ class UserInput:
             self.laser_energy = float(data['laser_energy'])
             self.fwhm = float(data['fwhm'])
         except KeyError:
-            if self.run_excited_state_trajectories:
-                raise KeyError('laser energy and fwhm need for excited state runs')
+            if self.run_excited_state_trajectories and self.exc_state_init_ex_param == -1:
+                raise KeyError('laser energy and fwhm needed for excited state runs')
             else:
                 pass
 
