@@ -19,20 +19,23 @@ def build_trajectory_command(amber, n_trajectories):
     '''
     Returns the command for the slurm script
     '''
-    command = "module load intel/2016.0.109\n\n"
+    inputfile= "${{ID}}/{}".format(amber.input_roots[0])
+    outputfile= "${{ID}}/{}".format(amber.output_roots[0])
+    restartfile= "${{ID}}/{}".format(amber.coordinate_files[0])
+    command = "module load intel/2017\n\n"
     command += "for i in $(seq 1 {})\n".format(n_trajectories)
     command += "do\n" \
                '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
                '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
                '    ID="$((${FIRST_COUNT} + ${i}))"\n'
-    command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(amber.input_roots[0],
-                                                                           amber.output_roots[0])
+    command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(inputfile,
+                                                                           outputfile)
     command += "${ID}.out -c "
     if amber.from_restart:
-        command += "{}${{ID}}.rst -p m1.prmtop -r ".format(amber.coordinate_files[0])
+        command += "{}${{ID}}.rst -p m1.prmtop -r ".format(restartfile)
     else:
-        command += "{}.${{ID}} -p m1.prmtop -r ".format(amber.coordinate_files[0])
-    command += "{}${{ID}}.rst -x {}".format(amber.output_roots[0], amber.output_roots[0]) \
+        command += "{}.${{ID}} -p m1.prmtop -r ".format(restartfile)
+    command += "{}${{ID}}.rst -x {}".format(outputfile, outputfile) \
                +"${ID}.nc &\n" \
                +"done\n" \
                +"wait\n"
