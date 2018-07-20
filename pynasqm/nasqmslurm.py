@@ -19,9 +19,9 @@ def build_trajectory_command(amber, n_trajectories):
     '''
     Returns the command for the slurm script
     '''
-    inputfile= "${{ID}}/{}".format(amber.input_roots[0])
-    outputfile= "${{ID}}/{}".format(amber.output_roots[0])
-    restartfile= "${{ID}}/{}".format(amber.coordinate_files[0])
+    inputfile = amber.input_roots[0]
+    outputfile = amber.output_roots[0]
+    restartfile = amber.coordinate_files[0]
     command = "module load intel/2017\n\n"
     command += "for i in $(seq 1 {})\n".format(n_trajectories)
     command += "do\n" \

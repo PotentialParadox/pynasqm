@@ -103,9 +103,9 @@ class Trajectories(ABC):
 
     def _run_on_hpc(self):
         amber = Amber()
-        amber.input_roots = [self._child_root]
-        amber.output_roots = [self._child_root]
-        amber.coordinate_files = [self._parent_restart_root]
+        amber.input_roots = ["${{ID}}/{}".format(self._child_root)]
+        amber.output_roots = ["${{ID}}/{}".format(self._child_root)]
+        amber.coordinate_files = ["${{ID}}/{}".format(self._parent_restart_root)]
         amber.from_restart = self._amber_restart
         job_name = self._user_input.job_name + self._job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
