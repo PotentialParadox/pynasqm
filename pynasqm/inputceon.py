@@ -200,7 +200,7 @@ class InputCeon:
         is_disang = None
         is_dumpave = None
         file_string = None
-        file_path = "{}/{}".format(self.directory, self.amber_input)
+        file_path = "{}{}".format(self.directory, self.amber_input)
         with open(file_path, 'r') as file_in:
             file_string = file_in.read()
             is_nmropt = re.search(p_nmropt, file_string)
@@ -218,7 +218,7 @@ class InputCeon:
         if not is_wp:
             file_string = open(file_path, 'r').read()
             file_string = file_string + " &wt\n type='END'\n /\n"
-            open(self.amber_input, 'w').write(file_string)
+            open(file_path, 'w').write(file_string)
         if is_disang:
             sed_inplace(file_path, p_disang, 'DISANG={}\n'.format(nmr_directory))
         else:
