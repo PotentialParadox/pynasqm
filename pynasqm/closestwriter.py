@@ -18,7 +18,7 @@ class ClosestWriter:
     def _default_trajout(self):
         closest_outputs = []
         for trajectory in range(1, self._number_trajectories() + 1):
-            closest_outputs.append("closest_{}.txt".format(trajectory))
+            closest_outputs.append("{}/closest_{}.txt".format(trajectory,trajectory))
         return closest_outputs
 
     def _number_trajectories(self):
@@ -26,7 +26,7 @@ class ClosestWriter:
 
     def write(self):
         for i in range(self._number_trajectories()):
-            script_filename = "closest_{}.traj".format(i+1)
+            script_filename = "{}/closest_{}.traj".format(i+1,i+1)
             self.script_files.append(script_filename)
             script = self._closest_script(self.trajins[i], self.trajouts[i])
             open(script_filename, 'w').write(script)

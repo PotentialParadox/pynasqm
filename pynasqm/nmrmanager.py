@@ -40,7 +40,7 @@ class NMRManager:
 
     @staticmethod
     def _create_dist_file_name(index):
-        return "rst_{}.dist".format(index+1)
+        return "{}/rst_{}.dist".format(index+1, index+1)
 
 
     def _get_number_trajectories(self):

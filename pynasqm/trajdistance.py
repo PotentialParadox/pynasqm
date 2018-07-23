@@ -7,9 +7,9 @@ class TrajDistance:
         self._solute_mask = solute_mask
 
     def __call__(self, trajin, solvent_mask, index=0):
-        file_name = 'distance_{}.dat'.format(index+1)
+        file_name = '{}/distance_{}.dat'.format(index+1, index+1)
         traj_string = self._create_string(trajin, solvent_mask, file_name)
-        call_file = 'traj_dist_{}.in'.format(index+1)
+        call_file = '{}/traj_dist_{}.in'.format(index+1, index+1)
         open(call_file, 'w').write(traj_string)
         subprocess.call(['cpptraj', '-i', call_file, file_name, '-o', 'distance.log'])
         return self.read_distance(file_name)
