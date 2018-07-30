@@ -18,6 +18,9 @@ class InputceonManager:
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
         self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
+    def set_timestep(self, timestep):
+        self.moldyn.set_value('time_step', timestep)
+
     @staticmethod
     def generate_initial_coeffs(state, states_to_prop):
         A =  np.zeros((states_to_prop, 2), dtype=float)

@@ -134,6 +134,8 @@ class InputCeon:
         Sets the timestep of the simulation
         """
         sed_inplace(self.amber_input, r'dt=\s*\d+\.?\d*', 'dt=' +str(time_step/1000))
+        self.inputceonmanager.set_timestep(time_step)
+
 
     def set_random_velocities(self, is_random_velocities):
         '''
