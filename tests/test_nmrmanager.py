@@ -43,7 +43,7 @@ def test_update_inputs():
     amber_input_name = "md_qmmm_amb.in"
     original_input_ceons = InputCeon(amber_input_name, ".")
     test_name = "nmr_manager.in"
-    new_input_ceon = original_input_ceons.copy(".", test_name)
+    new_input_ceon = original_input_ceons.copy("1/", test_name)
     input_ceons = [new_input_ceon]
     restricted_atoms = types.SimpleNamespace()
     restricted_atoms.solvent_atoms = [[2041]]
@@ -55,5 +55,5 @@ def test_update_inputs():
     manager = NMRManager(input_ceons, closest_outputs, atom_array, distances, dist_files=dist_file_input)
     manager.update_inputs()
     answer = open("nmr_manager_test.in", 'r').read()
-    result = open(test_name, 'r').read()
+    result = open("1/" + test_name, 'r').read()
     assert result == answer

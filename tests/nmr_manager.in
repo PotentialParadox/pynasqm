@@ -18,7 +18,6 @@
   ntpr=1,
   ntwx=1,
   ntwv=-1,
-  nmropt=1,
   ifqnt=1
  /
  &qmmm
@@ -33,11 +32,3 @@
   qm_pme=0,
   nae=1
  /
- &wt
- type='DUMPFREQ', istep1=100,
- /
- &wt
- type='END'
- /
-DISANG=./rst_1.dist
-DUMPAVE=./rst_1.eq
