@@ -135,6 +135,7 @@ class InputCeon:
         """
         sed_inplace(self.amber_input, r'dt=\s*\d+\.?\d*', 'dt=' +str(time_step/1000))
         self.inputceonmanager.set_timestep(time_step)
+        self.inputceonmanager.write()
 
 
     def set_random_velocities(self, is_random_velocities):
