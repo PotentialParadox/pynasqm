@@ -96,7 +96,10 @@ class UserInput:
         self.n_exc_states_propagate_ex_param = int(data["n_exc_states_propagate"])
 
         # Change here the initial state
-        self.exc_state_init_ex_param = int(data["exc_state_init"])
+        try:
+            self.exc_state_init_ex_param = int(data["exc_state_init"])
+        except KeyError:
+            self.exc_state_init_ex_param = -1
 
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
