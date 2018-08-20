@@ -29,7 +29,7 @@ class NMRManager:
                                      "possibly too many nearest solvent".format(distance,
                                                                                 trajectory+1))
             file_name = self._create_dist_file_name(trajectory)
-            self._dist_files.append(file_name)
+            self._dist_files.append((file_name.split('/'))[1])
             nmrfactory = NMRWriterFactory(restricted_atoms1, restricted_atoms2, desired_distances)
             nmrwriter = nmrfactory.get_writer()
             nmrwriter.write_to(file_name)
