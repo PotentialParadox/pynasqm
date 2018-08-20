@@ -17,7 +17,7 @@ def amber_to_nexmd(amber, nexmd):
         coord_element = [atom_ids[index]]
         coord_element.extend(a_coords[index])
         coords.append(coord_element)
-    header = nexmd.header
+    header = "{}\n{}\n".format(nexmd.qmmm, nexmd.moldyn)
     coeffs = nexmd.coeffs
     return InputceonWriter(header, coords, veloc, coeffs)
 

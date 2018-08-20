@@ -24,16 +24,19 @@ class Amber:
         '''
         Explanation for run amber parallel, needs to be private
         '''
-        input_root = "{}/{}".format(conjoined_list[6], conjoined_list[0])
-        output_root = "{}/{}".format(conjoined_list[6], conjoined_list[1])
-        coordinate_file = "{}/{}".format(conjoined_list[6], conjoined_list[2])
+        os.chdir('./{}'.format(conjoined_list[6]))
+        print('in directory: {}'.format(os.getcwd()))
+        input_root = conjoined_list[0]
+        output_root = conjoined_list[1]
+        coordinate_file = conjoined_list[2]
         prmtop_file = conjoined_list[3]
-        restart_root = "{}/{}".format(conjoined_list[6], conjoined_list[4])
-        export_root = "{}/{}".format(conjoined_list[6], conjoined_list[5])
+        restart_root = conjoined_list[4]
+        export_root = conjoined_list[5]
         subprocess.run(['sander', '-O', '-i', "{}.in".format(input_root), '-o',
                         "{}.out".format(output_root), '-c', coordinate_file,
                         '-p', prmtop_file, '-r', "{}.rst".format(restart_root),
                         '-x', "{}.nc".format(export_root)])
+        os.chdir('..')
 
     def run_amber(self, number_processors=1, is_ground_state=False):
         '''

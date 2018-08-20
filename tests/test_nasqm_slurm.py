@@ -67,9 +67,9 @@ def test_build_command(amber):
     '''
     Tests the build command
     '''
-    amber.input_roots = ["${ID}/nasqm_abs_"]
-    amber.coordinate_files = ["${ID}/ground_snap"]
-    amber.output_roots = ["${ID}/nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_"]
+    amber.coordinate_files = ["ground_snap"]
+    amber.output_roots = ["nasqm_abs_"]
     n_trajectories = 16
     result = nasqm_slurm.build_trajectory_command(amber, n_trajectories)
     test = open("nasqm_slurm_build_command.txt", 'r').read()
@@ -81,9 +81,9 @@ def test_slurm_trajectory_file_1(userinput, amber):
     Tests to see if slurm trajectory_file is capable of running
     one abs trajectory
     '''
-    amber.input_roots = ["${ID}/nasqm_abs_"]
-    amber.coordinate_files = ["${ID}/ground_snap"]
-    amber.output_roots = ["${ID}/nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_"]
+    amber.coordinate_files = ["ground_snap"]
+    amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 1
     result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
@@ -96,9 +96,9 @@ def test_slurm_trajectory_file_16(userinput, amber):
     Tests to see if slurm trajectory_file is capable of running
     one whole trajectory
     '''
-    amber.input_roots = ["${ID}/nasqm_abs_"]
-    amber.coordinate_files = ["${ID}/ground_snap"]
-    amber.output_roots = ["${ID}/nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_"]
+    amber.coordinate_files = ["ground_snap"]
+    amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 16
     result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
@@ -111,14 +111,13 @@ def test_slurm_trajectory_file_33(userinput):
     Tests to see if slurm trajectory_file is capable of running
     multiple whole trajectories with remainder
     '''
-    amber.input_roots = ["${ID}/nasqm_abs_"]
-    amber.coordinate_files = ["${ID}/ground_snap"]
-    amber.output_roots = ["${ID}/nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_"]
+    amber.coordinate_files = ["ground_snap"]
+    amber.output_roots = ["nasqm_abs_"]
     amber.from_restart = False
     title = "MyJob"
     n_trajectories = 33
     result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
     test_1 = open("nasqm_slurm_1.txt", 'r').read()
-    print(result[0])
     assert result == (test_0, test_1)

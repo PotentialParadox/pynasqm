@@ -27,7 +27,8 @@ def build_trajectory_command(amber, n_trajectories):
     command += "do\n" \
                '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
                '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
-               '    ID="$((${FIRST_COUNT} + ${i}))"\n'
+               '    ID="$((${FIRST_COUNT} + ${i}))"\n'\
+               '    cd ${ID}\n'
     command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(inputfile,
                                                                            outputfile)
     command += "${ID}.out -c "
@@ -37,8 +38,9 @@ def build_trajectory_command(amber, n_trajectories):
         command += "{}.${{ID}} -p m1.prmtop -r ".format(restartfile)
     command += "{}${{ID}}.rst -x {}".format(outputfile, outputfile) \
                +"${ID}.nc &\n" \
-               +"done\n" \
-               +"wait\n"
+               "    cd ..\n" \
+               "done\n" \
+               "wait\n"
     return command
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories):
