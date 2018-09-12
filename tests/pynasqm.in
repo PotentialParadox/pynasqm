@@ -52,6 +52,8 @@
     "time_step": "0.5",
 # Change here the runtime of the initial ground state MD
     "ground_state_run_time": "10",
+# Change here how often you want to print the trajectory files
+    "n_steps_to_print_mcrd": "100",
 # Change here how often you want to print the ground state trajectory
     "n_steps_to_print_gs": "50",
 # Change here the runtime for the the trajectories
@@ -65,8 +67,12 @@
 # Change here the number of excited states you
 # with to have in the CIS calculation
     "n_exc_states_propagate": "1",
-# Change here the initial state
+# Change here the initial state set to -1 if user laser_excitation
     "exc_state_init": "1",
+# Change here the energy of the laser used for excitation?
+    "laser_energy": "4.2",
+# Change here the full width half max of the absorption spectra
+    "fwhm": "0.3",
 # Change here how often you want to print the excited state trajectories
     "n_steps_to_print_exc": "50",
 # Some time will be needed for the molecule to equilibrate
