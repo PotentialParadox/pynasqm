@@ -37,7 +37,7 @@ def print_line(fo, ev_energy, nm_energy, weighted_state_intensities, total_inten
 
 def calculate_spectra(n_states, n_gauss, fwhm, n_bins, x_min, x_max, file_in, file_out):
 
-    divisor = 0.02
+    divisor = 0.01
 
     sigma = fwhm / 2.35482
 
