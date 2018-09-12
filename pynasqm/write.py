@@ -143,11 +143,11 @@ def verify_coeffs(coeffs):
 
 def write_average_coeffs(n_trajectories, n_states=1):
     N = n_trajectories
-    files = [open("{}/coefficient.out".format(x), 'r').read() for x in range(1, n_trajectories+1)]
-    coeffs = np.array([get_coeffs(f) for f in files])
+    filenames = ["{}/coeff-n.out".format(x) for x in range(1, N+1)]
+    coeffs = np.array([get_coeffs(f) for f in filenames])
     verify_coeffs(coeffs)
     n_steps = len(coeffs[0])
-    times = np.array([get_times(f) for f in files])
+    times = np.array([get_times(f) for f in filenames])
     coeff_average = np.average(coeffs, axis=0)
     print_values = np.zeros((n_steps, n_states+1))
     print_values[:,0] = times[0]

@@ -1,25 +1,18 @@
 import re
+import numpy as np
 import matplotlib.pyplot as plt
 
-def get_coeffs(filestring):
+def get_coeffs(filename):
     '''
     returns [timestep][state coeff]
     '''
-    filestring += '\n blank line'
-    coeff_blocks  = filestring.split('$COEFF')[1:]
-    coeffs = []
-    for block in coeff_blocks:
-        temp_coeffs = block.split('\n')
-        temp_coeffs = temp_coeffs[1:-3]
-        temp_coeffs = [float(x.split()[0]) for x in temp_coeffs]
-        coeffs.append(temp_coeffs)
-    return coeffs
+    data = np.loadtxt(filename)
+    return list(data[:,2:-1])
 
-def get_times(filestring):
+def get_times(filename):
     # find time =         (timevalue)
-    p_time = re.compile("time.*(\s\d+\.\d+)")
-    times = [float(x) for x in re.findall(p_time, filestring)]
-    return times
+    data = np.loadtxt(filename)
+    return list(data[:,1])
 
 def graph_coeffs(times, coeffs, title):
     x = times
