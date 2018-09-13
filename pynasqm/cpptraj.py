@@ -20,4 +20,5 @@ def create_restarts(amber_input, output, step=None):
            'run\n' \
            'quit'.format(output)
     open('convert_to_crd.in', 'w').write(ctc)
-    subprocess.run(['cpptraj', '-i', 'convert_to_crd.in'])
+    print("Creating restarts from", amber_input)
+    subprocess.run(['cpptraj', '-i', 'convert_to_crd.in', '-o', 'convert_to_crd.out'])
