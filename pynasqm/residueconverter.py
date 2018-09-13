@@ -1,4 +1,4 @@
-from subprocess import call
+import subprocess
 
 class ResidueConverter:
 
@@ -25,7 +25,8 @@ class ResidueConverter:
             return atoms
 
     def _run(self):
-        call(['cpptraj', '-i', self._scriptfile, '-o', 'atominfo.log'])
+        subprocess.Popen(['cpptraj', '-i', self._scriptfile, '-o', 'atominfo.log'], stdout=subprocess.PIPE,
+                         stderr=subprocess.PIPE)
 
     def _create_scriptfile(self, mask):
         scriptstring = "parm {}\n".format(self._parmtop)

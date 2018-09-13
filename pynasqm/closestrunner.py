@@ -24,4 +24,5 @@ class ClosestRunner:
     @staticmethod
     def _run_closest_scripts(file_names):
         for script in file_names:
-            subprocess.call(['cpptraj', '-i', script, '-o', 'cpptraj.out'])
+            subprocess.Popen(['cpptraj', '-i', script, '-o', 'cpptraj.out'], stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
