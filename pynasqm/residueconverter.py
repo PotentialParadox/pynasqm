@@ -12,7 +12,7 @@ class ResidueConverter:
         mask = self._create_resmask(residue)
         script = self._create_scriptfile(mask)
         self._write_script(script)
-        self._run()
+        self._run(script)
         answer = self._extract_atoms()
         return answer
 
@@ -24,10 +24,14 @@ class ResidueConverter:
                 atoms.append(int(line.split()[0]))
             return atoms
 
-    def _run(self):
-        p1 = subprocess.Popen(['cpptraj', '-i', self._scriptfile], stdout=subprocess.PIPE,
+    @staticmethod
+    def _run(script):
+        p1 = subprocess.Popen(['echo', script], stdout=subprocess.PIPE,
                               stderr=subprocess.PIPE)
-        stdout = p1.communicate()[0]
+        p2 = subprocess.Popen(['cpptraj'], stdin=p1.stdout,
+                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p1.stdout.close()
+        stdout = p2.communicate()[0]
 
     def _create_scriptfile(self, mask):
         scriptstring = "parm {}\n".format(self._parmtop)
