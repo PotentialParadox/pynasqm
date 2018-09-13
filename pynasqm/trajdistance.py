@@ -11,8 +11,9 @@ class TrajDistance:
         traj_string = self._create_string(trajin, solvent_mask, file_name)
         call_file = '{}/traj_dist_{}.in'.format(index+1, index+1)
         open(call_file, 'w').write(traj_string)
-        subprocess.Popen(['cpptraj', '-i', call_file, file_name, '-o', 'distance.log'], stdout=subprocess.PIPE,
+        p1 =subprocess.Popen(['cpptraj', '-i', call_file, file_name, '-o', 'distance.log'], stdout=subprocess.PIPE,
                          stderr=subprocess.PIPE)
+        stdout = p1.communicate()[0]
         return self.read_distance(file_name)
 
     def _create_string(self, trajin, solvent_mask, outfile_name):
