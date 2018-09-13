@@ -7,8 +7,8 @@ class NMRSingleSingle(NMRWriter):
         self._restricted_atoms2 = restricted_atoms2
         self._peak_number = 0
         self._spectrum_number = 0
+        self._force_constants = self._default_constants(desired_distance)
         self._force_positions = self._default_positions(desired_distance)
-        self._force_constants = self._default_constants()
 
 
     def _atom_indexes_string(self, atom1, atom2):

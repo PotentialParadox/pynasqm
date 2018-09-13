@@ -25,8 +25,9 @@ class ResidueConverter:
             return atoms
 
     def _run(self):
-        subprocess.Popen(['cpptraj', '-i', self._scriptfile, '-o', 'atominfo.log'], stdout=subprocess.PIPE,
-                         stderr=subprocess.PIPE)
+        p1 = subprocess.Popen(['cpptraj', '-i', self._scriptfile], stdout=subprocess.PIPE,
+                              stderr=subprocess.PIPE)
+        stdout = p1.communicate()[0]
 
     def _create_scriptfile(self, mask):
         scriptstring = "parm {}\n".format(self._parmtop)
