@@ -68,10 +68,10 @@ class Trajectories(ABC):
                 trajins = closest_runner.get_trajins()
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-                distances = self._get_distances(parmtop, trajins, closest_outputs)
+                distances = self._get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
                 NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update()
 
-    def _get_distances(self, parmtop, trajins, closest_outputs):
+    def _get_distances(self, parmtop, trajins, closest_outputs, nresidues):
         center_mask = self._user_input.mask_for_center
         added_buffer = 0.2
         list_distances = []
@@ -79,6 +79,9 @@ class Trajectories(ABC):
             residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
             trajdist = TrajDistance(parmtop, center_mask)
             distances = [trajdist(trajins[traj], residue, traj) + added_buffer for residue in residues]
+            maxdistance = max(distances)
+            far_distances = [-maxdistance for _ in range(nresidues-len(distances)-1)]
+            distances = distances + far_distances
             list_distances.append(distances)
         return list_distances
 
@@ -93,6 +96,7 @@ class Trajectories(ABC):
         center_mask = self._user_input.mask_for_center
         list_restricted_atoms = []
         for traj in range(self._number_trajectories):
+            print("Generating restricted atoms list for traj {}".format(traj+1))
             list_restricted_atoms.append(RestrictedAtoms(parmtop, trajins[traj], center_mask,
                                                          closest_outputs[traj]))
         return list_restricted_atoms

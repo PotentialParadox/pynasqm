@@ -1,3 +1,5 @@
+import re
+import subprocess
 from pynasqm.maskreader import MaskReader
 from pynasqm.residueconverter import ResidueConverter
 from pynasqm.closestreader import ClosestReader
@@ -9,6 +11,7 @@ class RestrictedAtoms:
         self._trajin = trajin
         self._mask = mask
         self._closest_output = closest_out
+        self.nresidues = self.get_number_residues()
         self.solvent_atoms = self._get_restricted_solvent_atoms()
         self.solute_atoms = self._get_restricted_solute_atoms()
 
@@ -32,12 +35,26 @@ class RestrictedAtoms:
         return len(self.solvent_atoms)
 
     def _get_restricted_solvent_atoms(self):
-        reader = ClosestReader(self._closest_output)
-        residues = reader.residues
-        atom_list = []
-        for residue in residues:
-            atoms = ResidueConverter(self._parmtop, self._trajin).residue_to_atoms(residue)
-            atom_list.append(atoms)
-        return atom_list
+        residues = ClosestReader(self._closest_output).residues
+        solvents = self._convert_residues_to_atomgroups(residues)
+        far_solvents = self._convert_residues_to_atomgroups(self.get_far_residues(residues))
+        solvents = solvents + far_solvents
+        return solvents
 
+    def get_far_residues(self, close_solvents):
+        return [x for x in range(2, self.nresidues+1) if x not in close_solvents]
+
+    @staticmethod
+    def get_number_residues():
+        p1 = subprocess.Popen(['echo', 'parm m1.prmtop\n parminfo'], stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        p2 = subprocess.Popen(['cpptraj'], stdin=p1.stdout, stdout=subprocess.PIPE)
+        cout = p2.communicate()[0]
+        cout = cout.decode()
+        p_residue = re.compile(r"(\d+)\s+residues")
+        residues = re.findall(p_residue, cout)
+        return int(residues[0])
+
+    def _convert_residues_to_atomgroups(self, residues):
+        return [ResidueConverter(self._parmtop, self._trajin).residue_to_atoms(x) for x in residues]
 
