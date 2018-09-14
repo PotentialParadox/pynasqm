@@ -10,6 +10,7 @@ class NMRGroupGroup(NMRWriter):
         self._force_positions = self._default_positions(desired_distance)
 
     def _atom_indexes_string(self, atoms1, atoms2):
-        index_string = "igr1={} igr2={}\n".format(self._list_atoms(atoms1),
+        index_string = "iat=-1,-1,\n".format(atoms2[0])
+        index_string += "igr1={} igr2={}\n".format(self._list_atoms(atoms1),
                                                   self._list_atoms(atoms2))
         return index_string
