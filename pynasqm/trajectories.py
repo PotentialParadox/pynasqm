@@ -73,7 +73,7 @@ class Trajectories(ABC):
 
     def _get_distances(self, parmtop, trajins, closest_outputs, nresidues):
         center_mask = self._user_input.mask_for_center
-        added_buffer = 0.2
+        added_buffer = 0.0
         list_distances = []
         for traj in range(self._number_trajectories):
             residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
