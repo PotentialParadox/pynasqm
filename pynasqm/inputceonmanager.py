@@ -18,6 +18,12 @@ class InputceonManager:
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
         self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
+    def set_is_tully(self, isTully):
+        if isTully:
+            self.moldyn.set_value('bo_dynamics_flag', 0)
+        else:
+            self.moldyn.set_value('bo_dynamics_flag', 1)
+
     def set_timestep(self, timestep):
         self.moldyn.set_value('time_step', timestep)
 

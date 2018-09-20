@@ -23,6 +23,10 @@ class InputCeon:
         self.inputceonmanager.set_excited_state(state, states_to_prop)
         self.inputceonmanager.write()
 
+    def set_bo(self, isTully):
+        self.inputceonmanager.set_is_tully(isTully)
+        self.inputceonmanager.write()
+
     def find_path(self):
         '''
         Return the full naesmd path
