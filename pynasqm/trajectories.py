@@ -80,6 +80,8 @@ class Trajectories(ABC):
             trajdist = TrajDistance(parmtop, center_mask)
             distances = [trajdist(trajins[traj], residue, traj) + added_buffer for residue in residues]
             maxdistance = max(distances)
+            newdistances = [maxdistance for _ in distances]
+            distances = newdistances
             far_distances = [-maxdistance for _ in range(nresidues-len(distances)-1)]
             distances = distances + far_distances
             list_distances.append(distances)
