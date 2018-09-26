@@ -56,5 +56,6 @@ class RestrictedAtoms:
         return int(residues[0])
 
     def _convert_residues_to_atomgroups(self, residues):
-        return [ResidueConverter(self._parmtop, self._trajin).residue_to_atoms(x) for x in residues]
+        resconv = ResidueConverter(self._parmtop, self._trajin)
+        return [resconv.residue_to_atoms(x) for x in residues]
 
