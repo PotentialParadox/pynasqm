@@ -23,8 +23,8 @@ class InputCeon:
         self.inputceonmanager.set_excited_state(state, states_to_prop)
         self.inputceonmanager.write()
 
-    def set_bo(self, isTully):
-        self.inputceonmanager.set_is_tully(isTully)
+    def set_bo(self, isTully, qsteps=0):
+        self.inputceonmanager.set_is_tully(isTully, qsteps)
         self.inputceonmanager.write()
 
     def find_path(self):

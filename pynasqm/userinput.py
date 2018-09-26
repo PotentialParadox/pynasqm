@@ -22,6 +22,11 @@ class UserInput:
         self.constant_value = int(data["constant_value"])
         # Are you performing tully surface hopping
         self.is_tully = pynasqm.utils.str2bool(data["is_tully"])
+        # If doing surface hoping, how many quantum steps per each classical [4]
+        try:
+            self.qsteps = int(data["qsteps"])
+        except KeyError:
+            self.qsteps = 4
         # How many nodes will you be working on?
         self.number_nodes = int(data["number_nodes"])
         # How many processors will be on a node?
