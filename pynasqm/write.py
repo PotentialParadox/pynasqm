@@ -110,7 +110,7 @@ def write_spectra_abs_input(user_input):
                                         user_input.n_abs_exc)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
-                                 user_input.abs_time_truncations)
+                                 user_input.abs_time_delay)
     open('spectra_abs.input', 'w').write(abs_string)
 
 def write_spectra_flu_input(user_input):
