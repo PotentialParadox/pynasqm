@@ -8,6 +8,7 @@ import numpy as np
 import pynasqm.utils
 from pynasqm.amberout import find_nasqm_excited_state, find_excited_energies
 from pynasqm.coeffreader import get_coeffs, get_times
+import re
 
 
 def numpy_to_specta_string(numpy_data):
@@ -72,17 +73,38 @@ def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
     answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
     return answer
 
+def traj_finished(amber_outfile):
+    '''
+    Checks to see if the amber output file finished without
+    '''
+    lines = open(amber_outfile, 'r').readlines()
+    if "Could not go further" in lines[-1]:
+        return False
+    return True
+
+def print_failed(failed_trajs):
+    failed_string = "Trajectories: "
+    for traj in failed_trajs:
+        failed_string += "{} ".format(traj)
+    failed_string += "failed and are being skipped in the calculation of flu spectra"
+    print(failed_string)
 
 def accumulate_flu_spectra(n_trajectories, n_states=10):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
     output_stream = io.StringIO()
+    failed_jobs = []
     for i in range(n_trajectories):
         amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
         input_stream = open(amber_outfile, 'r')
-        find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
+        if traj_finished(amber_outfile):
+            find_nasqm_excited_state(input_stream, output_stream,
+                                     states=[j for j in range(1, n_states+1)])
+        else:
+            failed_jobs.append(i+1)
         input_stream.close()
+    print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
     return output_string
@@ -134,7 +156,7 @@ def coeff_error_string(unlike):
     error_string = "Unlike Coefficients in trajectories: "
     for u in unlike:
         error_string += "{} ".format(u+1)
-    error_string += "\n"
+    error_string += "\nSkipping these in the calculations of populations"
     return error_string
 
 def verify_coeffs(coeffs):
