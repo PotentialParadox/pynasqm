@@ -108,6 +108,9 @@ def write_spectra_abs_input(user_input):
     '''
     abs_string = accumulate_abs_spectra(user_input.n_snapshots_gs, user_input.n_frames_abs,
                                         user_input.n_abs_exc)
+    time_step = user_input.time_step * user_input.n_steps_to_print_gs
+    abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
+                                 user_input.abs_time_truncations)
     open('spectra_abs.input', 'w').write(abs_string)
 
 def write_spectra_flu_input(user_input):
@@ -139,15 +142,21 @@ def verify_coeffs(coeffs):
     mode = statistics.mode(counts)
     unlike = [i for i, x in enumerate(counts) if x != mode]
     if unlike != []:
-        raise ValueError(coeff_error_string(unlike))
+        print(coeff_error_string(unlike))
+    acceptable = [i for i, x in enumerate(counts) if x == mode]
+    if acceptable == []:
+        raise ValueError('No trajectories finished')
+    return acceptable
 
 def write_average_coeffs(n_trajectories, n_states=1):
     N = n_trajectories
     filenames = ["{}/coeff-n.out".format(x) for x in range(1, N+1)]
     coeffs = np.array([get_coeffs(f) for f in filenames])
-    verify_coeffs(coeffs)
+    completed_trajectories = verify_coeffs(coeffs)
+    coeffs = [coeffs[x] for x in completed_trajectories]
     n_steps = len(coeffs[0])
     times = np.array([get_times(f) for f in filenames])
+    times = [times[x] for x in completed_trajectories]
     coeff_average = np.average(coeffs, axis=0)
     print_values = np.zeros((n_steps, n_states+1))
     print_values[:,0] = times[0]
