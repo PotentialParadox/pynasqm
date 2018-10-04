@@ -3,6 +3,8 @@
 # Change here whether you are working on your personal computer
 # or an HPC with SLURM
     "is_hpc": "False",
+# If on hpc, what is the name of your job?
+    "job_name": "Job",
 # If periodic what type of constant value are you using?
 # 1-constant volume, 2-constant pressure
     "constant_value": "1",
@@ -87,7 +89,7 @@
     "fluorescence_time_truncation": "0",
 # A similar argument can be made for absorption, we need to account for the equilibration
 # time from full mm to qm/mm
-    "absorption_time_truncation": "0",
+    "absorption_time_delay": "0",
 # These are your email options for the slurm interface
     "email": "dtracy.uf@gmail.com",
 # Additive Choice: 1-Begin, 2-End, 4-Fail
