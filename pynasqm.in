@@ -51,6 +51,12 @@
     "time_step": "0.5",
 # Change here the runtime, in ps, of the initial ground state MD
     "ground_state_run_time": "10",
+# Change here how often you want to print the ground state trajectory files
+    "n_steps_to_print_gmcrd": "1000",
+# Change here how often you want to print the absorption trajectory files
+    "n_steps_to_print_amcrd": "1000",
+# Change here how often you want to print the excited state trajectory files
+    "n_steps_to_print_emcrd": "1000",
 # Change here how often you want to print the ground state trajectory
     "n_steps_to_print_gs": "50",
 # Change here the runtime in PS for the the trajectories
@@ -66,6 +72,10 @@
     "n_exc_states_propagate": "1",
 # Change here the initial state
     "exc_state_init": "1",
+# Change here the energy of the laser used for excitation?
+    "laser_energy": "4.2",
+# Change here the full width half max of the absorption spectra
+    "fwhm": "0.3",
 # Change here how often you want to print the excited state trajectories
     "n_steps_to_print_exc": "10",
 # Some time will be needed for the molecule to equilibrate
@@ -75,6 +85,9 @@
     "fluorescence_time_delay": "2000",
 # Truncation will remove so many fs off the back of the trajectory
     "fluorescence_time_truncation": "0",
+# A similar argument can be made for absorption, we need to account for the equilibration
+# time from full mm to qm/mm
+    "absorption_time_truncation": "0",
 # These are your email options for the slurm interface
     "email": "dtracy.uf@gmail.com",
 # Additive Choice: 1-Begin, 2-End, 4-Fail

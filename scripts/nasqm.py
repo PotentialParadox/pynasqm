@@ -52,7 +52,6 @@ def main():
 def create_input(user_input):
     input_ceon = InputCeon(amber_input='md_qmmm_amb.in', directory='./')
     input_ceon.set_periodic(user_input.is_qmmm, user_input.constant_value)
-    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_mcrd)
     return input_ceon
 
 def copy_inputs():
@@ -81,6 +80,7 @@ def run_ground_state_dynamics(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_gs)
+    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
     input_ceon.set_exc_state_propagate(0)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_gs)
@@ -123,6 +123,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_n_steps(user_input.n_steps_abs)
+    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_amcrd)
     input_ceon.set_quantum(True)
     input_ceon.set_excited_state(0, user_input.n_abs_exc)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
@@ -154,6 +155,7 @@ def run_excited_state_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
     input_ceon.set_quantum(True)
     input_ceon.set_n_steps(user_input.n_steps_exc)
+    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
     input_ceon.set_excited_state(user_input.exc_state_init_ex_param,
                                  user_input.n_exc_states_propagate_ex_param)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)

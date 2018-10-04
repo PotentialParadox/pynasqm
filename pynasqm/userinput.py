@@ -88,9 +88,17 @@ class UserInput:
 
         # Change here how often you want to print to the mcrds
         try:
-            self.n_steps_print_mcrd = int(data["n_steps_to_print_mcrd"])
+            self.n_steps_print_gmcrd = int(data["n_steps_to_print_gmcrd"])
         except KeyError:
-            self.n_steps_print_mcrd = 100
+            self.n_steps_print_gmcrd = 100
+        try:
+            self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
+        except KeyError:
+            self.n_steps_print_amcrd = 100
+        try:
+            self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
+        except KeyError:
+            self.n_steps_print_emcrd = 100
 
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
@@ -116,6 +124,14 @@ class UserInput:
         self.fluorescence_time_delay = float(data["fluorescence_time_delay"]) # fs
         # Truncation will remove so many fs off the back of the trajectory
         self.fluorescence_time_truncation = float(data["fluorescence_time_truncation"]) # fs
+
+        # A similar argument can be made for absorption, we need to account for the equilibration
+        # time from full mm to qm/mm
+        try:
+            self.abs_time_delay = float(data["absorption_time_delay"]) # fs
+        except KeyError:
+            print("Absorption time delay wasn't given defaulting to 1ps")
+            self.abs_time_delay = 1000
 
         self.email = data["email"]
         # Additive Choice: 1-Begin, 2-End, 4-Fail
@@ -148,13 +164,13 @@ class UserInput:
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
 
-        self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_mcrd)
+        self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
         self.n_steps_abs = int(self.abs_run_time / self.time_step * 1000)
         # We will do absorption calculation on all
         # steps printed out, so 1 would do absorption
         # for each step during the run_abs_snapshot step
         self.n_frames_abs = int(self.n_steps_abs / self.n_steps_to_print_abs)
-        self.n_mcrd_frames_abs = int(self.n_steps_abs / self.n_steps_print_mcrd)
+        self.n_mcrd_frames_abs = int(self.n_steps_abs / self.n_steps_print_amcrd)
         self.n_steps_exc = int(self.exc_run_time / self.time_step * 1000)
 
 
