@@ -21,7 +21,7 @@ def numpy_to_specta_string(numpy_data):
     return string_output
 
 
-def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
+def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=1):
     '''
     Remove the data from the equilibration time given by time_delay
     Time is in fs
@@ -33,7 +33,7 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
     n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
     data = data.reshape((n_rows, n_columns))
-    n_rows_to_remove_traj = int(time_delay / time_step)
+    n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
     n_rows_data2 = n_rows - n_rows_to_remove
     if n_rows_data2 < 0:
@@ -47,7 +47,7 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay):
     answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
     return answer
 
-def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
+def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay, ntpr=1):
     '''
     Truncate the spectra by a given time
     Time is in fs
@@ -59,7 +59,7 @@ def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay):
     n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
     data = data.reshape((n_rows, n_columns))
-    n_rows_to_remove_traj = int(time_delay / time_step)
+    n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
     n_rows_data2 = n_rows - n_rows_to_remove
     if n_rows_data2 < 0:
@@ -132,7 +132,7 @@ def write_spectra_abs_input(user_input):
                                         user_input.n_abs_exc)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
-                                 user_input.abs_time_delay)
+                                 user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
 
 def write_spectra_flu_input(user_input):
@@ -146,10 +146,12 @@ def write_spectra_flu_input(user_input):
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
     fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
                                    time_step,
-                                   user_input.fluorescence_time_delay)
+                                   user_input.fluorescence_time_delay,
+                                   user_input.n_steps_to_print_exc)
     fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
                                           time_step,
-                                          user_input.fluorescence_time_truncation)
+                                          user_input.fluorescence_time_truncation,
+                                          user_input.n_steps_to_print_exc)
     open('spectra_flu.input', 'w').write(fluor_string)
 
 def coeff_error_string(unlike):
