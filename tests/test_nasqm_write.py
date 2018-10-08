@@ -26,6 +26,7 @@ def test_strip_timedelay():
     '''
     test_string = open("spectra_flu.input").read()
     results = nasqm_write.strip_timedelay(test_string, 2, 0.5, 2)
+    print(results)
     assert results == '    2.70677444298323E+00    1.00507770698760E+00\n'\
                       '    2.50629011440210E+00    1.06776301983101E+00\n'
 
