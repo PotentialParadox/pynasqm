@@ -17,6 +17,18 @@ def find_dipoles(file_stream):
         dipoles[i] = float(value)
     return dipoles
 
+def find_box(file_stream):
+    '''
+    Return the dimensions of the box
+    X, Y, Z
+    in angstrom
+    '''
+    p_box = re.compile("Box")
+    p_xyz = re.compile(r"Box.*?(\d\S*)")
+    for line in file_stream:
+        if re.search(p_box, line):
+            m = re.findall(p_xyz, line)
+            return [float(x) for x in m]
 
 def read_nasqm_excited_states(input_stream, states):
     '''
