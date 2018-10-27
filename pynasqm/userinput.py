@@ -76,12 +76,24 @@ class UserInput:
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
 
+        # Change here the number of restarts of length abs_run_time you wish to run
+        try:
+            self.n_ground_runs = int(data["n_ground_runs"])
+        except KeyError:
+            self.n_ground_runs = 1
+
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
 
         # Change here the runtime for the the trajectories
         # used to create calculated the absorption
         self.abs_run_time = float(data["abs_run_time"]) # ps
+
+        # Change here the number of restarts of length abs_run_time you wish to run
+        try:
+            self.n_abs_runs = int(data["n_abs_runs"])
+        except KeyError:
+            self.n_abs_runs = 1
 
         # Change here how often you want to print the absorption trajectories
         self.n_steps_to_print_abs = int(data["n_steps_to_print_abs"])
@@ -103,6 +115,12 @@ class UserInput:
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
+
+        # Change here the number of restarts of length exc_run_time you wish to run
+        try:
+            self.n_exc_runs = int(data["n_exc_runs"])
+        except KeyError:
+            self.n_exc_runs = 1
 
         # Change here the number of excited states you
         # with to have in the CIS calculation
@@ -160,6 +178,8 @@ class UserInput:
                 raise KeyError('laser energy and fwhm needed for excited state runs')
             else:
                 pass
+
+        self.restart_attempt = None
 
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)

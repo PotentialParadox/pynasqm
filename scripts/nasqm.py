@@ -4,6 +4,7 @@ created by Dustin Tracy (dtracy.uf@gmail.com)
 This program is used to automate NASQM job creations.
 You'll find the parameters to change in the file nasqm_user_input.py
 '''
+import argparse
 import time
 import subprocess
 from pynasqm.amber import Amber
@@ -21,10 +22,23 @@ from pynasqm.initialexcitedstates import get_energies_and_strenghts
 def main():
     '''
     The primary nasqm automation function call. All changable parameters can be
-    found in nasqm_user_input.py
+    found in userinput.py
     '''
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("job", help="0-ground, 1-abs, 2-flu", default=0, type=int)
+    parser.add_argument("restart", help="restart attempt, 0 for first run", default=0, type=int)
+    args = parser.parse_args()
+
     user_input = UserInput()
+    user_input.restart_attempt = args.restart
+
+    if args.restart != 0:
+        if args.job > 0:
+            user_input.run_ground_state_dynamics = False
+        if args.job > 1:
+            user_input.run_absorption_trajectories = False
+            user_input.run_absorption_collection = False
 
     original_inputs = copy_inputs()
     input_ceon = create_input(user_input)
