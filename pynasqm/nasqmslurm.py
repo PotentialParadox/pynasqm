@@ -15,7 +15,7 @@ def create_slurm_header(user_input):
             'memory': user_input.memory_per_node, 'walltime': user_input.walltime,
             'max_jobs': user_input.max_jobs, 'qos': user_input.qos}
 
-def build_trajectory_command(amber, n_trajectories):
+def build_trajectory_command(amber, n_trajectories, start):
     '''
     Returns the command for the slurm script
     '''
@@ -23,7 +23,7 @@ def build_trajectory_command(amber, n_trajectories):
     outputfile = amber.output_roots[0]
     restartfile = amber.coordinate_files[0]
     command = "module load intel/2017\n\n"
-    command += "for i in $(seq 1 {})\n".format(n_trajectories)
+    command += "for i in $(seq {} {})\n".format(start, start+n_trajectories-1)
     command += "do\n" \
                '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
                '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
@@ -54,10 +54,11 @@ def slurm_trajectory_files(user_input, amber, title, n_trajectories):
     slurm_script_max = None
     slurm_script_nmax = None
     if n_arrays_max != 0:
-        command = build_trajectory_command(amber, user_input.processors_per_node)
+        command = build_trajectory_command(amber, user_input.processors_per_node, 1)
         slurm_script_max = slurm_script.create_slurm_script(command, title, n_arrays_max)
     if n_trajectories_remaining != 0:
-        command = build_trajectory_command(amber, n_trajectories_remaining)
+        start_trajectory = n_arrays_max*user_input.processors_per_node+1
+        command = build_trajectory_command(amber, n_trajectories_remaining, start_trajectory)
         slurm_script_nmax = slurm_script.create_slurm_script(command, title, 1)
     return slurm_script_max, slurm_script_nmax
 
