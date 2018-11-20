@@ -26,8 +26,8 @@ def main():
     '''
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("job", help="0-ground, 1-abs, 2-flu", default=0, type=int)
-    parser.add_argument("restart", help="restart attempt, 0 for first run", default=0, type=int)
+    parser.add_argument("--job", help="0-ground, 1-abs, 2-flu", default=0, type=int)
+    parser.add_argument("--restart", help="restart attempt, 0 for first run", default=0, type=int)
     args = parser.parse_args()
 
     user_input = UserInput()
@@ -87,12 +87,13 @@ def create_inputceon_copies(input_ceon, root_name, number):
         input_ceons.append(input_ceon.copy(file_name, "{}".format(index)))
     return input_ceons
 
-def run_ground_state_dynamics(input_ceon, user_input):
+def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
     for future calculations
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
+    input_ceon = md_qmmm_amb.copy("./", "nasqm_ground_{}".format(user_input.restart_attempt+1))
     input_ceon.set_n_steps(user_input.n_steps_gs)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
@@ -101,32 +102,29 @@ def run_ground_state_dynamics(input_ceon, user_input):
     input_ceon.set_exc_state_init(0)
     input_ceon.set_verbosity(0)
     input_ceon.set_time_step(user_input.time_step)
-    input_ceon.set_random_velocities(True)
-    amber = Amber()
-    amber.input_roots = ["md_qmmm_amb"]
-    amber.output_roots = ["nasqm_ground"]
-    amber.prmtop_files = ["m1.prmtop"]
-    amber.restart_roots = ["nasqm_ground"]
-    amber.export_roots = ["nasqm_ground"]
-    if user_input.is_qmmm:
-        amber.coordinate_files = ['m1_md2.rst']
+    if user_input.restart_attempt == 0:
+        input_ceon.set_random_velocities(True)
     else:
+        input_ceon.set_random_velocities(False)
+    amber = Amber()
+    amber.input_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+    amber.output_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+    amber.prmtop_files = ["m1.prmtop"]
+    amber.restart_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+    amber.export_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+
+    if user_input.is_qmmm and user_input.restart_attempt == 0:
+        amber.coordinate_files = ['m1_md2.rst']
+    elif not user_input.is_qmmm and user_input.restart_attempt == 0:
         amber.coordinate_files = ['m1.inpcrd']
+    else:
+        amber.coordinate_files = ['nasqm_ground_{}.rst'.format(user_input.restart_attempt)]
     if user_input.is_hpc:
-        subprocess.run(['cp', 'md_qmmm_amb.in', 'md_qmmm_amb1.in'])
-        if user_input.is_qmmm:
-            subprocess.run(['cp', 'm1_md2.rst', 'm1_md2.rst.1'])
-        else:
-            subprocess.run(['cp', 'm1.inpcrd', 'm1.inpcrd.1'])
         number_trajectories = 1
         slurm_files = nasqm_slurm.slurm_trajectory_files(user_input, amber,
                                                          amber.output_roots[0],
                                                          number_trajectories)
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
-        subprocess.run(['mv', 'nasqm_ground1.out', 'nasqm_ground.out'])
-        subprocess.run(['mv', 'nasqm_ground1.rst', 'nasqm_ground.rst'])
-        subprocess.run(['mv', 'nasqm_ground1.nc', 'nasqm_ground.nc'])
-        subprocess.run(['rm', 'md_qmmm_amb1.in'])
     else:
         amber.run_amber(number_processors=1, is_ground_state=True)
 
@@ -190,7 +188,7 @@ def run_fluorescence_collection(user_input):
     write_spectra_flu_input(user_input)
     write_omega_vs_time(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
     write_nasqm_flu_energie(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
-    if (user_input.is_tully()):
+    if (user_input.is_tully):
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 
 main()

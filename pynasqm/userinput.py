@@ -76,7 +76,7 @@ class UserInput:
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
 
-        # Change here the number of restarts of length abs_run_time you wish to run
+        # Change here the number of restarts of length ground_state_run_time you wish to run
         try:
             self.n_ground_runs = int(data["n_ground_runs"])
         except KeyError:
@@ -179,7 +179,7 @@ class UserInput:
             else:
                 pass
 
-        self.restart_attempt = None
+        self.restart_attempt = 0
 
         ## Derived Values
         self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
