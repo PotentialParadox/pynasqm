@@ -11,13 +11,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/nmrTests/manager")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../../..")
 
 def test_write_dist_files():
     input_ceons = ["md_qmmm.in"]
@@ -34,7 +34,7 @@ def test_write_dist_files():
     writer = NMRManager(input_ceons, closest_outputs, atom_array, distances)
     result_file = "rst_1.dist"
     writer.write_dist_files()
-    result = open(result_file, 'r').read()
+    result = open("1/{}".format(result_file), 'r').read()
     answer_file = "nmr_manager_test.dist"
     answer = open(answer_file, 'r').read()
     assert result == answer

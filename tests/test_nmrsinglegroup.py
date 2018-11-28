@@ -12,13 +12,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/nmrTests/nmrSingleGroup")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../../..")
 
 def test_nmr_writer():
     restricted_atoms1 = [[4055]]
