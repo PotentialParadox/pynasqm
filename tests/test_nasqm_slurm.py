@@ -71,7 +71,7 @@ def test_build_command(amber):
     amber.coordinate_files = ["ground_snap"]
     amber.output_roots = ["nasqm_abs_"]
     n_trajectories = 16
-    result = nasqm_slurm.build_trajectory_command(amber, n_trajectories)
+    result = nasqm_slurm.build_trajectory_command(amber, n_trajectories, 1)
     test = open("nasqm_slurm_build_command.txt", 'r').read()
     assert result == test
 
@@ -119,5 +119,5 @@ def test_slurm_trajectory_file_33(userinput):
     n_trajectories = 33
     result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
-    test_1 = open("nasqm_slurm_1.txt", 'r').read()
+    test_1 = open("nasqm_slurm_33.txt", 'r').read()
     assert result == (test_0, test_1)
