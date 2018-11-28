@@ -1,0 +1,5 @@
+parm m1.prmtop
+trajin 2/ground_snap.2
+distance :1 :400 out 2/distance_2.dat
+run
+exit

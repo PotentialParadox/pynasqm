@@ -1,4 +1,0 @@
-#CLOSEST_00001[Frame] CLOSEST_00001[Mol] CLOSEST_00001[Dist] CLOSEST_00001[FirstAtm]
-                    1                181              2.2866                     946
-                    1                668              2.2901                    3381
-                    1                395              2.3886                    2016

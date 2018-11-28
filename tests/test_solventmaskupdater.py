@@ -11,13 +11,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/solventMaskUpdater")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 
 def test_mask_updater():
@@ -32,7 +32,7 @@ def test_mask_updater():
     updater = SolventMaskUpdater(input_ceons, user_input, outputs)
     updater.update_masks()
     result = open(test_name, 'r').read()
-    answer_file = "test_mask_updater.in"
+    answer_file = "mask_updater_test.in"
     answer = open(answer_file, 'r').read()
     assert result == answer
 

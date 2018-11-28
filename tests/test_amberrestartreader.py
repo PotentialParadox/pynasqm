@@ -10,13 +10,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/amberRestartReader")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 def test_readheader():
     restart_file = "amberrestartwriter_test.txt"

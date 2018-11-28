@@ -2,7 +2,6 @@
 Units tests for the cpptraj wrappers for nasqm
 '''
 import os
-import types
 import pytest
 from pynasqm.inputceon import InputCeon
 
@@ -10,13 +9,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/inputceon")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 def test_set_nmr_directory():
     amber_input_name = "md_qmmm_amb.in"
