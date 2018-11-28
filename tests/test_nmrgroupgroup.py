@@ -12,34 +12,34 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/nmrTests/nmrGroupGroup")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../../..")
 
-# def test_nmrgroupgroup_writer1():
-#     restricted_atoms1 = [[4055, 4056]]
-#     restricted_atoms2 = [[4065, 4066]]
-#     desired_distance = [4]
-#     writer = NMRGroupGroup(restricted_atoms1, restricted_atoms2, desired_distance)
-#     result_file = "nmr_groupgroup1.dist"
-#     answer_file = "nmr_groupgroup_test1.dist"
-#     writer.write_to(result_file)
-#     result = open(result_file, 'r').read()
-#     answer = open(answer_file, 'r').read()
-#     assert result == answer
+def test_nmrgroupgroup_writer1():
+    restricted_atoms1 = [[4055, 4056]]
+    restricted_atoms2 = [[4065, 4066]]
+    desired_distance = [4]
+    writer = NMRGroupGroup(restricted_atoms1, restricted_atoms2, desired_distance)
+    result_file = "nmr_groupgroup1.dist"
+    answer_file = "nmr_groupgroup_test1.dist"
+    writer.write_to(result_file)
+    result = open(result_file, 'r').read()
+    answer = open(answer_file, 'r').read()
+    assert result == answer
 
-# def test_nmrgrougroup_writer2():
-#     restricted_atoms1 = [[4055, 4056], [4055, 4056]]
-#     restricted_atoms2 = [[4065, 4066], [5678, 5679]]
-#     desired_distance = [4,5]
-#     writer = NMRGroupGroup(restricted_atoms1, restricted_atoms2, desired_distance)
-#     result_file = "nmr_groupgroup2dist"
-#     answer_file = "nmr_groupgroup_test2.dist"
-#     writer.write_to(result_file)
-#     result = open(result_file, 'r').read()
-#     answer = open(answer_file, 'r').read()
-#     assert result == answer
+def test_nmrgrougroup_writer2():
+    restricted_atoms1 = [[4055, 4056], [4055, 4056]]
+    restricted_atoms2 = [[4065, 4066], [5678, 5679]]
+    desired_distance = [4,5]
+    writer = NMRGroupGroup(restricted_atoms1, restricted_atoms2, desired_distance)
+    result_file = "nmr_groupgroup2.dist"
+    answer_file = "nmr_groupgroup_test2.dist"
+    writer.write_to(result_file)
+    result = open(result_file, 'r').read()
+    answer = open(answer_file, 'r').read()
+    assert result == answer
