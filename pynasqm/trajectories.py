@@ -111,8 +111,11 @@ class Trajectories(ABC):
         amber = Amber()
         amber.input_roots = ["{}".format(self._child_root)]
         amber.output_roots = ["{}".format(self._child_root)]
-        amber.coordinate_files = ["{}".format(self._parent_restart_root)]
         amber.from_restart = self._amber_restart
+        if self._amber_restart:
+            amber.coordinate_files = ["{}${{ID}}.rst".format(self._parent_restart_root)]
+        else:
+            amber.coordinate_files = ["{}.${{ID}}".format(self._parent_restart_root)]
         job_name = self._user_input.job_name + self._job_suffix
         slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
                                                          job_name, self._number_trajectories)

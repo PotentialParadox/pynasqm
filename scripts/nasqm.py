@@ -14,7 +14,7 @@ from pynasqm.userinput import UserInput
 from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
-from pynasqm.mdgroundstatetrajectory import groundStateDynamics
+from pynasqm.mmgroundstatetrajectory import groundStateDynamics
 
 
 def main():

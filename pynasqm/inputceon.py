@@ -81,14 +81,14 @@ class InputCeon:
         '''
         Set the number of exciteds states to propagate
         '''
-        sed_inplace('input.ceon', 'n_exc_states_propagate=\d*', 'n_exc_states_propagate='
+        sed_inplace('input.ceon', r'n_exc_states_propagate=\d*', 'n_exc_states_propagate='
                     + str(n_exc_states_propagate))
 
     def set_coordinates(self, coordinates):
         '''
         Set the coordinates for input.ceon
         '''
-        sed_global('input.ceon', '&coord(.|\s|\n)*?&endcoord', '&coord\n' + coordinates + '&endcoord')
+        sed_global('input.ceon', r'&coord(.|\s|\n)*?&endcoord', '&coord\n' + coordinates + '&endcoord')
 
     def set_exc_state_init(self, exc_state_init):
         """
@@ -177,7 +177,7 @@ class InputCeon:
         try:
             copyfile('input.ceon', input_ceon)
         except SameFileError:
-            print("Copying inpuceon to itself, make sure to use different directories"\
+            print("Copying input.ceon to itself, make sure to use different directories"\
                   " for different trajectories")
         else:
             pass

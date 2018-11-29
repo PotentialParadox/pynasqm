@@ -3,7 +3,7 @@
   imin=0,
   iwrap=1,
   irest=0,
-  ntx=5,
+  ntx=1,
   ntb=1,
   ig=-1,
   taup=2.0,
@@ -13,17 +13,16 @@
   temp0=300.0,
   ntt=3,
   gamma_ln=2.0,
-  nstlim=40000,
-  dt=0.0002,
-  ntpr=1,
-  ntwx=1,
+  nstlim=1,
+  dt=5e-05,
+  ntpr=15,
+  ntwx=10,
   ntwv=-1,
-  nmropt=1,
-  ifqnt=1
+  ifqnt=0
  /
  &qmmm
   scfconv=1.0000E-10,
-  verbosity=3,
+  verbosity=0,
   qmmask=':1',
   diag_routine=1,
   qmcharge=0,
@@ -33,11 +32,3 @@
   qm_pme=0,
   nae=1
  /
- &wt
- type='DUMPFREQ', istep1=100,
- /
- &wt
- type='END'
- /
-DISANG=./rest_1.dist
-DUMPAVE=./rest_1.eq

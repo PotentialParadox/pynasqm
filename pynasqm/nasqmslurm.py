@@ -32,10 +32,7 @@ def build_trajectory_command(amber, n_trajectories, start):
     command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(inputfile,
                                                                            outputfile)
     command += "${ID}.out -c "
-    if amber.from_restart:
-        command += "{}${{ID}}.rst -p m1.prmtop -r ".format(restartfile)
-    else:
-        command += "{}.${{ID}} -p m1.prmtop -r ".format(restartfile)
+    command += "{} -p m1.prmtop -r ".format(restartfile)
     command += "{}${{ID}}.rst -x {}".format(outputfile, outputfile) \
                +"${ID}.nc &\n" \
                "    cd ..\n" \

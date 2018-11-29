@@ -68,7 +68,7 @@ def test_build_command(amber):
     Tests the build command
     '''
     amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
     amber.output_roots = ["nasqm_abs_"]
     n_trajectories = 16
     result = nasqm_slurm.build_trajectory_command(amber, n_trajectories, 1)
@@ -82,7 +82,7 @@ def test_slurm_trajectory_file_1(userinput, amber):
     one abs trajectory
     '''
     amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
     amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 1
@@ -97,7 +97,7 @@ def test_slurm_trajectory_file_16(userinput, amber):
     one whole trajectory
     '''
     amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
     amber.output_roots = ["nasqm_abs_"]
     title = "MyJob"
     n_trajectories = 16
@@ -112,7 +112,7 @@ def test_slurm_trajectory_file_33(userinput):
     multiple whole trajectories with remainder
     '''
     amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
     amber.output_roots = ["nasqm_abs_"]
     amber.from_restart = False
     title = "MyJob"
