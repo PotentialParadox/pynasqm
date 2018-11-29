@@ -29,13 +29,11 @@ def build_trajectory_command(amber, n_trajectories, start):
                '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
                '    ID="$((${FIRST_COUNT} + ${i}))"\n'\
                '    cd ${ID}\n'
-    command += "    $AMBERHOME/bin/sander -O -i {}${{ID}}.in -o {}".format(inputfile,
-                                                                           outputfile)
-    command += "${ID}.out -c "
-    command += "{} -p m1.prmtop -r ".format(restartfile)
-    command += "{}${{ID}}.rst -x {}".format(outputfile, outputfile) \
-               +"${ID}.nc &\n" \
-               "    cd ..\n" \
+    command += "    $AMBERHOME/bin/sander -O -i {}.in -o {}.out ".format(inputfile,
+                                                                    outputfile)
+    command += "-c {} -p m1.prmtop ".format(restartfile)
+    command += "-r {}.rst -x {}.nc &\n".format(outputfile, outputfile) \
+               + "    cd ..\n" \
                "done\n" \
                "wait\n"
     return command

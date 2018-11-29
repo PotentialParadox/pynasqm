@@ -3,7 +3,7 @@ from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
 
 def setInput(md_qmmm_amb, user_input, attempt):
-    input_ceon = md_qmmm_amb.copy("./", "nasqm_ground_{}_{}.in".format(attempt+1, 1))
+    input_ceon = md_qmmm_amb.copy("./", "nasqm_ground_r{}_t{}.in".format(attempt+1, 1))
     input_ceon.set_n_steps(user_input.n_steps_gs)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
@@ -19,11 +19,11 @@ def setInput(md_qmmm_amb, user_input, attempt):
 
 def createAmber(user_input, attempt):
     amber = Amber()
-    amber.input_roots = ["nasqm_ground_r{}_t".format(attempt)]
-    amber.output_roots = ["nasqm_ground_r{}_t".format(attempt)]
+    amber.input_roots = ["nasqm_ground_r{}_t${{ID}}".format(attempt)]
+    amber.output_roots = ["nasqm_ground_r{}_t${{ID}}".format(attempt)]
     amber.prmtop_files = ["m1.prmtop"]
     amber.restart_roots = ["nasqm_ground_r{}".format(attempt)]
-    amber.export_roots = ["nasqm_ground_r{}_t".format(attempt)]
+    amber.export_roots = ["nasqm_ground_r{}_t${{ID}}".format(attempt)]
     if user_input.is_qmmm and attempt == 0:
         amber.coordinate_files = ['m1_md2.rst']
     elif not user_input.is_qmmm and attempt == 0:
@@ -38,11 +38,12 @@ def runDynamics(user_input, amber, slurm_files):
     else:
         amber.run_amber(number_processors=1, is_ground_state=True)
 
-def moveFinalFiles(index):
-    subprocess.run(['mv', 'nasqm_ground_r{}_t{}.out'.format(index, 1),
-                    'nasqm_ground.out'])
-    subprocess.run(['mv', 'nasqm_ground_r{}_t{}.nc'.format(index, 1),
-                        'nasqm_ground.nc'])
+def combineFinalFiles(index):
+    pass
+    # subprocess.run(['mv', 'nasqm_ground_r{}_t{}.out'.format(index, 1),
+    #                 'nasqm_ground.out'])
+    # subprocess.run(['mv', 'nasqm_ground_r{}_t{}.nc'.format(index, 1),
+    #                     'nasqm_ground.nc'])
 
 def prepareDynamics(md_qmmm_amb, user_input, attempt):
     setInput(md_qmmm_amb, user_input, attempt)
@@ -61,4 +62,4 @@ def groundStateDynamics(md_qmmm_amb, user_input, attempt):
     amber, slurm_files = prepareDynamics(md_qmmm_amb, user_input, attempt)
     runDynamics(user_input, amber, slurm_files)
     if attempt + 1 == user_input.n_ground_runs:
-        moveFinalFiles(attempt)
+        combineFinalFiles(attempt)
