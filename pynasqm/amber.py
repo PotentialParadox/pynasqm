@@ -18,7 +18,6 @@ class Amber:
         self.prmtop_files = prmtop_files
         self.restart_roots = restart_roots
         self.export_roots = export_roots
-        self.from_restart = from_restarts
 
     def run_amber_worker(self, conjoined_list):
         '''

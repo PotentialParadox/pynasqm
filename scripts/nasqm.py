@@ -90,14 +90,6 @@ def run_absorption_trajectories(input_ceon, user_input):
     using random velocities to make them different from each other
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
-    input_ceon.set_n_steps(user_input.n_steps_abs)
-    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_amcrd)
-    input_ceon.set_quantum(True)
-    input_ceon.set_excited_state(0, user_input.n_abs_exc)
-    input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
-    input_ceon.set_verbosity(1)
-    input_ceon.set_time_step(user_input.time_step)
-    input_ceon.set_random_velocities(True)
     AbsTrajectories(user_input, input_ceon).run()
 
 def run_absorption_collection(user_input):

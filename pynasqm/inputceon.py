@@ -167,7 +167,7 @@ class InputCeon:
         result = re.findall(p_mask, file_string)
         return result[0]
 
-    def copy(self, directory, file_name):
+    def copy(self, directory, file_name, override=False):
         '''
         Returns a copy into the new file_name
         '''
@@ -177,16 +177,18 @@ class InputCeon:
         try:
             copyfile('input.ceon', input_ceon)
         except SameFileError:
-            print("Copying input.ceon to itself, make sure to use different directories"\
-                  " for different trajectories")
+            if not override:
+                print("Copying input.ceon to itself, make sure to use different directories"\
+                      " for different trajectories")
         else:
             pass
         parmtop = "{}/{}".format(directory, 'm1.prmtop')
         try:
             copyfile('m1.prmtop', parmtop)
         except SameFileError:
-            print("Copying m1.prmtop to itself, make sure to use different directories"\
-                  " for different trajectories")
+            if not override:
+                print("Copying m1.prmtop to itself, make sure to use different directories"\
+                      " for different trajectories")
         else:
             pass
         return InputCeon(file_name, directory)

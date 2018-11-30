@@ -22,14 +22,13 @@ class Trajectories(ABC):
         self._amber_restart = True
 
     def run(self):
-        self._create_restarts_from_parent()
-        self._create_inputceon_copies()
+        self._set_initial_input()
+        self.create_restarts_from_parent()
+        self.create_inputceon_copies()
         self._update_input_files()
         self._print_header("Running Dynamics")
-        if self._user_input.is_hpc:
-            self._run_on_hpc()
-        else:
-            self._run_on_pc()
+        (amber, slurm) = self.prepareDynamics()
+        self.runDynamics(amber, slurm)
 
     @staticmethod
     def _print_header(header):
@@ -37,19 +36,14 @@ class Trajectories(ABC):
         print(15 * " " + header)
         print(50*"*")
 
-    def _create_directories(self):
-        for i in range(1, self._number_trajectories + 1):
-            directory = "{}".format(i)
-            if not os.path.exists(directory):
-                mkdir(directory)
-
-    def _create_restarts_from_parent(self):
+    def create_restarts_from_parent(self):
         pass
 
-    def _create_inputceon_copies(self):
+    def create_inputceon_copies(self):
         input_ceons = []
+        attempt = self._user_input.restart_attempt
         for index in range(1, self._number_trajectories+1):
-            file_name = "{}{}.in".format(self._child_root, index)
+            file_name = "{}r{}_t{}.in".format(self._child_root, attempt, index)
             input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
         self._input_ceons = input_ceons
 
@@ -107,6 +101,70 @@ class Trajectories(ABC):
     def _trajins(self):
         pass
 
+    def _set_initial_input(self):
+        pass
+
+    def runDynamics(self, amber, slurm_files):
+        if self._user_input.is_hpc:
+            nasqm_slurm.run_nasqm_slurm_files(slurm_files)
+        else:
+            amber.run_amber(number_processors=1, is_ground_state=False)
+
+    def hpc_coordinate_files(self, attempt):
+        if attempt == 0 and not self._amber_restart:
+            return ["{}.${{ID}}".format(self._parent_restart_root)]
+        return ["{}r{}_t${{ID}}.rst".format(self._child_root, attempt-1)]
+
+    def pc_coordinate_files(self, attempt):
+        if attempt == 0 and not self._amber_restart:
+            return ["{}.{}".format(self._parent_restart_root, i)
+                    for i in range(1, self._number_trajectories+1)]
+        return ["{}r{}_t{}.rst".format(self._child_root, attempt-1, traj)
+                for traj in range(1, self._number_trajectories+1)]
+
+    def coordinate_files(self, attempt):
+        if self._user_input.is_hpc:
+            return self.hpc_coordinate_files(attempt)
+        return self.pc_coordinate_files(attempt)
+
+    def prmtop_files(self):
+        if self._user_input.is_hpc:
+            return ["m1.prmtop"]
+        return ["m1.prmtop"] * self._number_trajectories
+
+    def create_amber(self):
+        amber = Amber()
+        attempt = self._user_input.restart_attempt
+        roots = None
+        if self._user_input.is_hpc:
+            roots = ["{}r{}_t${{ID}}".format(self._child_root, attempt)]
+            amber.prmtop_files = ["m1.prmtop"]
+        else:
+            roots = ["{}r{}_t{}".format(self._child_root, attempt, i)
+                     for i in range(1, self._number_trajectories+1)]
+            amber.prmtop_files = ["m1.prmtop"] * self._number_trajectories
+        amber.input_roots = roots
+        amber.output_roots = roots
+        amber.restart_roots = roots
+        amber.export_roots = roots
+        amber.coordinate_files = self.coordinate_files(attempt)
+        amber.prmtop_files = self.prmtop_files()
+        return amber
+
+    def create_slurm(self, amber):
+        if self._user_input.is_hpc:
+            job_name = self._user_input.job_name + self._job_suffix
+            slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
+                                                             job_name, self._number_trajectories)
+        else:
+            slurm_files = None
+        return slurm_files
+
+    def prepareDynamics(self):
+        amber = self.create_amber()
+        slurm_files = self.create_slurm(amber)
+        return amber, slurm_files
+
     def _run_on_hpc(self):
         amber = Amber()
         amber.input_roots = ["{}".format(self._child_root)]
@@ -131,6 +189,7 @@ class Trajectories(ABC):
         amber.restart_roots = trajectory_roots
         amber.export_roots = trajectory_roots
         amber.run_amber(self._user_input.processors_per_node)
+
 
     def _create_restarts_and_trajectories(self):
         snap_restarts = []

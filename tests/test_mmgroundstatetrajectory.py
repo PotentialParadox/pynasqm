@@ -2,9 +2,10 @@
 Units tests for the cpptraj wrappers for nasqm
 '''
 import os
+import subprocess
 import types
 import pytest
-from pynasqm.mmgroundstatetrajectory import prepareDynamics
+from pynasqm.mmgroundstatetrajectory import prepareDynamics, combineFinalTrajs
 from pynasqm.inputceon import InputCeon
 
 def setup_module(module):
@@ -17,7 +18,10 @@ def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("../..")
+    if os.path.isfile('nasqm_ground_r0.nc'):
+        os.chdir("../../..")
+    else:
+        os.chdir("../..")
 
 @pytest.fixture
 def mdQmmmAmb():
@@ -57,5 +61,16 @@ def test_prepareDynamcs2of2(mdQmmmAmb, userInput):
     '''
     _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput, 1)
     answer = open("2of2_slurm_attempt_test.sbatch").read()
-    open("testresult.txt", 'w').write(slurm_file)
     assert slurm_file == answer
+    if not os.path.isfile('nasqm_ground_r0.in'):
+        raise AssertionError("nasqm_ground_r0.in not found")
+    if not os.path.isfile('nasqm_ground_r1.in'):
+        raise AssertionError("nasqm_ground_r0.in not found")
+    subprocess.call(['rm', 'nasqm_ground_r0.in', 'nasqm_ground_r1.in'])
+
+def test_combineFinalTrajs():
+    os.chdir('combineFinalTrajs')
+    combineFinalTrajs(1)
+    if not os.path.isfile('nasqm_ground.nc'):
+        raise AssertionError("failed to combine ground trajectories")
+    subprocess.call(['rm', 'nasqm_ground.nc'])
