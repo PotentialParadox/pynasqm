@@ -124,3 +124,4 @@ def test_absPrepareDynamics1(userInput, inputCeon):
     answer = open("2of2_slurm_attempt_test.sbatch").read()
     open('testresult.txt','w').write(slurm_file)
     assert slurm_file == answer
+

@@ -60,20 +60,70 @@ def test_numpy_to_spectra_string():
     assert results == '    2.90923255131416E+00    9.08120295476811E-01\n'\
                       '    2.90923255131440E+00    9.08120295476795E-01\n'
 
+def test_accumulate_spectra():
+    '''
+    Test reading from one trajectory and one state for 0 restarts
+    '''
+    results = nasqm_write.accumulate_spectra(n_trajectories=1, n_states=1, suffix='abs')
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00\n'\
 
-def test_accumulate_flu_spectra():
+def test_accumulate_spectra1r():
     '''
-    Tests 2 small nasqm_flu trajectories
+    Test reading from one trajectory and one state for 1 restart
     '''
-    results = nasqm_write.accumulate_flu_spectra(n_trajectories=2, n_states=1)
-    open("resultsf.txt", 'w').write(results)
-    assert results == '    2.90923255131416E+00    9.08120295476811E-01\n'\
-                      '    2.90923255131440E+00    9.08120295476795E-01\n'\
-                      '    2.90576054156170E+00    9.12245042622513E-01\n'\
-                      '    2.89718863282344E+00    9.17508693665317E-01\n'\
-                      '    2.88542766911918E+00    9.23660450221756E-01\n'\
-                      '    3.02432904582440E+00    7.59972440955212E-01\n'\
-                      '    3.02432904608962E+00    7.59972440957533E-01\n'\
-                      '    3.02035138173248E+00    7.69148450276112E-01\n'\
-                      '    3.01028876491316E+00    7.78144025689657E-01\n'\
-                      '    2.99529803383703E+00    7.85693947577494E-01\n'
+    results = nasqm_write.accumulate_spectra(n_trajectories=1, n_states=1, suffix='abs', n_restarts=1)
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00\n'\
+                      '    3.22529862617871E+00    1.05778312509567E+00\n'\
+                      '    3.21617650672326E+00    1.05448934909954E+00\n'\
+
+def test_accumulate_spectra2s():
+    '''
+    Test reading from one trajectory and two states for 0 restarts
+    Format line = omega1 dipole1 omega2 dipole2
+    '''
+    results = nasqm_write.accumulate_spectra(n_trajectories=1, n_states=2, suffix='abs', n_restarts=0)
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00'\
+                      '    3.71890627860014E+00    1.64020500024431E-04\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00'\
+                      '    3.70774165720411E+00    1.34466755638638E-04\n'
+
+def test_accumulate_spectra2t():
+    '''
+    Test reading from two trajectories and one state for 0 restarts
+    '''
+    results = nasqm_write.accumulate_spectra(n_trajectories=2, n_states=1, suffix='abs', n_restarts=0)
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00\n'\
+                      '    3.07300648005544E+00    1.12660242104271E+00\n'\
+                      '    3.05076474304548E+00    1.14233288127772E+00\n'
+
+def test_accumulate_spectra3t2rf():
+    '''
+    Test discarding a failed job that completes the zeroth restart but not the first restart
+    '''
+    results = nasqm_write.accumulate_spectra(n_trajectories=3, n_states=1, suffix='abs', n_restarts=1)
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00\n'\
+                      '    3.22529862617871E+00    1.05778312509567E+00\n'\
+                      '    3.21617650672326E+00    1.05448934909954E+00\n'\
+                      '    3.07300648005544E+00    1.12660242104271E+00\n'\
+                      '    3.05076474304548E+00    1.14233288127772E+00\n'\
+                      '    3.02807198850095E+00    1.15875294522284E+00\n'\
+                      '    3.00586949578253E+00    1.17469230534153E+00\n'
+
+def test_as_missing_file():
+    '''
+    For accumulate spectra, make sure it can discard trajectories that don't start all their restarts
+    '''
+    results = nasqm_write.accumulate_spectra(n_trajectories=4, n_states=1, suffix='abs', n_restarts=1)
+    assert results == '    3.23577665874952E+00    1.07353638841629E+00\n'\
+                      '    3.23284259144905E+00    1.06340489195189E+00\n'\
+                      '    3.22529862617871E+00    1.05778312509567E+00\n'\
+                      '    3.21617650672326E+00    1.05448934909954E+00\n'\
+                      '    3.07300648005544E+00    1.12660242104271E+00\n'\
+                      '    3.05076474304548E+00    1.14233288127772E+00\n'\
+                      '    3.02807198850095E+00    1.15875294522284E+00\n'\
+                      '    3.00586949578253E+00    1.17469230534153E+00\n'
+

@@ -4,6 +4,7 @@ Things were tested on Hypergator 2 at the University of Florida
 '''
 import os
 import pytest
+import types
 from pynasqm.userinput import UserInput
 import pynasqm.nasqmslurm as nasqm_slurm
 
@@ -24,7 +25,7 @@ def userinput():
     '''
     Create a test user input
     '''
-    user_input = UserInput()
+    user_input = types.SimpleNamespace()
     user_input.email = "dtracy.uf@gmail.com"
     user_input.qos = "roitberg"
     user_input.email_options = 2

@@ -68,6 +68,9 @@ class UserInput:
         # from the initial ground state trajectory to run the
         # new excited state dynamics
         self.n_snapshots_ex = int(data["n_snapshots_ex"])
+        if self.n_snapshots_ex > self.n_snapshots_gs:
+            raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
+                             "therefore n_snapshots_ex must less than or equal to n_snapshots_gs")
 
         # Change here the time step that will be shared by
         # each trajectory
@@ -79,6 +82,7 @@ class UserInput:
         # Change here the number of restarts of length ground_state_run_time you wish to run
         try:
             self.n_ground_runs = int(data["n_ground_runs"])
+            self.ground_state_run_time = self.ground_state_run_time / self.n_ground_runs
         except KeyError:
             self.n_ground_runs = 1
 
@@ -92,6 +96,7 @@ class UserInput:
         # Change here the number of restarts of length abs_run_time you wish to run
         try:
             self.n_abs_runs = int(data["n_abs_runs"])
+            self.abs_run_time = self.abs_run_time / self.n_abs_runs
         except KeyError:
             self.n_abs_runs = 1
 
@@ -119,6 +124,7 @@ class UserInput:
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
             self.n_exc_runs = int(data["n_exc_runs"])
+            self.exc_run_time = self.exc_run_time / self.n_exc_runs
         except KeyError:
             self.n_exc_runs = 1
 
@@ -196,7 +202,7 @@ class UserInput:
 
 
     def get_data(self):
-        p_comment = "\s*#"
+        p_comment = r"\s*#"
         file_stream = open(self.file_name, 'r')
         new_string = "{\n"
         for line in file_stream:
