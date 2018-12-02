@@ -207,23 +207,32 @@ def write_omega_vs_time(n_trajectories, n_states=1):
         average_omegas_time.write(str(omega) + '\n')
     average_omegas_time.close()
 
+# def nasqm_flu_energies(n_trajectories, n_states=1, n_restarts=0):
+#     energies = read_nasqm_flu_energies(n_trajectories, n_states, n_restarts)
+#     averages = average_energies(energies, n_trajectories)
+#     write_nasqm_flu_energies(averages)
 
-def write_nasqm_flu_energie(n_trajectories, n_states=1):
-    '''
-    Reads the data from the amber output files and writes the data
-    to nasqm_flue_energies.txt
-    '''
-    state_range = range(1, n_states+1)
-    output_stream = open('nasqm_flu_energies.txt', 'w')
-    for i in range(n_trajectories):
-        amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
-        input_stream = open(amber_outfile, 'r')
-        find_excited_energies(input_stream, output_stream, state_range)
-    output_stream.close()
-    average_energies_time = open('nasqm_flu_energy_time.txt', 'w')
-    data = np.loadtxt('nasqm_flu_energies.txt')
-    subprocess.run(['rm', 'nasqm_flu_energies.txt'])
-    n_rows_per_trajectory = int(data.shape[0] / n_trajectories)
-    for i in range(n_rows_per_trajectory):
-        energy = np.average(data[i::n_rows_per_trajectory])
-        average_energies_time.write(str(energy) + '\n')
+# def average_energies(data, n_trajectories):
+#     n_rows_per_trajectory = int(data.shape[0] / n_trajectories)
+#     return [np.average(data[i::n_rows_per_trajectory])
+#             for i in range(n_rows_per_trajectory)]
+
+# def read_nasqm_flu_energies(n_trajectories, n_states=1, n_restarts=0):
+#     '''
+#     Reads the omega data from the amber output files
+#     '''
+#     state_range = range(1, n_states+1)
+#     output_stream = open('nasqm_flu_energies.txt', 'w')
+#     for i in range(n_trajectories):
+#         amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
+#         input_stream = open(amber_outfile, 'r')
+#         find_excited_energies(input_stream, output_stream, state_range)
+#     output_stream.close()
+#     data = np.loadtxt('nasqm_flu_energies.txt')
+#     subprocess.run(['rm', 'nasqm_flu_energies.txt'])
+#     return data
+
+# def write_nasqm_flu_energies(averages):
+#     average_energies_time = open('nasqm_flu_energy_time.txt', 'w')
+#     for energy in averages:
+#         average_energies_time.write(str(energy) + '\n')

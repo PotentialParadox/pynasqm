@@ -9,7 +9,7 @@ class FluTrajectories(Trajectories):
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_ex
         self._child_root = 'nasqm_flu_'
-        self._job_suffix = '_f_'
+        self._job_suffix = 'Flu'
         self._parent_restart_root = 'nasqm_abs_'
         self._amber_restart = True
 
@@ -19,13 +19,31 @@ class FluTrajectories(Trajectories):
         return "{}{}.rst".format(self._parent_restart_root, index+1)
 
     def _trajins(self):
-        trajins = []
-        for i in range(1, self._number_trajectories +1):
-            trajins.append("{}/{}{}.rst".format(i, self._parent_restart_root, i))
-        return trajins
+        attempt = self._user_input.restart_attempt
+        abs_r = self._user_input.n_abs_runs - 1
+        trajs = self._number_trajectories
+        if attempt == 0:
+            return ["{}/nasqm_abs_r{}_t{}.rst".format(traj, abs_r, traj)
+                    for traj in range(1, trajs+1)]
+        return ["{}/nasqm_flu_r{}_t{}.rst".format(traj, attempt-1, traj)
+                for traj in range(1, trajs+1)]
 
     def doing_laser_excitation(self):
         return self._user_input.exc_state_init_ex_param == -1
+
+    def _set_initial_input(self):
+        input_ceon = self._input_ceons[0]
+        user_input = self._user_input
+        input_ceon.set_quantum(True)
+        input_ceon.set_n_steps(user_input.n_steps_exc)
+        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
+        input_ceon.set_excited_state(user_input.exc_state_init_ex_param,
+                                     user_input.n_exc_states_propagate_ex_param)
+        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
+        input_ceon.set_verbosity(1)
+        input_ceon.set_time_step(user_input.time_step)
+        input_ceon.set_random_velocities(False)
+        input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
 
     def _create_inputceon_copies(self):
         input_ceons = []
@@ -44,3 +62,14 @@ class FluTrajectories(Trajectories):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         self._input_ceons = input_ceons
 
+    def hpc_coordinate_files(self, attempt):
+        if attempt == 0:
+            return ["nasqm_abs_r{}_t${{ID}}.rst".format(self._user_input.n_abs_runs-1)]
+        return ["nasqm_flu_r{}_t${{ID}}.rst".format(attempt-1)]
+
+    def pc_coordinate_files(self, attempt):
+        if attempt == 0:
+            return ["nasqm_abs_r{}_t{}.rst".format(self._user_input.n_abs_runs-1, traj)
+                    for traj in range(1, self._number_trajectories+1)]
+        return ["nasqm_flu_r{}_t{}.rst".format(attempt-1, traj)
+                for traj in range(1, self._number_trajectories+1)]

@@ -108,19 +108,16 @@ class Trajectories(ABC):
         if self._user_input.is_hpc:
             nasqm_slurm.run_nasqm_slurm_files(slurm_files)
         else:
-            amber.run_amber(number_processors=1, is_ground_state=False)
+            amber.run_amber(number_processors=self._user_input.processors_per_node,
+                            is_ground_state=False)
 
+    @abstractmethod
     def hpc_coordinate_files(self, attempt):
-        if attempt == 0 and not self._amber_restart:
-            return ["{}.${{ID}}".format(self._parent_restart_root)]
-        return ["{}r{}_t${{ID}}.rst".format(self._child_root, attempt-1)]
+        pass
 
+    @abstractmethod
     def pc_coordinate_files(self, attempt):
-        if attempt == 0 and not self._amber_restart:
-            return ["{}.{}".format(self._parent_restart_root, i)
-                    for i in range(1, self._number_trajectories+1)]
-        return ["{}r{}_t{}.rst".format(self._child_root, attempt-1, traj)
-                for traj in range(1, self._number_trajectories+1)]
+        pass
 
     def coordinate_files(self, attempt):
         if self._user_input.is_hpc:
@@ -164,44 +161,6 @@ class Trajectories(ABC):
         amber = self.create_amber()
         slurm_files = self.create_slurm(amber)
         return amber, slurm_files
-
-    def _run_on_hpc(self):
-        amber = Amber()
-        amber.input_roots = ["{}".format(self._child_root)]
-        amber.output_roots = ["{}".format(self._child_root)]
-        amber.from_restart = self._amber_restart
-        if self._amber_restart:
-            amber.coordinate_files = ["{}${{ID}}.rst".format(self._parent_restart_root)]
-        else:
-            amber.coordinate_files = ["{}.${{ID}}".format(self._parent_restart_root)]
-        job_name = self._user_input.job_name + self._job_suffix
-        slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
-                                                         job_name, self._number_trajectories)
-        nasqm_slurm.run_nasqm_slurm_files(slurm_files)
-
-    def _run_on_pc(self):
-        (snap_restarts, trajectory_roots) = self._create_restarts_and_trajectories()
-        amber = Amber()
-        amber.input_roots = trajectory_roots
-        amber.output_roots = trajectory_roots
-        amber.coordinate_files = snap_restarts
-        amber.prmtop_files = ["m1.prmtop"]*len(trajectory_roots)
-        amber.restart_roots = trajectory_roots
-        amber.export_roots = trajectory_roots
-        amber.run_amber(self._user_input.processors_per_node)
-
-
-    def _create_restarts_and_trajectories(self):
-        snap_restarts = []
-        trajectory_roots = []
-        if self._number_trajectories == 1:
-            snap_restarts.append(self._restart_name(-1))
-            trajectory_roots.append(self._trajectory_name(-1))
-        else:
-            for i in range(self._number_trajectories):
-                snap_restarts.append("{}".format(self._restart_name(i)))
-                trajectory_roots.append(self._trajectory_name(i))
-        return snap_restarts, trajectory_roots
 
     @abstractmethod
     def _restart_name(self, index):

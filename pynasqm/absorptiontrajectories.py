@@ -59,7 +59,7 @@ class AbsTrajectories(Trajectories):
         attempt = self._user_input.restart_attempt
         if attempt == 0:
             return ["{}/ground_snap.{}".format(i, i) for i in range(1, self._number_trajectories+1)]
-        return ["{}/nasqm_abs_r{}_t{}.rst".format(i, attempt, i)
+        return ["{}/nasqm_abs_r{}_t{}.rst".format(i, attempt-1, i)
                 for i in range(1, self._number_trajectories+1)]
 
     def _create_directories(self):
@@ -67,3 +67,15 @@ class AbsTrajectories(Trajectories):
             directory = "{}".format(i)
             if not os.path.exists(directory):
                 os.mkdir(directory)
+
+    def hpc_coordinate_files(self, attempt):
+        if attempt == 0:
+            return ["{}.${{ID}}".format(self._parent_restart_root)]
+        return ["{}r{}_t${{ID}}.rst".format(self._child_root, attempt-1)]
+
+    def pc_coordinate_files(self, attempt):
+        if attempt == 0 and not self._amber_restart:
+            return ["{}.{}".format(self._parent_restart_root, i)
+                    for i in range(1, self._number_trajectories+1)]
+        return ["{}r{}_t{}.rst".format(self._child_root, attempt-1, traj)
+                for traj in range(1, self._number_trajectories+1)]

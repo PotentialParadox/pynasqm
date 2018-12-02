@@ -7,8 +7,7 @@ You'll find the parameters to change in the file nasqm_user_input.py
 import argparse
 import time
 from pynasqm.inputceon import InputCeon
-from pynasqm.write import (write_omega_vs_time,
-                           write_nasqm_flu_energie, write_spectra_flu_input,
+from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
                            write_spectra_abs_input, write_average_coeffs)
 from pynasqm.userinput import UserInput
 from pynasqm.absorptiontrajectories import AbsTrajectories
@@ -90,7 +89,12 @@ def run_absorption_trajectories(input_ceon, user_input):
     using random velocities to make them different from each other
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
-    AbsTrajectories(user_input, input_ceon).run()
+    if user_input.is_hpc:
+        AbsTrajectories(user_input, input_ceon).run()
+    user_input.restart_attempt = 0
+    for _ in range(user_input.restart_attempt, user_input.n_abs_runs):
+        AbsTrajectories(user_input, input_ceon).run()
+        user_input.restart_attempt += 1
 
 def run_absorption_collection(user_input):
     '''
@@ -113,17 +117,12 @@ def run_excited_state_trajectories(input_ceon, user_input):
     from those at the excited state
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
-    input_ceon.set_quantum(True)
-    input_ceon.set_n_steps(user_input.n_steps_exc)
-    input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
-    input_ceon.set_excited_state(user_input.exc_state_init_ex_param,
-                                 user_input.n_exc_states_propagate_ex_param)
-    input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
-    input_ceon.set_verbosity(1)
-    input_ceon.set_time_step(user_input.time_step)
-    input_ceon.set_random_velocities(False)
-    input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
-    FluTrajectories(user_input, input_ceon).run()
+    if user_input.is_hpc:
+        FluTrajectories(user_input, input_ceon).run()
+    user_input.restart_attempt = 0
+    for _ in range(user_input.restart_attempt, user_input.n_abs_runs):
+        FluTrajectories(user_input, input_ceon).run()
+        user_input.restart_attempt += 1
 
 def run_fluorescence_collection(user_input):
     '''
@@ -135,7 +134,7 @@ def run_fluorescence_collection(user_input):
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
     write_spectra_flu_input(user_input)
     write_omega_vs_time(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
-    write_nasqm_flu_energie(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
+    # write_nasqm_flu_energie(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
     if (user_input.is_tully):
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 

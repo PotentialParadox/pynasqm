@@ -122,6 +122,5 @@ def test_absPrepareDynamics1(userInput, inputCeon):
     absTraj = AbsTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = absTraj.prepareDynamics()
     answer = open("2of2_slurm_attempt_test.sbatch").read()
-    open('testresult.txt','w').write(slurm_file)
     assert slurm_file == answer
 
