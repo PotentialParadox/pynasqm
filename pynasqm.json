@@ -35,7 +35,7 @@
     "n_steps_to_print_exc": "10",
     "fluorescence_time_delay": "2000",
     "fluorescence_time_truncation": "0",
-    "absorption_time_truncation": "0",
+    "absorption_time_delay": "0",
     "email": "dtracy.uf@gmail.com",
     "email_options": "3",
     "mask_for_center": ":1",
