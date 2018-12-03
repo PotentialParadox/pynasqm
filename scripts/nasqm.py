@@ -14,6 +14,9 @@ from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
+from pynasqm.sed import sed_inplace, sed_global
+import subprocess
+
 
 
 def main():
@@ -80,6 +83,10 @@ def run_ground_state_dynamics(md_qmmm_amb, user_input):
     for future calculations
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
+    if user_input.is_hpc:
+        groundStateDynamics(md_qmmm_amb, user_input, user_input.restart_attempt)
+        submit_restart(user_input, user_input.n_gs_runs, 0)
+        exit()
     for attempt in range(user_input.restart_attempt, user_input.n_ground_runs):
         groundStateDynamics(md_qmmm_amb, user_input, attempt)
 
@@ -91,6 +98,8 @@ def run_absorption_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     if user_input.is_hpc:
         AbsTrajectories(user_input, input_ceon).run()
+        submit_restart(user_input, user_input.n_abs_runs, 1)
+        exit()
     user_input.restart_attempt = 0
     for _ in range(user_input.restart_attempt, user_input.n_abs_runs):
         AbsTrajectories(user_input, input_ceon).run()
@@ -119,10 +128,24 @@ def run_excited_state_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
     if user_input.is_hpc:
         FluTrajectories(user_input, input_ceon).run()
+        submit_restart(user_input, user_input.n_exc_runs, 2)
+        exit()
     user_input.restart_attempt = 0
     for _ in range(user_input.restart_attempt, user_input.n_abs_runs):
         FluTrajectories(user_input, input_ceon).run()
         user_input.restart_attempt += 1
+
+def submit_restart(user_input, max_runs, job):
+    restart = user_input.restart_attempt + 1
+    if user_input.restart_attempt == max_runs:
+        restart = 0
+        job += 1
+    p_restart = '--restart\s\d+'
+    p_job = '--job\s\d+'
+    primary_sbatch = 'pynasqm_start.sbatch'
+    sed_inplace(primary_sbatch, p_restart, '--restart {}'.format(restart))
+    sed_inplace(primary_sbatch, p_job, '--job {}'.format(job))
+    subprocess.call(['sbatch', 'pynasqm_start.sbatch'])
 
 def run_fluorescence_collection(user_input):
     '''
