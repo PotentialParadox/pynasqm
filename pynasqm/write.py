@@ -37,11 +37,7 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
     n_rows_data2 = n_rows - n_rows_to_remove
     if n_rows_data2 < 0:
-        raise ValueError('Time delay greater than the excited state runtime.\n'\
-                         'N_Trajs: {}\n'\
-                         'time_step: {}\n'\
-                         'time_delay: {}\n'\
-                         'ntpr: {}\n'.format(n_trajectories, time_step, time_delay, ntpr))
+        raise ValueError('Time delay greater than the excited state runtime.')
     data2 = np.zeros((n_rows_data2, n_columns))
     data2_ri = 0
     for i, data_point in enumerate(data):

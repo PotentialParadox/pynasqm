@@ -77,13 +77,23 @@ def restore_inputs(origninal_inputs):
     open('input.ceon', 'w').write(origninal_inputs[0])
     open('md_qmmm_amb.in', 'w').write(origninal_inputs[1])
 
+def create_inputceon_copies(input_ceon, root_name, number):
+    '''
+    Create an array of copies of the inputceons
+    '''
+    input_ceons = []
+    for index in range(1, number+1):
+        file_name = "{}{}.in".format(root_name, index)
+        input_ceons.append(input_ceon.copy(file_name, "{}".format(index)))
+    return input_ceons
+
 def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
     for future calculations
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
-    input_ceon = md_qmmm_amb.copy("./", "nasqm_ground_{}_{}.in".format(user_input.restart_attempt+1, 1))
+    input_ceon = md_qmmm_amb.copy("./", "nasqm_ground_{}".format(user_input.restart_attempt+1))
     input_ceon.set_n_steps(user_input.n_steps_gs)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
@@ -97,14 +107,13 @@ def run_ground_state_dynamics(md_qmmm_amb, user_input):
     else:
         input_ceon.set_random_velocities(False)
     amber = Amber()
-    amber.input_roots = ["nasqm_ground_{}_".format(user_input.restart_attempt+1)]
-    amber.output_roots = ["nasqm_ground_{}_".format(user_input.restart_attempt+1)]
+    amber.input_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+    amber.output_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
     amber.prmtop_files = ["m1.prmtop"]
-    amber.restart_roots = ["nasqm_ground_{}_".format(user_input.restart_attempt+1)]
-    amber.export_roots = ["nasqm_ground_{}_".format(user_input.restart_attempt+1)]
+    amber.restart_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
+    amber.export_roots = ["nasqm_ground_{}".format(user_input.restart_attempt+1)]
 
     if user_input.is_qmmm and user_input.restart_attempt == 0:
-        subprocess.run(['cp', 'm1_md2.rst', 'm1_md2.rst.1'])
         amber.coordinate_files = ['m1_md2.rst']
     elif not user_input.is_qmmm and user_input.restart_attempt == 0:
         amber.coordinate_files = ['m1.inpcrd']
@@ -118,12 +127,6 @@ def run_ground_state_dynamics(md_qmmm_amb, user_input):
         nasqm_slurm.run_nasqm_slurm_files(slurm_files)
     else:
         amber.run_amber(number_processors=1, is_ground_state=True)
-    if user_input.restart_attempt + 1 == user_input.n_ground_runs:
-        ng = user_input.n_ground_runs
-        subprocess.run(['mv', 'nasqm_ground_{}_{}.out'.format(ng, 1),
-                        'nasqm_ground.out'])
-        subprocess.run(['mv', 'nasqm_ground_{}_{}.nc'.format(ng, 1),
-                        'nasqm_ground.nc'])
 
 def run_absorption_trajectories(input_ceon, user_input):
     '''
