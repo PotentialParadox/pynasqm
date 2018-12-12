@@ -84,7 +84,7 @@ def traj_finished(amber_outfile):
 
 def print_failed(failed_trajs):
     if failed_trajs == []:
-        return ""
+        return
     failed_string = "Trajectories: "
     for traj in failed_trajs:
         failed_string += "{} ".format(traj)
