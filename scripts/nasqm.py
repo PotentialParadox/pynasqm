@@ -173,10 +173,10 @@ def run_fluorescence_collection(user_input):
     print("!!!!!!!!!!!!!!!!!!!! Parsing Fluorescences !!!!!!!!!!!!!!!!!!!!")
     exc_state_init = user_input.exc_state_init_ex_param
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
-    write_spectra_flu_input(user_input)
-    write_omega_vs_time(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
-    write_nasqm_flu_energie(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_init)
-    if (user_input.is_tully):
+    n_completed = write_spectra_flu_input(user_input)
+    write_omega_vs_time(n_trajectories=n_completed, n_states=exc_state_init)
+    write_nasqm_flu_energie(n_trajectories=n_completed, n_states=exc_state_init)
+    if user_input.is_tully:
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 
 main()
