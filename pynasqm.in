@@ -1,101 +1,127 @@
-# Change here whether your simulation is qmmm
-    "is_qmmm": "True",
+# -*- Mode: json -*-
+############################################################
+#                  HPC Info (Slurm Supported)
+############################################################
 # Change here whether you are working on your personal computer
 # or an HPC with SLURM
     "is_hpc": "False",
 # If on hpc, what is the name of your job?
-    "job_name": "Job",
-# If periodic what type of constant value are you using?
-# 1-constant volume, 2-constant pressure
-    "constant_value": "1",
-# Are you performing tully surface hopping?
-    "is_tully": "True",
+    "job_name": "vac",
 # How many nodes will you be working on?
     "number_nodes": "1",
 # How many processors will be on a node?
-    "processors_per_node": "4",
+    "processors_per_node": "16",
 # How much memory per node, provide string
     "memory_per_node": "2000mb",
 # What is the maximum amount of jobs you want to run at once?
     "max_jobs": "4",
 # What do you want to set as your default walltime?
 # 0h:0m:0s
-    "walltime": "01:00:00",
+    "walltime": "95:00:00",
 # Whats queue do you want the job to go to
     "qos": "roitberg-b",
-# Do you want to run ground state dynamics
-    "run_ground_state_dynamics": "False",
-# Do you want to run the trajectories used for the abjorption specta
-    "run_absorption_trajectories": "False",
-# Do you want to run the single point snapshots from these
-# absorption
-    "run_absorption_snapshots": "False",
-# Do you want to collect the data from the absorption calculations?
-    "run_absorption_collection": "False",
-# Do you want to run the exctied state trajectories?
-    "run_excited_state_trajectories": "False",
-# Do you want to collect the data from the exctied state trajectory
-# calculations?
-    "run_fluorescence_collection": "False",
-# Change here the number of snapshots you wish to take
-# from the initial ground state trajectory to run the
-# further ground state dynamics
-    "n_snapshots_gs": "1",
-# Change here the number of states you wish to
-# calculate in the absorption singlpoint calculations
-    "n_abs_exc": "5",
-# Change here the number of snapshots you wish to take
-# from the initial ground state trajectory to run the
-# new excited state dynamics
-    "n_snapshots_ex": "4",
+# These are your email options for the slurm interface
+    "email": "dtracy.uf@gmail.com",
+# Additive Choice: 1-Begin, 2-End, 4-Fail
+    "email_options": "3",
+############################################################
+#                  General Job Type
+############################################################
+# Change here whether your simulation is qmmm
+    "is_qmmm": "False",
+# If periodic what type of constant value are you using?
+# 1-constant volume, 2-constant pressure
+    "constant_value": "1",
+# Are you performing tully surface hopping?
+    "is_tully": "False",
 # Change here the time step, in ps, that will be shared by
 # each trajectory
     "time_step": "0.5",
+############################################################
+#                  MM Ground State Calculation
+############################################################
+# Do you want to run ground state dynamics
+    "run_ground_state_dynamics": "False",
 # Change here the runtime, in ps, of the initial ground state MD
-    "ground_state_run_time": "10",
+    "ground_state_run_time": "0.01",
 # Change here how often you want to print the ground state trajectory files
-    "n_steps_to_print_gmcrd": "1000",
-# Change here how often you want to print the absorption trajectory files
-    "n_steps_to_print_amcrd": "1000",
-# Change here how often you want to print the excited state trajectory files
-    "n_steps_to_print_emcrd": "1000",
+    "n_steps_to_print_gmcrd": "5",
 # Change here how often you want to print the ground state trajectory
-    "n_steps_to_print_gs": "50",
+    "n_steps_to_print_gs": "5",
+############################################################
+#                  QM Ground State Calculation
+############################################################
+# Do you want to run the trajectories used for the abjorption specta
+    "run_absorption_trajectories": "True",
+# Change here the number of snapshots you wish to take
+# from the initial ground state trajectory to run the
+# further ground state dynamics
+    "n_snapshots_gs": "2",
 # Change here the runtime in PS for the the trajectories
 # used to create calculated the absorption
-    "abs_run_time": "5",
+    "abs_run_time": "0.004",
+# Change here how often you want to print the absorption trajectory files
+    "n_steps_to_print_amcrd": "5",
 # Change here how often you want to print the absorption trajectories
-    "n_steps_to_print_abs": "50",
+    "n_steps_to_print_abs": "4",
+# Change here the number of states you wish to
+# calculate in the absorption singlpoint calculations
+    "n_abs_exc": "5",
+# Do you want to collect the data from the absorption calculations?
+    "run_absorption_collection": "False",
+# Some time will be needed for the molecule to equilibrate
+# from jumping from the MM to QM
+# We don't want to include this data in the calculation
+# We therefore set a time delay in fs.
+    "absorption_time_delay": "000",
+############################################################
+#                  Excited State Calculation
+############################################################
+# Do you want to run the exctied state trajectories?
+    "run_excited_state_trajectories": "False",
+# Change here the number of snapshots you wish to take
+# from the initial ground state trajectory to run the
+# new excited state dynamics. Needs to be <= n_snapshots_gs
+    "n_snapshots_ex": "2",
 # Change here the runtime, in ps, for the the trajectories
 # used to create calculated the fluorescence
-    "exc_run_time": "10",
+    "exc_run_time": "0.002",
+# Change here how often you want to print the excited state trajectory files
+    "n_steps_to_print_emcrd": "5",
+# Change here how often you want to print the excited state trajectories
+    "n_steps_to_print_exc": "10",
 # Change here the number of excited states you
 # with to have in the CIS calculation
-    "n_exc_states_propagate": "1",
-# Change here the initial state
+    "n_exc_states_propagate": "5",
+# Change here the initial state, set to '-1' if you want to simulate laser exitation.
     "exc_state_init": "1",
 # Change here the energy of the laser used for excitation?
     "laser_energy": "4.2",
 # Change here the full width half max of the absorption spectra
     "fwhm": "0.3",
-# Change here how often you want to print the excited state trajectories
-    "n_steps_to_print_exc": "10",
+# Do you want to collect the data from the exctied state trajectory
+# calculations?
+    "run_fluorescence_collection": "False",
 # Some time will be needed for the molecule to equilibrate
 # from jumping from the ground state to the excited state.
 # We don't want to include this data in the calculation
 # of the fluorescence. We therefore set a time delay in fs.
-    "fluorescence_time_delay": "2000",
+    "fluorescence_time_delay": "0000",
 # Truncation will remove so many fs off the back of the trajectory
-    "fluorescence_time_truncation": "0",
-# A similar argument can be made for absorption, we need to account for the equilibration
-# time from full mm to qm/mm
-    "absorption_time_delay": "0",
-# These are your email options for the slurm interface
-    "email": "dtracy.uf@gmail.com",
-# Additive Choice: 1-Begin, 2-End, 4-Fail
-    "email_options": "3",
+    "fluorescence_time_truncation": "0000",
+############################################################
+#                  QM Solvents
+############################################################
+# Do you want to restrain the closest solvents?
+    "restrain_solvents": "False",
 # The amber mask to determine the center of your system
     "mask_for_center": ":1",
 # Number of solvents closest to mask to include in qm
-    "number_nearest_solvents": "0"
+    "number_nearest_solvents": "0",
+############################################################
+#                  Deprecated
+############################################################
+# Do you want to run the single point snapshots from these
+# absorption
+    "run_absorption_snapshots": "False"
 

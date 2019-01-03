@@ -10,21 +10,15 @@ parser.add_argument("--number_states", help="The number of states you want to in
                     default=1, type=int)
 parser.add_argument("--labels", "-l", help="labels of the data", default=[1], nargs="+")
 parser.add_argument("--inputfile", "-i", help="The input file", default=None)
-parser.add_argument("--absorbance", "-a",
-                    help="Is the file absorbance (True) or Fluorescence (False)",
+parser.add_argument("--comparison", "-c",
+                    help="Are you comparing spectra?",
                     default="False")
 parser.add_argument("--x_units", "-x", help="0-Ev or 1-nm", default=1, type=int)
 args = parser.parse_args()
 
-args.absorbance = pynasqm.utils.str2bool(args.absorbance)
+args.comparison = pynasqm.utils.str2bool(args.comparison)
 
-if args.absorbance is False and args.inputfile == None:
-    args.inputfile = "spectra_flu.out"
-
-if args.absorbance == True and args.inputfile == None:
-    args.inputfile = "spectra_abs.out"
-
-color_code = ['b', 'g', 'r', 'c', 'm', 'y', 'k', (0.1, 0.2, 0.5)]
+color_code = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'b', 'g', (0.1, 0.2, 0.5)]
 
 data = np.loadtxt(args.inputfile)
 
@@ -32,6 +26,12 @@ state_intensity_index_start = 2
 state_intensity_index_end = 2 + args.number_states
 x = data[:, args.x_units]
 ys = data[:, state_intensity_index_start:state_intensity_index_end]
+
+if args.comparison:
+    for i in range(len(ys[0,:])):
+        ys[:,i] = ys[:,i] / max(ys[:,i])
+else:
+    ys = ys / np.max(ys)
 
 for i in range(args.number_states):
     y = ys[:, i]
@@ -45,14 +45,13 @@ if args.x_units == 0:
 else:
     plt.xlabel('Wavelength, nm')
 
-if args.absorbance:
-    ylabel = 'Normalized Absorbance'
-else:
-    ylabel = 'Normalized Fluorescence'
+ylabel = 'Intensity'
 
 plt.ylabel(ylabel)
 plt.title(args.title)
 plt.legend(loc=2)
+plt.yticks([])
+plt.ylim((0,2))
 plt.savefig(args.inputfile[:-4] + '.png')
 plt.show()
 
