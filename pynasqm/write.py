@@ -92,14 +92,14 @@ def print_failed(failed_trajs):
     failed_string += "failed and are being skipped in the calculation of flu spectra"
     print(failed_string)
 
-def accumulate_flu_spectra(n_trajectories, n_states=10):
+def accumulate_spectra(n_trajectories, suffix, n_states=10):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
     output_stream = io.StringIO()
     failed_jobs = []
     for i in range(n_trajectories):
-        amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
+        amber_outfile = '{}/nasqm_{}_{}.out'.format(i+1, suffix, i+1)
         input_stream = open(amber_outfile, 'r')
         if traj_finished(amber_outfile):
             find_nasqm_excited_state(input_stream, output_stream,
@@ -110,41 +110,29 @@ def accumulate_flu_spectra(n_trajectories, n_states=10):
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
-    return output_string
-
-def accumulate_abs_spectra(n_snapshots_gs, n_frames, n_states=20):
-    '''
-    Reads the data from the amber output files and writes the data to spectra_abs.input
-    '''
-    output_stream = io.StringIO()
-    for i in range(n_snapshots_gs):
-        amber_outfile = '{}/nasqm_abs_{}.out'.format(i+1, i+1)
-        input_stream = open(amber_outfile, 'r')
-        find_nasqm_excited_state(input_stream, output_stream, states=[j for j in range(1, n_states+1)])
-        input_stream.close()
-    output_string = output_stream.getvalue()
-    output_stream.close()
-    return output_string
+    return output_string, len(failed_jobs)
 
 def write_spectra_abs_input(user_input):
     '''
     Writes the approriately formatted data to spectra_abs.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
+    returns the number of completed trajectories
     '''
-    abs_string = accumulate_abs_spectra(user_input.n_snapshots_gs, user_input.n_frames_abs,
-                                        user_input.n_abs_exc)
+    abs_string, nfailed = accumulate_spectra(user_input.n_snapshots_gs, "abs", user_input.n_abs_exc)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
+    return user_input.n_snapshots_gs - nfailed
 
 def write_spectra_flu_input(user_input):
     '''
     Writes the approriately formatted data to spectra_flu.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
+    returns the number of completed trajectories
     '''
-    fluor_string = accumulate_flu_spectra(n_trajectories=user_input.n_snapshots_ex,
-                                          n_states=user_input.n_exc_states_propagate_ex_param)
+    fluor_string, nfailed = accumulate_spectra(user_input.n_snapshots_ex, "flu",
+                                               n_states=user_input.n_exc_states_propagate_ex_param)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step * user_input.n_steps_to_print_exc
     fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
@@ -156,6 +144,7 @@ def write_spectra_flu_input(user_input):
                                           user_input.fluorescence_time_truncation,
                                           user_input.n_steps_to_print_exc)
     open('spectra_flu.input', 'w').write(fluor_string)
+    return user_input.n_snapshots_ex - nfailed
 
 def coeff_error_string(unlike):
     error_string = "Unlike Coefficients in trajectories: "
