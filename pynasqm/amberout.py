@@ -58,10 +58,7 @@ def create_spectra_string(output_stream, energies, strengths, states):
     if not output_stream:
         output_stream = io.StringIO()
     n_steps = int(len(energies) / len(states))
-    # NAESMD will run twice on the first iteration of a md simulation
-    # we only want to count the second one. During singlepoint calculations
-    # we don't need to worry about this.
-    begin_step = 1 if n_steps > 1 else 0
+    begin_step = 0
     for step in range(begin_step, n_steps):
         for state in range(len(states)):
             index = len(states) * step + state
