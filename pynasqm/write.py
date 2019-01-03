@@ -77,10 +77,11 @@ def traj_finished(amber_outfile):
     '''
     Checks to see if the amber output file finished without
     '''
-    lines = open(amber_outfile, 'r').readlines()
-    if "Could not go further" in lines[-1]:
-        return False
-    return True
+    lastlines = open(amber_outfile, 'r').readlines()[-4:]
+    for line in lastlines:
+        if "Run   done" in line:
+            return True
+    return False
 
 def print_failed(failed_trajs):
     if failed_trajs == []:
