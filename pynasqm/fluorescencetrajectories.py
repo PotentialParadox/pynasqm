@@ -44,3 +44,21 @@ class FluTrajectories(Trajectories):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         self._input_ceons = input_ceons
 
+    def _update_input_files(self):
+        n_qm_solvents = self._user_input.number_nearest_solvents
+        if n_qm_solvents > 0:
+            center_mask = self._user_input.mask_for_center
+            trajins = self._trajins()
+            self._check_trajins(trajins)
+            closest_outputs = ["{}/closest_{}.txt".format(traj, traj)
+                               for traj in range(1, self._number_trajectories)]
+            mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
+            mask_updater.update_masks()
+            if self._user_input.restrain_solvents is True:
+                trajins = closest_runner.get_trajins()
+                parmtop = "m1.prmtop"
+                restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
+                distances = self._get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
+                NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update()
+
+
