@@ -18,7 +18,7 @@ def teardown_module(module):
     '''
     Return to main directory
     '''
-    if os.path.isfile('nasqm_ground_r0.nc'):
+    if os.path.isfile('nasqm_ground.nc'):
         os.chdir("../../..")
     else:
         os.chdir("../..")
@@ -54,3 +54,4 @@ def test_prepareDynamcs1of1(mdQmmmAmb, userInput):
     _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput)
     answer = open("1of1_slurm_attempt_test.sbatch").read()
     assert slurm_file == answer
+    subprocess.call(['rm', 'nasqm_ground.in'])

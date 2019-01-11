@@ -121,5 +121,4 @@ def test_slurm_trajectory_file_33(userinput):
     (result1, result2) = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
     test_1 = open("nasqm_slurm_33.txt", 'r').read()
-    open("tempResults.txt", 'w').write(result1)
     assert (result1, result2) == (test_0, test_1)
