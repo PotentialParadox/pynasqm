@@ -19,7 +19,7 @@ do
     FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"
     ID="$((${FIRST_COUNT} + ${i}))"
     cd ${ID}
-    $AMBERHOME/bin/sander -O -i nasqm_flu_r1_t${ID}.in -o nasqm_flu_r1_t${ID}.out -c nasqm_flu_r0_t${ID}.rst -p m1.prmtop -r nasqm_flu_r1_t${ID}.rst -x nasqm_flu_r1_t${ID}.nc &
+    $AMBERHOME/bin/sander -O -i nasqm_flu_${ID}.in -o nasqm_flu_${ID}.out -c nasqm_flu_r0_t${ID}.rst -p m1.prmtop -r nasqm_flu_${ID}.rst -x nasqm_flu_${ID}.nc &
     cd ..
 done
 wait

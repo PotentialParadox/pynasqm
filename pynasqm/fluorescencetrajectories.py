@@ -19,13 +19,8 @@ class FluTrajectories(Trajectories):
         return "{}{}.rst".format(self._parent_restart_root, index+1)
 
     def _trajins(self):
-        attempt = self._user_input.restart_attempt
-        abs_r = self._user_input.n_abs_runs - 1
         trajs = self._number_trajectories
-        if attempt == 0:
-            return ["{}/nasqm_abs_r{}_t{}.rst".format(traj, abs_r, traj)
-                    for traj in range(1, trajs+1)]
-        return ["{}/nasqm_flu_r{}_t{}.rst".format(traj, attempt-1, traj)
+        return ["{}/nasqm_abs_{}.rst".format(traj, traj)
                 for traj in range(1, trajs+1)]
 
     def doing_laser_excitation(self):
@@ -62,14 +57,9 @@ class FluTrajectories(Trajectories):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         self._input_ceons = input_ceons
 
-    def hpc_coordinate_files(self, attempt):
-        if attempt == 0:
-            return ["nasqm_abs_r{}_t${{ID}}.rst".format(self._user_input.n_abs_runs-1)]
-        return ["nasqm_flu_r{}_t${{ID}}.rst".format(attempt-1)]
+    def hpc_coordinate_files(self):
+        return ["nasqm_abs_${ID}.rst"]
 
-    def pc_coordinate_files(self, attempt):
-        if attempt == 0:
-            return ["nasqm_abs_r{}_t{}.rst".format(self._user_input.n_abs_runs-1, traj)
-                    for traj in range(1, self._number_trajectories+1)]
-        return ["nasqm_flu_r{}_t{}.rst".format(attempt-1, traj)
+    def pc_coordinate_files(self):
+        return ["nasqm_abs_{}.rst".format(traj)
                 for traj in range(1, self._number_trajectories+1)]

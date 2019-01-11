@@ -43,7 +43,7 @@ class Trajectories(ABC):
         input_ceons = []
         attempt = self._user_input.restart_attempt
         for index in range(1, self._number_trajectories+1):
-            file_name = "{}r{}_t{}.in".format(self._child_root, attempt, index)
+            file_name = "{}{}.in".format(self._child_root, index)
             input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
         self._input_ceons = input_ceons
 
@@ -112,17 +112,17 @@ class Trajectories(ABC):
                             is_ground_state=False)
 
     @abstractmethod
-    def hpc_coordinate_files(self, attempt):
+    def hpc_coordinate_files(self):
         pass
 
     @abstractmethod
-    def pc_coordinate_files(self, attempt):
+    def pc_coordinate_files(self):
         pass
 
-    def coordinate_files(self, attempt):
+    def coordinate_files(self):
         if self._user_input.is_hpc:
-            return self.hpc_coordinate_files(attempt)
-        return self.pc_coordinate_files(attempt)
+            return self.hpc_coordinate_files()
+        return self.pc_coordinate_files()
 
     def prmtop_files(self):
         if self._user_input.is_hpc:
@@ -131,20 +131,19 @@ class Trajectories(ABC):
 
     def create_amber(self):
         amber = Amber()
-        attempt = self._user_input.restart_attempt
         roots = None
         if self._user_input.is_hpc:
-            roots = ["{}r{}_t${{ID}}".format(self._child_root, attempt)]
+            roots = ["{}${{ID}}".format(self._child_root)]
             amber.prmtop_files = ["m1.prmtop"]
         else:
-            roots = ["{}r{}_t{}".format(self._child_root, attempt, i)
+            roots = ["{}{}".format(self._child_root, i)
                      for i in range(1, self._number_trajectories+1)]
             amber.prmtop_files = ["m1.prmtop"] * self._number_trajectories
         amber.input_roots = roots
         amber.output_roots = roots
         amber.restart_roots = roots
         amber.export_roots = roots
-        amber.coordinate_files = self.coordinate_files(attempt)
+        amber.coordinate_files = self.coordinate_files()
         amber.prmtop_files = self.prmtop_files()
         return amber
 

@@ -80,47 +80,21 @@ def test_createInputceonCopies0(userInput, inputCeon):
     userInput.restart_attempt = 0
     absTraj = AbsTrajectories(userInput, inputCeon)
     absTraj.create_inputceon_copies()
-    if not os.path.isfile('1/nasqm_abs_r0_t1.in'):
+    if not os.path.isfile('1/nasqm_abs_1.in'):
         print(subprocess.call(['ls', '1']))
-        raise AssertionError("AbsTrajectory did not create 1/nasqm_abs_r0_t1.in")
-    if not os.path.isfile('2/nasqm_abs_r0_t2.in'):
+        raise AssertionError("AbsTrajectory did not create 1/nasqm_abs_1.in")
+    if not os.path.isfile('2/nasqm_abs_2.in'):
         print(subprocess.call(['ls', '2']))
-        raise AssertionError("AbsTrajectory did not create 2/nasqm_abs_r0_t2.in")
-    subprocess.call(['rm', '1/nasqm_abs_r0_t1.in', '2/nasqm_abs_r0_t2.in'])
+        raise AssertionError("AbsTrajectory did not create 2/nasqm_abs_2.in")
+    subprocess.call(['rm', '1/nasqm_abs_1.in', '2/nasqm_abs_2.in'])
 
-
-def test_createInputceonCopies1(userInput, inputCeon):
-    '''
-    Create the input files needed for the first restart of two trajectories
-    '''
-    userInput.restart_attempt = 1
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    absTraj.create_inputceon_copies()
-    if not os.path.isfile('1/nasqm_abs_r1_t1.in'):
-        print(subprocess.call(['ls', '1']))
-        raise AssertionError("AbsTrajectory did not create 1/nasqm_abs_r0_t1.in")
-    if not os.path.isfile('2/nasqm_abs_r1_t2.in'):
-        print(subprocess.call(['ls', '2']))
-        raise AssertionError("AbsTrajectory did not create 2/nasqm_abs_r0_t2.in")
-    subprocess.call(['rm', '1/nasqm_abs_r1_t1.in', '2/nasqm_abs_r1_t2.in'])
 
 def test_absPrepareDynamics0(userInput, inputCeon):
     '''
     Prepare dynamics for the zeroth restart of two trajectories
     '''
     userInput.restart_attempt = 0
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    _, (_, slurm_file) = absTraj.prepareDynamics()
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    _, (_, slurm_file) = abs_traj.prepareDynamics()
     answer = open("1of2_slurm_attempt_test.sbatch").read()
     assert slurm_file == answer
-
-def test_absPrepareDynamics1(userInput, inputCeon):
-    '''
-    Prepare dynamics for the first restart of two trajectories
-    '''
-    userInput.restart_attempt = 1
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    _, (_, slurm_file) = absTraj.prepareDynamics()
-    answer = open("2of2_slurm_attempt_test.sbatch").read()
-    assert slurm_file == answer
-

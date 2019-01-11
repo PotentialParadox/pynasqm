@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.mmgroundstatetrajectory import prepareDynamics, combineFinalTrajs
+from pynasqm.mmgroundstatetrajectory import prepareDynamics
 from pynasqm.inputceon import InputCeon
 
 def setup_module(module):
