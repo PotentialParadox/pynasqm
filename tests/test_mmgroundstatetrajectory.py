@@ -51,26 +51,6 @@ def test_prepareDynamcs1of1(mdQmmmAmb, userInput):
     '''
     Test for a ground state trajectory using no restarts
     '''
-    _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput, 0)
+    _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput)
     answer = open("1of1_slurm_attempt_test.sbatch").read()
     assert slurm_file == answer
-
-def test_prepareDynamcs2of2(mdQmmmAmb, userInput):
-    '''
-    Test for a ground state trajectory on its first restart
-    '''
-    _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput, 1)
-    answer = open("2of2_slurm_attempt_test.sbatch").read()
-    assert slurm_file == answer
-    if not os.path.isfile('nasqm_ground_r0.in'):
-        raise AssertionError("nasqm_ground_r0.in not found")
-    if not os.path.isfile('nasqm_ground_r1.in'):
-        raise AssertionError("nasqm_ground_r0.in not found")
-    subprocess.call(['rm', 'nasqm_ground_r0.in', 'nasqm_ground_r1.in'])
-
-def test_combineFinalTrajs():
-    os.chdir('combineFinalTrajs')
-    combineFinalTrajs(1)
-    if not os.path.isfile('nasqm_ground.nc'):
-        raise AssertionError("failed to combine ground trajectories")
-    subprocess.call(['rm', 'nasqm_ground.nc'])
