@@ -14,7 +14,11 @@ parser.add_argument("--comparison", "-c",
                     help="Are you comparing spectra?",
                     default="False")
 parser.add_argument("--x_units", "-x", help="0-Ev or 1-nm", default=1, type=int)
+parser.add_argument("--range", "-r", help="Provide two numbers,"\
+                    "the minimum and maximum values in the units you prefer",
+                    default=[0.0, 100.0], nargs="+", type=float)
 args = parser.parse_args()
+
 
 args.comparison = pynasqm.utils.str2bool(args.comparison)
 
@@ -32,6 +36,17 @@ if args.comparison:
         ys[:,i] = ys[:,i] / max(ys[:,i])
 else:
     ys = ys / np.max(ys)
+
+def filter_range(xin, yin, my_range):
+    y_fitered = []
+    x_filtered = []
+    for x_temp, y_temp in zip(xin, yin):
+        if my_range[0] <= x_temp <= my_range[1]:
+            y_fitered.append(y_temp)
+            x_filtered.append(x_temp)
+    return (np.array(x_filtered), np.array(y_fitered))
+
+(x, ys) = filter_range(x, ys, args.range)
 
 for i in range(args.number_states):
     y = ys[:, i]
@@ -54,5 +69,4 @@ plt.yticks([])
 plt.ylim((0,2))
 plt.savefig(args.inputfile[:-4] + '.png')
 plt.show()
-
 
