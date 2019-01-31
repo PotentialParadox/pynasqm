@@ -26,50 +26,52 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     Remove the data from the equilibration time given by time_delay
     Time is in fs
     '''
+    data = spectra_string_to_numpy(spectra_string)
+    n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
+    data2 = np.array(front_removal(data, n_trajectories, n_rows_to_remove_traj))
+    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
+    return answer
+
+def spectra_string_to_numpy(spectra_string):
+    '''
+    Given the string of an spectra.input file return a numpy array [step][info]
+    '''
     row1 = spectra_string.split('\n', 1)[0]
     row1_data = np.fromstring(row1, sep=" ")
     n_columns = len(row1_data)
     data = np.fromstring(spectra_string, sep=" ")
     n_rows = int(len(data) / n_columns)
-    n_elements_traj = int(n_rows / n_trajectories)
-    data = data.reshape((n_rows, n_columns))
-    n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
-    n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
-    n_rows_data2 = n_rows - n_rows_to_remove
-    if n_rows_data2 < 0:
-        raise ValueError('Time delay greater than the excited state runtime.')
-    data2 = np.zeros((n_rows_data2, n_columns))
-    data2_ri = 0
-    for i, data_point in enumerate(data):
-        if i % n_elements_traj >= n_rows_to_remove_traj:
-            data2[data2_ri][:] = data_point[:]
-            data2_ri += 1
-    answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
-    return answer
+    return data.reshape((n_rows, n_columns))
+
+def front_removal(in_list, n, e):
+    '''
+    Given an one dimesional list composed of n sublists of the same length l, remove
+    r elements from the front of each sublist and recocatenate
+    '''
+    l = int(len(in_list)/n)
+    if l < e:
+        raise ValueError('Asking to remove more elements than contained in each sublist')
+    return [x for (i, x) in enumerate(in_list) if i % l >= e]
+
+def back_removal(in_list, n, e):
+    '''
+    Given an one dimesional list composed of n sublists of the same length l, remove
+    r elements from the back of each sublist and recocatenate
+    '''
+    l = int(len(in_list)/n)
+    if l < e:
+        raise ValueError('Asking to remove more elements than contained in each sublist')
+    return [x for (i, x) in enumerate(in_list) if i % l < l-e]
+
 
 def truncate_spectra(spectra_string, n_trajectories, time_step, time_delay, ntpr=1):
     '''
     Truncate the spectra by a given time
     Time is in fs
     '''
-    row1 = spectra_string.split('\n', 1)[0]
-    row1_data = np.fromstring(row1, sep=" ")
-    n_columns = len(row1_data)
-    data = np.fromstring(spectra_string, sep=" ")
-    n_rows = int(len(data) / n_columns)
-    n_elements_traj = int(n_rows / n_trajectories)
-    data = data.reshape((n_rows, n_columns))
+    data = spectra_string_to_numpy(spectra_string)
     n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
-    n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
-    n_rows_data2 = n_rows - n_rows_to_remove
-    if n_rows_data2 < 0:
-        raise ValueError('Truncation time greater than the excited state runtime minus time delay.')
-    data2 = np.zeros((n_rows_data2, n_columns))
-    data2_ri = 0
-    for i, data_point in enumerate(data):
-        if i % n_elements_traj < n_elements_traj - n_rows_to_remove_traj:
-            data2[data2_ri][:] = data_point[:]
-            data2_ri += 1
+    data2 = np.array(back_removal(data, n_trajectories, n_rows_to_remove_traj))
     answer = pynasqm.utils.numpy_to_txt(data2, form="scientific")
     return answer
 
@@ -119,8 +121,9 @@ def write_spectra_abs_input(user_input):
     returns the number of completed trajectories
     '''
     abs_string, nfailed = accumulate_spectra(user_input.n_snapshots_gs, "abs", user_input.n_abs_exc)
-    time_step = user_input.time_step * user_input.n_steps_to_print_gs
-    abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
+    time_step = user_input.time_step
+    n_trajectories = user_input.n_snapshots_gs - nfailed
+    abs_string = strip_timedelay(abs_string, n_trajectories, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
     return user_input.n_snapshots_gs - nfailed
@@ -134,17 +137,18 @@ def write_spectra_flu_input(user_input):
     fluor_string, nfailed = accumulate_spectra(user_input.n_snapshots_ex, "flu",
                                                n_states=user_input.n_exc_states_propagate_ex_param)
     # The timestep needs to be adjusted for the number of frames skipped
-    time_step = user_input.time_step * user_input.n_steps_to_print_exc
-    fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
+    time_step = user_input.time_step
+    n_trajectories = user_input.n_snapshots_ex - nfailed
+    fluor_string = strip_timedelay(fluor_string, n_trajectories,
                                    time_step,
                                    user_input.fluorescence_time_delay,
                                    user_input.n_steps_to_print_exc)
-    fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
+    fluor_string = truncate_spectra(fluor_string, n_trajectories,
                                           time_step,
                                           user_input.fluorescence_time_truncation,
                                           user_input.n_steps_to_print_exc)
     open('spectra_flu.input', 'w').write(fluor_string)
-    return user_input.n_snapshots_ex - nfailed
+    return n_trajectories
 
 def coeff_error_string(unlike):
     error_string = "Unlike Coefficients in trajectories: "
