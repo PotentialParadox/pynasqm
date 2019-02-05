@@ -3,6 +3,8 @@ Commonly used utilities
 '''
 import re
 import numpy as np
+import subprocess
+import os
 
 def numpy_element(numpy_array, i, j=0):
     try:
@@ -43,3 +45,16 @@ def str2bool(v):
         return False
     else:
         raise TypeError('Boolean value expected.')
+
+def copy_file(source_path, output_path):
+    subprocess.call(['cp', source_path, output_path])
+
+def copy_files(lst, source_directory, output_directory):
+    for item in lst:
+        source = "{}/{}".format(source_directory, item)
+        output = "{}/{}".format(output_directory, item)
+        copy_file(source, output)
+
+def mkdir(directory):
+    if not os.path.exists(directory):
+        os.mkdir(directory)

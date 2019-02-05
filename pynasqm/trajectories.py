@@ -132,16 +132,20 @@ class Trajectories(ABC):
     def create_amber(self):
         amber = Amber()
         roots = None
+        restart_attempt = self._user_input.restart_attempt
         if self._user_input.is_hpc:
-            roots = ["{}${{ID}}".format(self._child_root)]
+            roots = ["{}t${{ID}}_r{}".format(self._child_root, restart_attempt)]
+            restart_files = ["snap_for_{}_t${{ID}}_r{}.rst".format(self._job_suffix, restart_attempt+1)]
             amber.prmtop_files = ["m1.prmtop"]
         else:
-            roots = ["{}{}".format(self._child_root, i)
+            roots = ["{}t{}_r{}".format(self._child_root, i, restart_attempt)
                      for i in range(1, self._number_trajectories+1)]
+            restart_files = ["snap_for_{}_t${}_r{}.rst".format(self._job_suffix, i, restart_attempt+1)
+                             for i in range(1, self._number_trajectories+1)]
             amber.prmtop_files = ["m1.prmtop"] * self._number_trajectories
         amber.input_roots = roots
         amber.output_roots = roots
-        amber.restart_roots = roots
+        amber.restart_files = restart_files
         amber.export_roots = roots
         amber.coordinate_files = self.coordinate_files()
         amber.prmtop_files = self.prmtop_files()
@@ -150,8 +154,9 @@ class Trajectories(ABC):
     def create_slurm(self, amber):
         if self._user_input.is_hpc:
             job_name = self._user_input.job_name + self._job_suffix
+            directory = "{}/traj_${{ID}}/restart_{}".format(self._job_suffix, self._user_input.restart_attempt)
             slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
-                                                             job_name, self._number_trajectories)
+                                                             job_name, self._number_trajectories, directory)
         else:
             slurm_files = None
         return slurm_files

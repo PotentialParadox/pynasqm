@@ -12,7 +12,7 @@ class AbsTrajectories(Trajectories):
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_gs
         self._child_root = 'nasqm_abs_'
-        self._job_suffix = 'Abs'
+        self._job_suffix = 'abs'
         self._parent_restart_root = 'ground_snap'
         self._parent_trajectory_root = 'nasqm_ground'
         self._number_frames_in_parent = user_input.n_mcrd_frames_gs * user_input.n_ground_runs
@@ -30,18 +30,45 @@ class AbsTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
 
+    @staticmethod
+    def restart_path(trajectory, restart):
+        return "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(trajectory, restart, trajectory, restart)
+
+    def start_from_mmground(self):
+        self._check_trajins(["nasqm_ground.nc"])
+        self._create_directories()
+        restart_step = int(self._number_frames_in_parent / self._number_trajectories)
+        nasqm_cpptraj.create_restarts(amber_input=self._parent_trajectory_root,
+                                      output=self._parent_restart_root, step=restart_step)
+        self._move_restarts()
+
+    def start_from_restart(self):
+        self._create_directories()
+        self._copy_from_restart()
+
+    def _copy_from_restart(self):
+        restart = self._user_input.restart_attempt
+        for traj in range(1, self._number_trajectories+1):
+            source_path = "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(traj,
+                                                                                   restart-1,
+                                                                                   traj,
+                                                                                   restart)
+            output_path = "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(traj,
+                                                                                   restart,
+                                                                                   traj,
+                                                                                   restart)
+            subprocess.call(['cp', source_path, output_path])
+
     def create_restarts_from_parent(self):
         if self._user_input.restart_attempt == 0:
-            self._check_trajins(["nasqm_ground.nc"])
-            self._create_directories()
-            restart_step = int(self._number_frames_in_parent / self._number_trajectories)
-            nasqm_cpptraj.create_restarts(amber_input=self._parent_trajectory_root,
-                                        output=self._parent_restart_root, step=restart_step)
-            self._move_restarts()
+            self.start_from_mmground()
+        else:
+            self.start_from_restart()
 
     def _move_restarts(self):
         for i, filename in enumerate(self._initial_snaps(), start=1):
-            directory = "{}/{}.{}".format(i, self._parent_restart_root, i)
+            new_resart_name = "snap_for_abs_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
+            directory = "abs/traj_{}/restart_{}/{}".format(i, self._user_input.restart_attempt, new_resart_name)
             subprocess.call(['mv', filename, directory])
 
     def _initial_snaps(self):
@@ -59,14 +86,19 @@ class AbsTrajectories(Trajectories):
         return ["{}/ground_snap.{}".format(i, i) for i in range(1, self._number_trajectories+1)]
 
     def _create_directories(self):
+        if not os.path.exists("abs"):
+            os.mkdir("abs")
         for i in range(1, self._number_trajectories + 1):
-            directory = "{}".format(i)
+            directory = "abs/traj_{}".format(i)
+            restart_directory = "abs/traj_{}/restart_{}".format(i, self._user_input.restart_attempt)
             if not os.path.exists(directory):
                 os.mkdir(directory)
+            if not os.path.exists(restart_directory):
+                os.mkdir(restart_directory)
 
     def hpc_coordinate_files(self):
-        return ["{}.${{ID}}".format(self._parent_restart_root)]
+        return ["snap_for_abs_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
 
     def pc_coordinate_files(self):
-        return ["{}.{}".format(self._parent_restart_root, i)
+        return ["snap_for_abs_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
                 for i in range(1, self._number_trajectories+1)]

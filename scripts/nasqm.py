@@ -77,6 +77,21 @@ def restore_inputs(origninal_inputs):
     open('input.ceon', 'w').write(origninal_inputs[0])
     open('md_qmmm_amb.in', 'w').write(origninal_inputs[1])
 
+def should_restart(n_runs, restart_attempt):
+    if restart_attempt + 1 >= n_runs:
+        return False
+    return True
+
+def restart(job_id, restart_attempt):
+    subprocess.call(["nasqm.py", "--job", "{}".format(job_id),
+                     "--restart", "{}".format(restart_attempt)])
+    exit()
+
+def manage_restart(job_id, n_runs, restart_attempt):
+    if should_restart(n_runs, restart_attempt):
+        print("restarting")
+        restart(job_id, restart_attempt+1)
+
 def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
@@ -84,6 +99,8 @@ def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
     groundStateDynamics(md_qmmm_amb, user_input)
+    manage_restart(0, user_input.n_ground_runs, user_input.restart_attempt)
+
 
 def run_absorption_trajectories(input_ceon, user_input):
     '''

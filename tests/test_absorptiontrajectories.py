@@ -50,44 +50,68 @@ def inputCeon():
     return InputCeon(amber_input='md_qmmm_amb.in', directory='./')
 
 def test_absCreateRestarts(userInput, inputCeon):
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    absTraj.create_restarts_from_parent()
-    if not os.path.isfile("1/ground_snap.1"):
+    '''
+    Create the input files for the initial trajectory part of two trajectories
+    '''
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if not os.path.isfile("abs/traj_1/restart_0/snap_for_abs_t1_r0.rst"):
         raise AssertionError("AbsTrajectory did not create ground_snap.1")
-    if not os.path.isfile("2/ground_snap.2"):
+    if not os.path.isfile("abs/traj_2/restart_0/snap_for_abs_t2_r0.rst"):
         raise AssertionError("AbsTrajectory did not create ground_snap.2")
     if os.path.isfile("ground_snap.3"):
         raise AssertionError("AbsTrajectory created too many ground_snaps")
     if os.path.isdir('3'):
-        raise AssertionError("AbsTrajectory create too many directories")
-    subprocess.run(['rm', '1/ground_snap.1', '2/ground_snap.2', './convert_to_crd.out'
-                    './convert_to_crd.out'])
+        raise AssertionError("AbsTrajectory created too many directories")
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absCreateRestarts1(userInput, inputCeon):
+    '''
+    Create the input files for the first restart of one trajectories
+    '''
     userInput.n_snapshots_gs = 1
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    absTraj.create_restarts_from_parent()
-    if not os.path.isfile("1/ground_snap.1"):
-        raise AssertionError("AbsTrajectory did not create ground_snap.1")
-    if os.path.isfile("2/ground_snap.2"):
-        raise AssertionError("AbsTrajectory created too many ground snaps")
-    subprocess.run(['rm', '1/ground_snap.1', './convert_to_crd.out', './convert_to_crd.out'])
+    userInput.n_abs_runs = 2
+    userInput.restart_attempt = 1
+    if not os.path.exists("abs"):
+        os.mkdir("abs")
+        os.mkdir("abs/traj_1")
+        os.mkdir("abs/traj_1/restart_0")
+    open("abs/traj_1/restart_0/snap_for_abs_t1_r1.rst", 'w').close()
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if not os.path.isfile("abs/traj_1/restart_1/snap_for_abs_t1_r1.rst"):
+        raise AssertionError("AbsTrajectory did not create snap_for_abs_t1_r1")
+    if os.path.isfile("abs/traj_2/restart_2/snap_for_abs_t2_r2.rst"):
+        raise AssertionError("AbsTrajectory created too many snaps")
+    subprocess.run(['rm', '-rf', 'traj_1', './convert_to_crd.out', './convert_to_crd.out'])
 
-def test_createInputceonCopies0(userInput, inputCeon):
-    '''
-    Create the input files needed for the zeroth restart of two trajectories
-    '''
-    userInput.restart_attempt = 0
-    absTraj = AbsTrajectories(userInput, inputCeon)
-    absTraj.create_inputceon_copies()
-    if not os.path.isfile('1/nasqm_abs_1.in'):
-        print(subprocess.call(['ls', '1']))
-        raise AssertionError("AbsTrajectory did not create 1/nasqm_abs_1.in")
-    if not os.path.isfile('2/nasqm_abs_2.in'):
-        print(subprocess.call(['ls', '2']))
-        raise AssertionError("AbsTrajectory did not create 2/nasqm_abs_2.in")
-    subprocess.call(['rm', '1/nasqm_abs_1.in', '2/nasqm_abs_2.in'])
 
+def test_absCreateRestarts1(userInput, inputCeon):
+    '''
+    Create the input files for the first restart of one trajectories
+    '''
+    userInput.n_snapshots_gs = 2
+    userInput.n_abs_runs = 2
+    userInput.restart_attempt = 1
+    if not os.path.exists("abs"):
+        os.mkdir("abs")
+        os.mkdir("abs/traj_1")
+        os.mkdir("abs/traj_1/restart_0")
+        os.mkdir("abs/traj_2")
+        os.mkdir("abs/traj_2/restart_0")
+    open("abs/traj_1/restart_0/snap_for_abs_t1_r1.rst", 'w').close()
+    open("abs/traj_2/restart_0/snap_for_abs_t2_r1.rst", 'w').close()
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if not os.path.isfile("abs/traj_1/restart_1/snap_for_abs_t1_r1.rst"):
+        raise AssertionError("AbsTrajectory did not create snap_for_abs_t1_r1")
+    if not os.path.isfile("abs/traj_2/restart_1/snap_for_abs_t2_r1.rst"):
+        raise AssertionError("AbsTrajectory did not create snap_for_abs_t2_r1")
+    if os.path.isdir("abs/traj_3"):
+        raise AssertionError("AbsTrajectory created too many trajectories")
+    if os.path.isdir("abs/traj_1/restart_2"):
+        raise AssertionError("AbsTrajectory created too many restarts")
+    subprocess.run(['rm', '-rf', 'traj_1', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absPrepareDynamics0(userInput, inputCeon):
     '''
@@ -97,4 +121,18 @@ def test_absPrepareDynamics0(userInput, inputCeon):
     abs_traj = AbsTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = abs_traj.prepareDynamics()
     answer = open("1of2_slurm_attempt_test.sbatch").read()
+    open('failed_attempt.txt', 'w').write(slurm_file)
     assert slurm_file == answer
+    subprocess.run(['rm', 'failed_attempt.txt'])
+
+def test_absPrepareDynamics0(userInput, inputCeon):
+    '''
+    Prepare dynamics for the first restart of two trajectories
+    '''
+    userInput.restart_attempt = 1
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    _, (_, slurm_file) = abs_traj.prepareDynamics()
+    answer = open("2of2_slurm_attempt_test.sbatch").read()
+    open('failed_attempt.txt', 'w').write(slurm_file)
+    assert slurm_file == answer
+    subprocess.run(['rm', 'failed_attempt.txt'])

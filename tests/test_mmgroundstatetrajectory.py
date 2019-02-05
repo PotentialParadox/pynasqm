@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.mmgroundstatetrajectory import prepareDynamics
+from pynasqm.mmgroundstatetrajectory import prepareDynamics, create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 
 def setup_module(module):
@@ -22,6 +22,10 @@ def teardown_module(module):
         os.chdir("../../..")
     else:
         os.chdir("../..")
+
+def mkdir(directory):
+    if not os.path.exists(directory):
+        os.mkdir(directory)
 
 @pytest.fixture
 def mdQmmmAmb():
@@ -47,11 +51,61 @@ def userInput():
     user_input.time_step = 0.05
     return user_input
 
-def test_prepareDynamcs1of1(mdQmmmAmb, userInput):
+def test_prepareDynamcs1of1(userInput):
     '''
     Test for a ground state trajectory using no restarts
     '''
-    _, (_, slurm_file) = prepareDynamics(mdQmmmAmb, userInput)
+    userInput.restart_attempt = 0
+    _, (_, slurm_file) = prepareDynamics(userInput)
     answer = open("1of1_slurm_attempt_test.sbatch").read()
+    open("failed_test.txt", 'w').write(slurm_file)
     assert slurm_file == answer
-    subprocess.call(['rm', 'nasqm_ground.in'])
+    subprocess.call(['rm', 'nasqm_ground.in', 'failed_test.txt'])
+
+def test_create_restarts(mdQmmmAmb, userInput):
+    '''
+    Create the original mmground trajectory"
+    '''
+    userInput.n_ground_runs = 2
+    userInput.restart_attempt = 0
+    open("m1.prmtop", 'w').close()
+    open("input.ceon", 'w').close()
+    open("m1.inpcrd", 'w').close()
+    create_restarts_from_parent(mdQmmmAmb, userInput)
+    if not os.path.isfile("mmground/restart_0/m1.prmtop"):
+        raise AssertionError("Did not correctly initiate mmground restart 0 with m1.prmtop")
+    if not os.path.isfile("mmground/restart_0/input.ceon"):
+        raise AssertionError("Did not correctly initiate mmground restart 0 with input.ceon")
+    if not os.path.isfile("mmground/restart_0/nasqm_ground_r0.in"):
+        raise AssertionError("Did not correctly initiate mmground restart 0 with nasqm_ground_r0.in")
+    amb_input = open("mmground/restart_0/nasqm_ground_r0.in").read()
+    if "ntx=1" not in amb_input:
+        raise AssertionError("Random velocities were not given in initial mm trajectory")
+    if not os.path.isfile("mmground/restart_0/snap_for_mm_r0.rst"):
+        raise AssertionError("Did not correctly initiate mmground restart 0 with the restart file snap_for_mm_r0.rst")
+
+
+def test_create_restarts1(mdQmmmAmb, userInput):
+    '''
+    Create the first mmground restart trajectory"
+    '''
+    userInput.n_ground_runs = 2
+    userInput.restart_attempt = 1
+    mkdir("mmground")
+    mkdir("mmground/restart_0")
+    open("mmground/restart_0/m1.prmtop", 'w').close()
+    open("mmground/restart_0/input.ceon", 'w').close()
+    open("mmground/restart_0/m1.inpcrd", 'w').close()
+    open("mmground/restart_0/snap_for_mm_r1.rst", 'w').close()
+    create_restarts_from_parent(mdQmmmAmb, userInput)
+    if not os.path.isfile("mmground/restart_1/m1.prmtop"):
+        raise AssertionError("Did not correctly initiate mmground restart 1 with m1.prmtop")
+    if not os.path.isfile("mmground/restart_1/input.ceon"):
+        raise AssertionError("Did not correctly initiate mmground restart 1 with input.ceon")
+    if not os.path.isfile("mmground/restart_1/nasqm_ground_r1.in"):
+        raise AssertionError("Did not correctly initiate mmground restart 1 with nasqm_ground_r1.in")
+    amb_input = open("mmground/restart_1/nasqm_ground_r1.in").read()
+    if "ntx=5" not in amb_input:
+        raise AssertionError("Random velocities were given in a mm restart trajectory")
+    if not os.path.isfile("mmground/restart_1/snap_for_mm_r1.rst"):
+        raise AssertionError("Did not correctly initiate mmground restart 1 with the restart file snap_for_mm_r1.rst")

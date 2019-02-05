@@ -1,5 +1,5 @@
 parm m1.prmtop
-trajin nasqm_ground.nc 1 last 10
+trajin nasqm_ground.nc 1 last 5
 center :1
 trajout ground_snap restart
 image

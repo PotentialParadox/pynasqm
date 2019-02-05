@@ -82,7 +82,6 @@ class UserInput:
         # Change here the number of restarts of length ground_state_run_time you wish to run
         try:
             self.n_ground_runs = int(data["n_ground_runs"])
-            self.ground_state_run_time = self.ground_state_run_time / self.n_ground_runs
         except KeyError:
             self.n_ground_runs = 1
 
@@ -188,7 +187,7 @@ class UserInput:
         self.restart_attempt = 0
 
         ## Derived Values
-        self.n_steps_gs = int(self.ground_state_run_time / self.time_step * 1000)
+        self.n_steps_gs = int(self.ground_state_run_time / (self.time_step * self.n_ground_runs) * 1000)
 
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
         self.n_steps_abs = int(self.abs_run_time / self.time_step * 1000)

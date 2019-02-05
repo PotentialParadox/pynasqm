@@ -80,13 +80,13 @@ def test_createInputceonCopies1(userInput, inputCeon):
         raise AssertionError("FluTrajectory did not create 2/nasqm_abs_2.in")
     subprocess.call(['rm', '1/nasqm_flu_1.in', '2/nasqm_flu_2.in'])
 
-def test_fluPrepareDynamics0(userInput, inputCeon):
-    '''
-    Prepare dynamics for the zeroth restart of two trajectories
-    '''
-    userInput.restart_attempt = 0
-    fluTraj = FluTrajectories(userInput, inputCeon)
-    _, (_, slurm_file) = fluTraj.prepareDynamics()
-    answer = open("1of2_slurm_attempt_test.sbatch").read()
-    assert slurm_file == answer
+# def test_fluPrepareDynamics0(userInput, inputCeon):
+#     '''
+#     Prepare dynamics for the zeroth restart of two trajectories
+#     '''
+#     userInput.restart_attempt = 0
+#     fluTraj = FluTrajectories(userInput, inputCeon)
+#     _, (_, slurm_file) = fluTraj.prepareDynamics()
+#     answer = open("1of2_slurm_attempt_test.sbatch").read()
+#     assert slurm_file == answer
 
