@@ -83,6 +83,7 @@ def test_create_restarts(mdQmmmAmb, userInput):
         raise AssertionError("Random velocities were not given in initial mm trajectory")
     if not os.path.isfile("mmground/restart_0/snap_for_mm_r0.rst"):
         raise AssertionError("Did not correctly initiate mmground restart 0 with the restart file snap_for_mm_r0.rst")
+    subprocess.call(['rm', '-rf', 'mmground'])
 
 
 def test_create_restarts1(mdQmmmAmb, userInput):
@@ -109,3 +110,4 @@ def test_create_restarts1(mdQmmmAmb, userInput):
         raise AssertionError("Random velocities were given in a mm restart trajectory")
     if not os.path.isfile("mmground/restart_1/snap_for_mm_r1.rst"):
         raise AssertionError("Did not correctly initiate mmground restart 1 with the restart file snap_for_mm_r1.rst")
+    subprocess.call(['rm', '-rf', 'mmground'])
