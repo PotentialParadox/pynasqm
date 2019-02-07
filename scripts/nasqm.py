@@ -87,10 +87,11 @@ def restart(job_id, restart_attempt):
                      "--restart", "{}".format(restart_attempt)])
     exit()
 
-def manage_restart(job_id, n_runs, restart_attempt):
-    if should_restart(n_runs, restart_attempt):
+def manage_restart(job_id, user_input, restart_attempt):
+    if should_restart(user_input.n_ground_runs, restart_attempt):
         print("restarting")
         restart(job_id, restart_attempt+1)
+    user_input.restart_attempt = 0
 
 def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
@@ -99,7 +100,7 @@ def run_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
     groundStateDynamics(md_qmmm_amb, user_input)
-    manage_restart(0, user_input.n_ground_runs, user_input.restart_attempt)
+    manage_restart(0, user_input, user_input.restart_attempt)
 
 
 def run_absorption_trajectories(input_ceon, user_input):

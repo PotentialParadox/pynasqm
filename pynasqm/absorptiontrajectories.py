@@ -1,6 +1,8 @@
 from pynasqm.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
+import pytraj as pt
 import pynasqm.nasqmslurm as nasqm_slurm
+from pynasqm.utils import mkdir
 import os
 
 import subprocess
@@ -14,7 +16,6 @@ class AbsTrajectories(Trajectories):
         self._child_root = 'nasqm_abs_'
         self._job_suffix = 'abs'
         self._parent_restart_root = 'ground_snap'
-        self._parent_trajectory_root = 'nasqm_ground'
         self._number_frames_in_parent = user_input.n_mcrd_frames_gs * user_input.n_ground_runs
         self._amber_restart = False
 
@@ -35,10 +36,11 @@ class AbsTrajectories(Trajectories):
         return "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(trajectory, restart, trajectory, restart)
 
     def start_from_mmground(self):
-        self._check_trajins(["nasqm_ground.nc"])
+        mm_traj = "mmground/nasqm_ground.nc"
+        self._check_trajins([mm_traj])
         self._create_directories()
         restart_step = int(self._number_frames_in_parent / self._number_trajectories)
-        nasqm_cpptraj.create_restarts(amber_input=self._parent_trajectory_root,
+        nasqm_cpptraj.create_restarts(amber_inputfile=mm_traj,
                                       output=self._parent_restart_root, step=restart_step)
         self._move_restarts()
 
@@ -83,18 +85,18 @@ class AbsTrajectories(Trajectories):
         return "{}.{}".format(self._parent_restart_root, index+1)
 
     def _trajins(self):
-        return ["{}/ground_snap.{}".format(i, i) for i in range(1, self._number_trajectories+1)]
+        return [self.restart_path(traj, self._user_input.restart_attempt)
+                for traj in range(1, self._number_trajectories+1)]
 
     def _create_directories(self):
-        if not os.path.exists("abs"):
-            os.mkdir("abs")
+        mkdir("abs")
         for i in range(1, self._number_trajectories + 1):
             directory = "abs/traj_{}".format(i)
             restart_directory = "abs/traj_{}/restart_{}".format(i, self._user_input.restart_attempt)
-            if not os.path.exists(directory):
-                os.mkdir(directory)
-            if not os.path.exists(restart_directory):
-                os.mkdir(restart_directory)
+            nmr_directory = "abs/traj_{}/nmr".format(i)
+            mkdir(directory)
+            mkdir(restart_directory)
+            mkdir(nmr_directory)
 
     def hpc_coordinate_files(self):
         return ["snap_for_abs_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
@@ -102,3 +104,8 @@ class AbsTrajectories(Trajectories):
     def pc_coordinate_files(self):
         return ["snap_for_abs_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
                 for i in range(1, self._number_trajectories+1)]
+
+    def _nmrdirs(self):
+        return ["abs/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
+
+

@@ -14,12 +14,14 @@ class NMRManager:
         self._distances = distances
         self._dist_files = dist_files
 
-    def update(self):
-        self.write_dist_files()
+    def update(self, nmr_directories=None):
+        self.write_dist_files(nmr_directories)
         self.update_inputs()
 
-    def write_dist_files(self):
-        for trajectory in range(self._get_number_trajectories()):
+    def write_dist_files(self, nmr_directories=None):
+        if nmr_directories is None:
+            nmr_directories = ["{}".format(i) for i in range(1, self._get_number_trajectories())]
+        for trajectory, directory in zip(range(self._get_number_trajectories()), nmr_directories):
             restricted_atoms1 = self._restricted_atoms[trajectory].solute_atoms
             restricted_atoms2 = self._restricted_atoms[trajectory].solvent_atoms
             desired_distances = self._distances[trajectory]
@@ -28,19 +30,23 @@ class NMRManager:
                     raise ValueError("Desired distance {} for traj {} greater than 20, "\
                                      "possibly too many nearest solvent".format(distance,
                                                                                 trajectory+1))
-            file_name = self._create_dist_file_name(trajectory)
-            self._dist_files.append((file_name.split('/'))[1])
+            file_name = self._create_dist_file_name(directory, trajectory)
+            self._dist_files.append(self.toInputPath(file_name))
             nmrfactory = NMRWriterFactory(restricted_atoms1, restricted_atoms2, desired_distances)
             nmrwriter = nmrfactory.get_writer()
             nmrwriter.write_to(file_name)
+
+    @staticmethod
+    def toInputPath(filename):
+        return "../nmr/{}".format((filename.split('/'))[-1])
 
     def update_inputs(self):
         for trajectory in range(self._number_trajectories):
             self._input_ceons[trajectory].set_nmr_directory(self._dist_files[trajectory])
 
     @staticmethod
-    def _create_dist_file_name(index):
-        return "{}/rst_{}.dist".format(index+1, index+1)
+    def _create_dist_file_name(directory, index):
+        return "{}/rst_{}.dist".format(directory, index+1)
 
 
     def _get_number_trajectories(self):

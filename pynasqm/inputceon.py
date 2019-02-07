@@ -209,7 +209,7 @@ class InputCeon:
         is_disang = None
         is_dumpave = None
         file_string = None
-        file_path = "{}{}".format(self.directory, self.amber_input)
+        file_path = "{}/{}".format(self.directory, self.amber_input)
         with open(file_path, 'r') as file_in:
             file_string = file_in.read()
             is_nmropt = re.search(p_nmropt, file_string)

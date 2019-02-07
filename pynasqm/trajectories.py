@@ -9,6 +9,7 @@ import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
 from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
+from pynasqm.utils import mkdir
 
 class Trajectories(ABC):
 
@@ -42,10 +43,18 @@ class Trajectories(ABC):
     def create_inputceon_copies(self):
         input_ceons = []
         attempt = self._user_input.restart_attempt
+        mkdir("abs")
         for index in range(1, self._number_trajectories+1):
-            file_name = "{}{}.in".format(self._child_root, index)
-            input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
+            file_name = "{}t{}_r{}.in".format(self._child_root, index, attempt)
+            mkdir("abs/traj_{}".format(index))
+            mkdir("abs/traj_{}/restart_{}".format(index, attempt))
+            directory = "{}/traj_{}/restart_{}".format(self._job_suffix, index, attempt)
+            input_ceons.append(self._input_ceons[0].copy(directory, file_name))
         self._input_ceons = input_ceons
+
+    @abstractmethod
+    def _nmrdirs(self):
+        pass
 
     def _update_input_files(self):
         n_qm_solvents = self._user_input.number_nearest_solvents
@@ -53,8 +62,9 @@ class Trajectories(ABC):
             center_mask = self._user_input.mask_for_center
             trajins = self._trajins()
             self._check_trajins(trajins)
+            nmrdirs = self._nmrdirs()
             closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
-                                           trajins, center_mask)
+                                           trajins, center_mask, nmrdirs)
             closest_outputs = closest_runner.create_closest_outputs()
             mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
             mask_updater.update_masks()
@@ -63,16 +73,16 @@ class Trajectories(ABC):
                 parmtop = "m1.prmtop"
                 restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
                 distances = self._get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
-                NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update()
+                NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update(nmrdirs)
 
     def _get_distances(self, parmtop, trajins, closest_outputs, nresidues):
         center_mask = self._user_input.mask_for_center
         added_buffer = 0.0
         list_distances = []
-        for traj in range(self._number_trajectories):
+        for traj, nmrdir in zip(range(self._number_trajectories), self._nmrdirs()):
             residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
             trajdist = TrajDistance(parmtop, center_mask)
-            distances = [trajdist(trajins[traj], residue, traj) + added_buffer for residue in residues]
+            distances = [trajdist(trajins[traj], residue, traj, nmrdir) + added_buffer for residue in residues]
             maxdistance = max(distances)
             newdistances = [maxdistance for _ in distances]
             distances = newdistances
@@ -129,6 +139,14 @@ class Trajectories(ABC):
             return ["m1.prmtop"]
         return ["m1.prmtop"] * self._number_trajectories
 
+    def traj_indexes(self):
+        return range(1, self._number_trajectories+1)
+
+    def _output_directories(self):
+        restart = self._user_input.restart_attempt
+        return ["abs/traj_{}/restart_{}".format(traj, restart)
+                for traj in self.traj_indexes()]
+
     def create_amber(self):
         amber = Amber()
         roots = None
@@ -140,7 +158,7 @@ class Trajectories(ABC):
         else:
             roots = ["{}t{}_r{}".format(self._child_root, i, restart_attempt)
                      for i in range(1, self._number_trajectories+1)]
-            restart_files = ["snap_for_{}_t${}_r{}.rst".format(self._job_suffix, i, restart_attempt+1)
+            restart_files = ["snap_for_{}_t{}_r{}.rst".format(self._job_suffix, i, restart_attempt+1)
                              for i in range(1, self._number_trajectories+1)]
             amber.prmtop_files = ["m1.prmtop"] * self._number_trajectories
         amber.input_roots = roots
@@ -149,6 +167,7 @@ class Trajectories(ABC):
         amber.export_roots = roots
         amber.coordinate_files = self.coordinate_files()
         amber.prmtop_files = self.prmtop_files()
+        amber.directories = self._output_directories()
         return amber
 
     def create_slurm(self, amber):
