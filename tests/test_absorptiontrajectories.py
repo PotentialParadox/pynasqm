@@ -7,6 +7,7 @@ import types
 import pytest
 from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.inputceon import InputCeon
+from pynasqm.utils import mkdir
 
 def setup_module(module):
     '''
@@ -51,19 +52,34 @@ def inputCeon():
 
 def test_absCreateRestarts(userInput, inputCeon):
     '''
-    Create the input files for the initial trajectory part of two trajectories
+    Create the restart files for the initial trajectory part of two trajectories
     '''
     abs_traj = AbsTrajectories(userInput, inputCeon)
     abs_traj.create_restarts_from_parent()
     if not os.path.isfile("abs/traj_1/restart_0/snap_for_abs_t1_r0.rst"):
-        raise AssertionError("AbsTrajectory did not create ground_snap.1")
+        raise AssertionError("AbsTrajectory did not create snap_for_abs_t1_r0.rst")
     if not os.path.isfile("abs/traj_2/restart_0/snap_for_abs_t2_r0.rst"):
-        raise AssertionError("AbsTrajectory did not create ground_snap.2")
-    if os.path.isfile("ground_snap.3"):
+        raise AssertionError("AbsTrajectory did not create snap_for_abs_t2_r0.rst")
+    if os.path.isdir("ground_snap.3"):
         raise AssertionError("AbsTrajectory created too many ground_snaps")
-    if os.path.isdir('3'):
+    if os.path.isdir('"abs/traj_3'):
         raise AssertionError("AbsTrajectory created too many directories")
+    if os.path.isdir('"abs/traj_1/nmr'):
+        raise AssertionError("AbsTrajectory did not create the nmr directory for traj_1")
+    if os.path.isdir('"abs/traj_2/nmr'):
+        raise AssertionError("AbsTrajectory did not create the nmr directory for traj_2")
     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+
+def test_absInputFileCopying(userInput, inputCeon):
+    '''
+    Create the input files for the intial part of 2 trajectories
+    '''
+    userInput.restart_attempt = 0
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.create_inputceon_copies()
+    if not os.path.isfile("abs/traj_1/restart_0/nasqm_abs_t1_r0.in"):
+        raise AssertionError("AbsTrajectory did not create nasqm_abs_t1_r0.in")
+
 
 def test_absCreateRestarts1(userInput, inputCeon):
     '''
@@ -111,7 +127,7 @@ def test_absCreateRestarts1(userInput, inputCeon):
         raise AssertionError("AbsTrajectory created too many trajectories")
     if os.path.isdir("abs/traj_1/restart_2"):
         raise AssertionError("AbsTrajectory created too many restarts")
-    subprocess.run(['rm', '-rf', 'traj_1', './convert_to_crd.out', './convert_to_crd.out'])
+    subprocess.run(['rm', '-rf', 'abs'])
 
 def test_absPrepareDynamics0(userInput, inputCeon):
     '''
