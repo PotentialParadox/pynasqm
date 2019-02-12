@@ -129,6 +129,7 @@ def test_absCreateRestarts1(userInput, inputCeon):
         raise AssertionError("AbsTrajectory created too many restarts")
     subprocess.run(['rm', '-rf', 'abs'])
 
+
 def test_absPrepareDynamics0(userInput, inputCeon):
     '''
     Prepare dynamics for the zeroth restart of two trajectories
@@ -152,3 +153,32 @@ def test_absPrepareDynamics0(userInput, inputCeon):
     open('failed_attempt.txt', 'w').write(slurm_file)
     assert slurm_file == answer
     subprocess.run(['rm', 'failed_attempt.txt'])
+
+def test_restart_on_failed(userInput, inputCeon):
+    '''
+    Make sure the program doesn't crash if the trajectory we are restarting from a failed trajectory.
+    If rst isn't there, make a dummy. I can let amber handle the failure.
+    In the test below the second trajectory is mocked to fail.
+    '''
+    userInput.n_snapshots_gs = 2
+    userInput.n_abs_runs = 2
+    userInput.restart_attempt = 1
+    if not os.path.exists("abs"):
+        os.mkdir("abs")
+        os.mkdir("abs/traj_1")
+        os.mkdir("abs/traj_1/restart_0")
+        os.mkdir("abs/traj_2")
+        os.mkdir("abs/traj_2/restart_0")
+    open("abs/traj_1/restart_0/snap_for_abs_t1_r1.rst", 'w').close()
+    # Failure here
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if not os.path.isfile("abs/traj_2/restart_1/snap_for_abs_t2_r1.rst"):
+        raise AssertionError("AbsTrajectory did not create a dummy snap_for_abs_t2_r1")
+    if os.path.isdir("abs/traj_3"):
+        raise AssertionError("AbsTrajectory created too many trajectories")
+    if os.path.isdir("abs/traj_1/restart_2"):
+        raise AssertionError("AbsTrajectory created too many restarts")
+    subprocess.run(['rm', '-rf', 'abs'])
+
+

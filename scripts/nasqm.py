@@ -110,6 +110,7 @@ def run_absorption_trajectories(input_ceon, user_input):
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
     AbsTrajectories(user_input, input_ceon).run()
+    manage_restart(1, user_input, user_input.restart_attempt)
 
 def run_absorption_collection(user_input):
     '''

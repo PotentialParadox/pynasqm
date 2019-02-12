@@ -104,6 +104,9 @@ def print_failed(failed_trajs):
     failed_string += "failed and are being skipped in the calculation of spectra"
     print(failed_string)
 
+def amber_outputs(suffix, traj_id, n_restarts):
+    return ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.out".format(suffix, traj_id, r, suffix, traj_id, r)
+            for r in range(n_restarts+1)]
 
 def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     """
@@ -111,17 +114,16 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     """
     output_stream = io.StringIO()
     failed_jobs = []
-    for i in range(n_trajectories):
-        amber_outputs = ['{}/nasqm_{}_r{}_t{}.out'.format(i+1, suffix, restart, i+1)
-                         for restart in range(n_restarts+1)]
-        if traj_finished(amber_outputs):
-            for amber_outfile in amber_outputs:
+    for traj in range(1, n_trajectories+1):
+        amb_outs = amber_outputs(suffix, traj, n_restarts)
+        if traj_finished(amb_outs):
+            for amber_outfile in amb_outs:
                 input_stream = open(amber_outfile, 'r')
                 find_nasqm_excited_state(input_stream, output_stream,
                                          states=[j for j in range(1, n_states+1)])
                 input_stream.close()
         else:
-            failed_jobs.append(i+1)
+            failed_jobs.append(traj)
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()

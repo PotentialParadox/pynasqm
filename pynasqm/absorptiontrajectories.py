@@ -55,6 +55,8 @@ class AbsTrajectories(Trajectories):
                                                                                    restart-1,
                                                                                    traj,
                                                                                    restart)
+            if not os.path.isfile(source_path):
+                subprocess.call(['touch', source_path])
             output_path = "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(traj,
                                                                                    restart,
                                                                                    traj,

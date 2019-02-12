@@ -26,7 +26,8 @@ class Trajectories(ABC):
         self._set_initial_input()
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
-        self._update_input_files()
+        if self._user_input.restart_attempt == 0 and self._job_suffix == "abs":
+            self._update_input_files()
         self._print_header("Running Dynamics")
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
