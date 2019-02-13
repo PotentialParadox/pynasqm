@@ -46,15 +46,23 @@ def str2bool(v):
     else:
         raise TypeError('Boolean value expected.')
 
-def copy_file(source_path, output_path):
-    subprocess.call(['cp', source_path, output_path])
-
-def copy_files(lst, source_directory, output_directory):
-    for item in lst:
-        source = "{}/{}".format(source_directory, item)
-        output = "{}/{}".format(output_directory, item)
-        copy_file(source, output)
-
 def mkdir(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
+
+def touch(output_path):
+    subprocess.call(['touch', output_path])
+
+def copy_file(source_path, output_path, force=False):
+    if not os.path.isfile(source_path):
+        if force:
+            touch(source_path)
+        else:
+            raise AssertionError("{} is missing".format(source_path))
+    subprocess.call(['cp', source_path, output_path])
+
+def copy_files(sources, outputs, force=False):
+    for source, output in zip(sources, outputs):
+        copy_file(source, output, force)
+
+

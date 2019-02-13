@@ -72,7 +72,9 @@ def choose_restart(user_input):
 def copy_inputs(user_input, source_directory, output_directory):
     restart_file = choose_restart(user_input)
     basics = ["m1.prmtop", "input.ceon", restart_file]
-    copy_files(basics, source_directory, output_directory)
+    source_files = ["{}/{}".format(source_directory, b) for b in basics]
+    output_files = ["{}/{}".format(output_directory, b) for b in basics]
+    copy_files(source_files, output_files)
 
 def choose_source_directory(restart_attempt):
     if restart_attempt == 0:

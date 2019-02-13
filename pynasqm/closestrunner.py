@@ -17,10 +17,11 @@ class ClosestRunner:
     def get_trajins(self):
         return self._trajins
 
-    def create_closest_outputs(self):
+    def create_closest_outputs(self, run=True):
         writer = ClosestWriter(self._trajins, self._n_solvents, self._focus_mask, self._directories)
-        writer.write()
-        self._run_closest_scripts(writer.script_files)
+        if run:
+            writer.write()
+            self._run_closest_scripts(writer.script_files)
         return writer.closeouts
 
     @staticmethod

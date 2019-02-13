@@ -31,9 +31,9 @@ def test_write_dist_files():
     restricted_atoms.solute_atoms = [[1]]
     atom_array = [restricted_atoms]
     distances = [[2.81]]
-    writer = NMRManager(input_ceons, closest_outputs, atom_array, distances)
+    writer = NMRManager(input_ceons, closest_outputs, atom_array)
     result_file = "rst_1.dist"
-    writer.write_dist_files()
+    writer.write_dist_files(distances)
     result = open("1/{}".format(result_file), 'r').read()
     answer_file = "nmr_manager_test.dist"
     answer = open(answer_file, 'r').read()
@@ -51,8 +51,7 @@ def test_update_inputs():
     atom_array = [restricted_atoms]
     closest_outputs = ["closest_1.txt"]
     dist_file_input = ['./rst_1.dist']
-    distances = [1, 1, 1]
-    manager = NMRManager(input_ceons, closest_outputs, atom_array, distances, dist_files=dist_file_input)
+    manager = NMRManager(input_ceons, closest_outputs, atom_array, dist_files=dist_file_input)
     manager.update_inputs()
     answer = open("nmr_manager_test.in", 'r').read()
     result = open("1/" + test_name, 'r').read()

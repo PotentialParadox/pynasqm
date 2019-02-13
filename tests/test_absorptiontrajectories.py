@@ -44,6 +44,9 @@ def userInput():
     user_input.n_mcrd_frames_gs = 5
     user_input.n_ground_runs = 2
     user_input.restart_attempt = 0
+    user_input.number_nearest_solvents = 1
+    user_input.mask_for_center = ":1"
+    user_input.restrain_solvents = True
     return user_input
 
 @pytest.fixture
@@ -54,6 +57,7 @@ def test_absCreateRestarts(userInput, inputCeon):
     '''
     Create the restart files for the initial trajectory part of two trajectories
     '''
+    userInput.restart_attempt = 0
     abs_traj = AbsTrajectories(userInput, inputCeon)
     abs_traj.create_restarts_from_parent()
     if not os.path.isfile("abs/traj_1/restart_0/snap_for_abs_t1_r0.rst"):
@@ -181,4 +185,24 @@ def test_restart_on_failed(userInput, inputCeon):
         raise AssertionError("AbsTrajectory created too many restarts")
     subprocess.run(['rm', '-rf', 'abs'])
 
+
+def test_nmr_update(userInput, inputCeon):
+    '''Assure that the input files of each restart refer to the same nmr data as
+    the original trajectory
+    '''
+    userInput.restart_attempt = 0
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.gen_inputfiles()
+    amb_input = open("abs/traj_2/restart_0/nasqm_abs_t2_r0.in").read()
+    if "DUMPFREQ" not in amb_input:
+        raise AssertionError("nasqm_abs_t2_r0.in was not updated for nmr")
+    subprocess.call(['rm', 'abs/traj_2/nmr/rst_2.dist'])
+    userInput.restart_attempt = 1
+    abs_traj = AbsTrajectories(userInput, inputCeon)
+    abs_traj.gen_inputfiles()
+    amb_input = open("abs/traj_2/restart_1/nasqm_abs_t2_r1.in").read()
+    if "DUMPFREQ" not in amb_input:
+        raise AssertionError("nasqm_abs_t2_r1.in was not updated for nmr")
+    if os.path.isfile("abs/traj_2/nmr/rst_2.dist"):
+        raise AssertionError("absorption created new nmr data on restart")
 

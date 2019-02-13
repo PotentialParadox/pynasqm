@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 import os.path
+import subprocess
 from os import mkdir
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
-from pynasqm.nmrmanager import NMRManager
+from pynasqm.nmrmanager import NMRManager, create_dist_file_name, toInputPath
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
@@ -24,13 +25,15 @@ class Trajectories(ABC):
 
     def run(self):
         self._set_initial_input()
-        self.create_restarts_from_parent()
-        self.create_inputceon_copies()
-        if self._user_input.restart_attempt == 0 and self._job_suffix == "abs":
-            self._update_input_files()
+        self.gen_inputfiles()
         self._print_header("Running Dynamics")
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
+
+    def gen_inputfiles(self):
+        self.create_restarts_from_parent()
+        self.create_inputceon_copies()
+        self._update_nmr_info()
 
     @staticmethod
     def _print_header(header):
@@ -44,12 +47,13 @@ class Trajectories(ABC):
     def create_inputceon_copies(self):
         input_ceons = []
         attempt = self._user_input.restart_attempt
-        mkdir("abs")
+        job = self._job_suffix
+        mkdir("{}".format(job))
         for index in range(1, self._number_trajectories+1):
             file_name = "{}t{}_r{}.in".format(self._child_root, index, attempt)
-            mkdir("abs/traj_{}".format(index))
-            mkdir("abs/traj_{}/restart_{}".format(index, attempt))
-            directory = "{}/traj_{}/restart_{}".format(self._job_suffix, index, attempt)
+            mkdir("{}/traj_{}".format(job, index))
+            mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
+            directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
             input_ceons.append(self._input_ceons[0].copy(directory, file_name))
         self._input_ceons = input_ceons
 
@@ -57,24 +61,33 @@ class Trajectories(ABC):
     def _nmrdirs(self):
         pass
 
-    def _update_input_files(self):
+    def should_update_nmr(self):
+        return (self._user_input.restart_attempt == 0
+                and self._job_suffix == "abs"
+                and self._user_input.restrain_solvents is True
+                and self._user_input.number_nearest_solvents > 0)
+
+    def _update_nmr_info(self):
         n_qm_solvents = self._user_input.number_nearest_solvents
-        if n_qm_solvents > 0:
-            center_mask = self._user_input.mask_for_center
-            trajins = self._trajins()
-            self._check_trajins(trajins)
-            nmrdirs = self._nmrdirs()
-            closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
-                                           trajins, center_mask, nmrdirs)
-            closest_outputs = closest_runner.create_closest_outputs()
-            mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
-            mask_updater.update_masks()
-            if self._user_input.restrain_solvents is True:
-                trajins = closest_runner.get_trajins()
-                parmtop = "m1.prmtop"
-                restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-                distances = self._get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
-                NMRManager(self._input_ceons, closest_outputs, restricted_atoms, distances).update(nmrdirs)
+        nmrdirs = self._nmrdirs()
+        center_mask = self._user_input.mask_for_center
+        trajins = self._trajins()
+        self._check_trajins(trajins)
+        closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
+                                        trajins, center_mask, nmrdirs)
+        closest_outputs = closest_runner.create_closest_outputs(run=self.should_update_nmr())
+        mask_updater = SolventMaskUpdater(self._input_ceons, self._user_input, closest_outputs)
+        mask_updater.update_masks()
+        trajins = closest_runner.get_trajins()
+        parmtop = "m1.prmtop"
+        restricted_atoms = None
+        if self.should_update_nmr():
+            restricted_atoms = self._get_list_restricted_atoms(parmtop, trajins, closest_outputs)
+            distances = self._get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
+            NMRManager(self._input_ceons, closest_outputs, restricted_atoms).update(distances, nmrdirs)
+        dist_files = [toInputPath(create_dist_file_name(directory, traj))
+                      for (directory, traj) in zip(nmrdirs, range(self._number_trajectories))]
+        NMRManager(self._input_ceons, closest_outputs, restricted_atoms, dist_files).update_inputs()
 
     def _get_distances(self, parmtop, trajins, closest_outputs, nresidues):
         center_mask = self._user_input.mask_for_center
@@ -145,7 +158,8 @@ class Trajectories(ABC):
 
     def _output_directories(self):
         restart = self._user_input.restart_attempt
-        return ["abs/traj_{}/restart_{}".format(traj, restart)
+        job = self._job_suffix
+        return ["{}/traj_{}/restart_{}".format(job, traj, restart)
                 for traj in self.traj_indexes()]
 
     def create_amber(self):
@@ -194,3 +208,34 @@ class Trajectories(ABC):
         if index == -1:
             index = 0
         return "{}{}".format(self._child_root, index+1)
+
+
+    def _create_directories(self):
+        job = self._job_suffix
+        mkdir("{}".format(job))
+        for i in range(1, self._number_trajectories + 1):
+            directory = "{}/traj_{}".format(job, i)
+            restart_directory = "{}/traj_{}/restart_{}".format(job, i,
+                                                               self._user_input.restart_attempt)
+            nmr_directory = "{}/traj_{}/nmr".format(job, i)
+            mkdir(directory)
+            mkdir(restart_directory)
+            mkdir(nmr_directory)
+
+    def start_from_restart(self):
+        restart = self._user_input.restart_attempt
+        job = self._job_suffix
+        for traj in range(1, self._number_trajectories+1):
+            source_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
+                                                                                  restart-1,
+                                                                                  job,
+                                                                                  traj,
+                                                                                  restart)
+            if not os.path.isfile(source_path):
+                subprocess.call(['touch', source_path])
+            output_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
+                                                                                   restart,
+                                                                                   job,
+                                                                                   traj,
+                                                                                   restart)
+            subprocess.call(['cp', source_path, output_path])
