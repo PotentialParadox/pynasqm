@@ -15,6 +15,7 @@ from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
 from pynasqm.sed import sed_inplace, sed_global
+from pynasqm.nasqmslurm import restart_nasqm
 import subprocess
 
 
@@ -84,18 +85,15 @@ def should_restart(n_runs, restart_attempt):
 
 def restart(user_input, job_id, restart_attempt):
     if user_input.is_hpc:
-        retart_for_hpc(user_input, job_id, restart_attempt)
+        restart_nasqm(user_input, job_id, restart_attempt)
     else:
         restart_for_pc(job_id, restart_attempt)
-
-def restart_for_hpc(user_input, job_id, restart_attempt):
     exit()
 
 
 def restart_for_pc(job_id, restart_attempt):
     subprocess.call(["nasqm.py", "--job", "{}".format(job_id),
                      "--restart", "{}".format(restart_attempt)])
-    exit()
 
 def manage_restart(job_id, user_input, restart_attempt):
     if should_restart(user_input.n_ground_runs, restart_attempt):
