@@ -34,7 +34,7 @@ def build_trajectory_command(directory, amber, n_trajectories, start):
                                                                     outputfile)
     command += "-c {} -p m1.prmtop ".format(startfile)
     command += "-r {} -x {}.nc &\n".format(restartfile, outputfile) \
-               + "    cd ..\n" \
+               + "    cd ../../..\n" \
                "done\n" \
                "wait\n"
     return command
@@ -63,3 +63,12 @@ def run_nasqm_slurm_files(slurm_files):
     Run the files produced by slurm_trajectory_files
     '''
     slurm.run_slurm(slurm_files[0], slurm_files[1])
+
+def create_restart_header(user_input):
+    header = create_slurm_header(user_input)
+    header["walltime"] = "95:00:00"
+    header["ppn"] = 1
+    return header
+
+def restart_nasqm(user_input, job_id, restart_attempt):
+    slurm_header = create_restart_header(user_input)

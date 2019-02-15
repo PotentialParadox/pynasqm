@@ -146,7 +146,7 @@ def test_absPrepareDynamics0(userInput, inputCeon):
     assert slurm_file == answer
     subprocess.run(['rm', 'failed_attempt.txt'])
 
-def test_absPrepareDynamics0(userInput, inputCeon):
+def test_absPrepareDynamics1(userInput, inputCeon):
     '''
     Prepare dynamics for the first restart of two trajectories
     '''

@@ -20,6 +20,6 @@ do
     ID="$((${FIRST_COUNT} + ${i}))"
     cd flu/traj_${ID}/restart_0
     $AMBERHOME/bin/sander -O -i nasqm_flu_t${ID}_r0.in -o nasqm_flu_t${ID}_r0.out -c snap_for_flu_t${ID}_r0.rst -p m1.prmtop -r snap_for_flu_t${ID}_r1.rst -x nasqm_flu_t${ID}_r0.nc &
-    cd ..
+    cd ../../..
 done
 wait

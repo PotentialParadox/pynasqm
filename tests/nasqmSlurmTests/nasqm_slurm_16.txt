@@ -20,6 +20,6 @@ do
     ID="$((${FIRST_COUNT} + ${i}))"
     cd ${ID}
     $AMBERHOME/bin/sander -O -i nasqm_abs_${ID}.in -o nasqm_abs_${ID}.out -c ground_snap.${ID} -p m1.prmtop -r nasqm_abs_${ID}.rst -x nasqm_abs_${ID}.nc &
-    cd ..
+    cd ../../..
 done
 wait
