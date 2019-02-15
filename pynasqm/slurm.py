@@ -77,30 +77,29 @@ def run_slurm(slurm_script1, slurm_script2=None):
     slurm_id1 = None
     slurm_id2 = None
     if slurm_script1:
-        open('nasqm1.sbatch', 'w').write(slurm_script1)
-        p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm1.sbatch'], shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, universal_newlines=True)
-        stdout_value, stderr_value = proc.communicate()
-        slurm_id1 = str(re.findall(p_id, stdout_value)[0])
-        if stderr_value == "Error":
-            return None
-        print("Submitted nasqm1.sbatch Job: ", slurm_id1)
+        file_name = 'nasqm1.sbatch'
+        slurm_id1 = submit_job(file_name, slurm_script1)
     if slurm_script2:
-        open('nasqm2.sbatch', 'w').write(slurm_script2)
-        p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm2.sbatch'], shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, universal_newlines=True)
-        stdout_value, stderr_value = proc.communicate()
-        slurm_id2 = str(re.findall(p_id, stdout_value)[0])
-        if stderr_value == "Error":
-            return None
-        print("Submitted nasqm2.sbatch Job: ", slurm_id2)
+        file_name = 'nasqm2.sbatch'
+        slurm_id2 = submit_job(file_name, slurm_script2)
     if slurm_script1:
-        print("Waiting for nasqm1.sbatch")
-        wait_for_job_finish(slurm_id1)
-        print("Job: ", slurm_id1, "completed")
+        wait_for_job(slurm_id1)
     if slurm_script2:
-        print("Waiting for nasqm2.sbatch")
-        wait_for_job_finish(slurm_id2)
-        print("Job: ", slurm_id2, "completed")
+        wait_for_job(slurm_id2)
+
+def wait_for_job(slurm_id):
+    print("Waiting for {}".format(slurm_id))
+    wait_for_job_finish(slurm_id)
+    print("Job: ", slurm_id, "completed")
+
+def submit_job(file_name, slurm_script):
+    open(file_name, 'w').write(slurm_script)
+    p_id = re.compile(r'\d+')
+    proc = subprocess.Popen(['sbatch {}'.format(file_name)], shell=True, stdout=subprocess.PIPE,
+                            stderr=subprocess.PIPE, universal_newlines=True)
+    stdout_value, stderr_value = proc.communicate()
+    slurm_id = str(re.findall(p_id, stdout_value)[0])
+    if stderr_value == "Error":
+        raise RuntimeError("Was unable to submit {} to slurm".format(file_name))
+    print("Submitted {} Job: {}".format(file_name, slurm_id))
+    return slurm_id

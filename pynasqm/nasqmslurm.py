@@ -70,5 +70,23 @@ def create_restart_header(user_input):
     header["ppn"] = 1
     return header
 
+def build_restart_command(job_id, restart_attempt):
+    return "source ~/myapps/load_exports\n"\
+        "module load intel/2017\n"\
+        "source /ufrc/roitberg/dtracy/amber/amber.sh\n"\
+        "\n"\
+        "nasqm.py --job {} --restart {}".format(job_id, restart_attempt)
+
+def nasqm_restart_script(user_input, job_id, restart_attempt):
+    header = create_restart_header(user_input)
+    restart_command = build_restart_command(job_id, restart_attempt)
+    title = "{}_restart".format(restart_attempt)
+    max_arrays = 1
+    slurm_script = slurm.Slurm(header)
+    return slurm_script.create_slurm_script(restart_command, title, max_arrays)
+
 def restart_nasqm(user_input, job_id, restart_attempt):
-    slurm_header = create_restart_header(user_input)
+    script = nasqm_restart_script(user_input, job_id, restart_attempt)
+    script_filename = "pynasqm_restart.sbatch"
+    slurm.submit_job(script_filename, script)
+    exit()

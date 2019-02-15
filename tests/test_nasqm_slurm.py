@@ -131,3 +131,11 @@ def test_slurm_trajectory_file_33(userinput):
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
     test_1 = open("nasqm_slurm_33.txt", 'r').read()
     assert (result1, result2) == (test_0, test_1)
+
+def test_nasqm_restart(userinput):
+    restart_attempt = 1
+    job_id = 1
+    result = nasqm_slurm.nasqm_restart_script(userinput, job_id, restart_attempt)
+    test = open("nasqm_restart.sbatch").read()
+    open("temp_failed.txt", 'w').write(result)
+    assert result == test
