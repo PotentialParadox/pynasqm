@@ -31,9 +31,6 @@ class AbsTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
 
-    @staticmethod
-    def restart_path(trajectory, restart):
-        return "abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(trajectory, restart, trajectory, restart)
 
     def start_from_mmground(self):
         mm_traj = "mmground/nasqm_ground.nc"
@@ -43,12 +40,12 @@ class AbsTrajectories(Trajectories):
                                       output=self._parent_restart_root, step=restart_step)
         self._move_restarts()
 
-    def create_restarts_from_parent(self):
+    def create_restarts_from_parent(self, override=True):
         self._create_directories()
         if self._user_input.restart_attempt == 0:
             self.start_from_mmground()
         else:
-            self.start_from_restart()
+            self.start_from_restart(override)
 
     def _move_restarts(self):
         for i, filename in enumerate(self._initial_snaps(), start=1):
@@ -67,9 +64,6 @@ class AbsTrajectories(Trajectories):
             return self._parent_restart_root
         return "{}.{}".format(self._parent_restart_root, index+1)
 
-    def _trajins(self):
-        return [self.restart_path(traj, self._user_input.restart_attempt)
-                for traj in range(1, self._number_trajectories+1)]
 
     def hpc_coordinate_files(self):
         return ["snap_for_abs_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]

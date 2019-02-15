@@ -127,17 +127,17 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
-    return output_string
+    return output_string, len(failed_jobs)
 
 def write_spectra_abs_input(user_input):
     '''
     Writes the approriately formatted data to spectra_abs.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    abs_string = accumulate_spectra(user_input.n_snapshots_gs,
-                                    user_input.n_abs_exc,
-                                    suffix='abs',
-                                    n_restarts=1)
+    abs_string, _ = accumulate_spectra(user_input.n_snapshots_gs,
+                                       user_input.n_abs_exc,
+                                       suffix='abs',
+                                       n_restarts=1)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
@@ -148,20 +148,22 @@ def write_spectra_flu_input(user_input):
     Writes the approriately formatted data to spectra_flu.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    fluor_string = accumulate_spectra(n_trajectories=user_input.n_snapshots_ex,
-                                      n_states=user_input.n_exc_states_propagate_ex_param,
-                                      suffix='flu')
+    fluor_string, nfailed = accumulate_spectra(n_trajectories=user_input.n_snapshots_ex,
+                                               n_states=user_input.n_exc_states_propagate_ex_param,
+                                               suffix='flu')
     # The timestep needs to be adjusted for the number of frames skipped
-    time_step = user_input.time_step * user_input.n_steps_to_print_exc
-    fluor_string = strip_timedelay(fluor_string, user_input.n_snapshots_ex,
+    time_step = user_input.time_step
+    n_trajectories = user_input.n_snapshots_ex - nfailed
+    fluor_string = strip_timedelay(fluor_string, n_trajectories,
                                    time_step,
                                    user_input.fluorescence_time_delay,
                                    user_input.n_steps_to_print_exc)
-    fluor_string = truncate_spectra(fluor_string, user_input.n_snapshots_ex,
+    fluor_string = truncate_spectra(fluor_string, n_trajectories,
                                           time_step,
                                           user_input.fluorescence_time_truncation,
                                           user_input.n_steps_to_print_exc)
     open('spectra_flu.input', 'w').write(fluor_string)
+    return n_trajectories
 
 def coeff_error_string(unlike):
     error_string = "Unlike Coefficients in trajectories: "
@@ -209,32 +211,3 @@ def write_omega_vs_time(n_trajectories, n_states=1):
         average_omegas_time.write(str(omega) + '\n')
     average_omegas_time.close()
 
-# def nasqm_flu_energies(n_trajectories, n_states=1, n_restarts=0):
-#     energies = read_nasqm_flu_energies(n_trajectories, n_states, n_restarts)
-#     averages = average_energies(energies, n_trajectories)
-#     write_nasqm_flu_energies(averages)
-
-# def average_energies(data, n_trajectories):
-#     n_rows_per_trajectory = int(data.shape[0] / n_trajectories)
-#     return [np.average(data[i::n_rows_per_trajectory])
-#             for i in range(n_rows_per_trajectory)]
-
-# def read_nasqm_flu_energies(n_trajectories, n_states=1, n_restarts=0):
-#     '''
-#     Reads the omega data from the amber output files
-#     '''
-#     state_range = range(1, n_states+1)
-#     output_stream = open('nasqm_flu_energies.txt', 'w')
-#     for i in range(n_trajectories):
-#         amber_outfile = '{}/nasqm_flu_{}.out'.format(i+1, i+1)
-#         input_stream = open(amber_outfile, 'r')
-#         find_excited_energies(input_stream, output_stream, state_range)
-#     output_stream.close()
-#     data = np.loadtxt('nasqm_flu_energies.txt')
-#     subprocess.run(['rm', 'nasqm_flu_energies.txt'])
-#     return data
-
-# def write_nasqm_flu_energies(averages):
-#     average_energies_time = open('nasqm_flu_energy_time.txt', 'w')
-#     for energy in averages:
-#         average_energies_time.write(str(energy) + '\n')

@@ -7,6 +7,7 @@ import types
 import pytest
 from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.inputceon import InputCeon
+from pynasqm.utils import mkdir, touch
 
 def setup_module(module):
     '''
@@ -42,6 +43,7 @@ def userInput():
     user_input.n_snapshots_ex = 2
     user_input.n_mcrd_frames_es = 5
     user_input.n_ground_runs = 2
+    user_input.n_flu_runs = 2
     user_input.n_abs_runs = 2
     user_input.restart_attempt = 0
     return user_input
@@ -50,43 +52,120 @@ def userInput():
 def inputCeon():
     return InputCeon(amber_input='md_qmmm_amb.in', directory='./')
 
-def test_createInputceonCopies0(userInput, inputCeon):
+def test_fluCreateFromAbs(userInput, inputCeon):
     '''
-    Create the input files needed for the zeroth restart of two trajectories at restart 0
+    Create the restart files for the initial trajectory part of two trajectories
+    '''
+    mkdir("abs")
+    mkdir("abs/traj_1")
+    mkdir("abs/traj_2")
+    mkdir("abs/traj_1/restart_1")
+    mkdir("abs/traj_2/restart_1")
+    mkdir("abs/traj_1/nmr")
+    mkdir("abs/traj_2/nmr")
+    touch("abs/traj_1/restart_1/snap_for_abs_t1_r2.rst")
+    touch("abs/traj_2/restart_1/snap_for_abs_t2_r2.rst")
+    open("abs/traj_1/nmr/rst_1.dist", 'w').write("rst_1")
+    open("abs/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
+    open("abs/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
+    open("abs/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
+    flu_traj = FluTrajectories(userInput, inputCeon)
+    override = False
+    flu_traj.create_restarts_from_parent(override)
+    if not os.path.isfile("flu/traj_1/restart_0/snap_for_flu_t1_r0.rst"):
+        raise AssertionError("FluTrajectory did not create snap_for_flu_t1_r0.rst")
+    if not os.path.isfile("flu/traj_2/restart_0/snap_for_flu_t2_r0.rst"):
+        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r0.rst")
+    if os.path.isdir("ground_snap.3"):
+        raise AssertionError("FluTrajectory created too many ground_snaps")
+    if os.path.isdir('"flu/traj_3'):
+        raise AssertionError("FluTrajectory created too many directories")
+    if open("flu/traj_1/nmr/rst_1.dist").read() != "rst_1":
+        raise AssertionError("FluTrajectory did not copy nmr data from abs for traj 1")
+    if open("flu/traj_2/nmr/rst_2.dist").read() != "rst_2":
+        raise AssertionError("FluTrajectory did not copy nmr data from abs for traj 2")
+    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'abs'])
+
+
+def test_fluCreateFromAbsFail(userInput, inputCeon):
+    '''
+    Make sure the program doesn't crash if the abs restart file wasn't created
+    In this instance the first trajectory didn't produce an appropriate output
+    '''
+    mkdir("abs")
+    mkdir("abs/traj_1")
+    mkdir("abs/traj_2")
+    mkdir("abs/traj_1/restart_1")
+    mkdir("abs/traj_2/restart_1")
+    mkdir("abs/traj_1/nmr")
+    mkdir("abs/traj_2/nmr")
+    open("abs/traj_1/nmr/rst_1.dist", 'w').write("rst_1")
+    open("abs/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
+    open("abs/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
+    open("abs/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
+    # Failed touch("abs/traj_2/restart_1/snap_for_abs_t1_r2.rst")
+    touch("abs/traj_2/restart_1/snap_for_abs_t2_r2.rst")
+    flu_traj = FluTrajectories(userInput, inputCeon)
+    flu_traj.create_restarts_from_parent()
+    if not os.path.isfile("flu/traj_1/restart_0/snap_for_flu_t1_r0.rst"):
+        raise AssertionError("FluTrajectory did not create a snap_for_flu_t1_r0.rst Dummy")
+    if not os.path.isfile("flu/traj_2/restart_0/snap_for_flu_t2_r0.rst"):
+        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r0.rst")
+    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'abs'])
+
+def test_fluCreateFromRestarts(userInput, inputCeon):
+    '''
+    Create the restart files for the second set of flu trajectories
+    '''
+    mkdir("flu")
+    mkdir("flu/traj_1")
+    mkdir("flu/traj_2")
+    mkdir("flu/traj_1/restart_0")
+    mkdir("flu/traj_2/restart_0")
+    mkdir("flu/traj_1/nmr")
+    mkdir("flu/traj_2/nmr")
+    touch("flu/traj_1/restart_0/snap_for_flu_t1_r1.rst")
+    touch("flu/traj_2/restart_0/snap_for_flu_t2_r1.rst")
+    open("flu/traj_1/nmr/rst_1.dist", 'w').write("rst_1")
+    open("flu/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
+    open("flu/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
+    open("flu/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
+    userInput.restart_attempt = 1
+    flu_traj = FluTrajectories(userInput, inputCeon)
+    override = False
+    flu_traj.create_restarts_from_parent(override)
+    if not os.path.isfile("flu/traj_1/restart_1/snap_for_flu_t1_r1.rst"):
+        raise AssertionError("FluTrajectory did not create snap_for_flu_t1_r1.rst")
+    if not os.path.isfile("flu/traj_2/restart_1/snap_for_flu_t2_r1.rst"):
+        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r1.rst")
+    if "rst_1" not in open("flu/traj_1/nmr/rst_1.dist").read():
+        raise AssertionError("FluTrajectory updated nmr of traj_1 during the first restart")
+    if "rst_2" not in open("flu/traj_2/nmr/rst_2.dist").read():
+        raise AssertionError("FluTrajectory updated nmr of traj_2 during the first restart")
+    if "rst_1" not in open("flu/traj_1/nmr/closest_1.txt").read():
+        raise AssertionError("FluTrajectory updated nmr of traj_1 during the first restart")
+    if "rst_2" not in open("flu/traj_2/nmr/closest_2.txt").read():
+        raise AssertionError("FluTrajectory updated nmr of traj_2 during the first restart")
+    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'abs'])
+
+
+def test_fluPrepareDynamics0(userInput, inputCeon):
+    '''
+    Prepare dynamics for the zeroth restart of two trajectories
     '''
     userInput.restart_attempt = 0
     fluTraj = FluTrajectories(userInput, inputCeon)
-    fluTraj.create_inputceon_copies()
-    if not os.path.isfile('1/nasqm_flu_1.in'):
-        print(subprocess.call(['ls', '1']))
-        raise AssertionError("FluTrajectory did not create 1/nasqm_abs_1.in")
-    if not os.path.isfile('2/nasqm_flu_2.in'):
-        print(subprocess.call(['ls', '2']))
-        raise AssertionError("FluTrajectory did not create 2/nasqm_abs_2.in")
-    subprocess.call(['rm', '1/nasqm_flu_1.in', '2/nasqm_flu_2.in'])
+    _, (_, slurm_file) = fluTraj.prepareDynamics()
+    answer = open("1of2_slurm_attempt_test.sbatch").read()
+    assert slurm_file == answer
 
-def test_createInputceonCopies1(userInput, inputCeon):
+
+def test_fluPrepareDynamics0(userInput, inputCeon):
     '''
-    Create the input files needed for the zeroth restart of two trajectories at restart 1
+    Prepare dynamics for the first restart of two trajectories
     '''
     userInput.restart_attempt = 1
     fluTraj = FluTrajectories(userInput, inputCeon)
-    fluTraj.create_inputceon_copies()
-    if not os.path.isfile('1/nasqm_flu_1.in'):
-        print(subprocess.call(['ls', '1']))
-        raise AssertionError("FluTrajectory did not create 1/nasqm_abs_1.in")
-    if not os.path.isfile('2/nasqm_flu_2.in'):
-        print(subprocess.call(['ls', '2']))
-        raise AssertionError("FluTrajectory did not create 2/nasqm_abs_2.in")
-    subprocess.call(['rm', '1/nasqm_flu_1.in', '2/nasqm_flu_2.in'])
-
-# def test_fluPrepareDynamics0(userInput, inputCeon):
-#     '''
-#     Prepare dynamics for the zeroth restart of two trajectories
-#     '''
-#     userInput.restart_attempt = 0
-#     fluTraj = FluTrajectories(userInput, inputCeon)
-#     _, (_, slurm_file) = fluTraj.prepareDynamics()
-#     answer = open("1of2_slurm_attempt_test.sbatch").read()
-#     assert slurm_file == answer
-
+    _, (_, slurm_file) = fluTraj.prepareDynamics()
+    answer = open("2of2_slurm_attempt_test.sbatch").read()
+    assert slurm_file == answer

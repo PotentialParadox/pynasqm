@@ -10,7 +10,7 @@ import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
 from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
-from pynasqm.utils import mkdir
+from pynasqm.utils import mkdir, copy_file
 
 class Trajectories(ABC):
 
@@ -121,9 +121,9 @@ class Trajectories(ABC):
                                                          closest_outputs[traj]))
         return list_restricted_atoms
 
-    @abstractmethod
     def _trajins(self):
-        pass
+        return [self.restart_path(traj, self._user_input.restart_attempt)
+                for traj in range(1, self._number_trajectories+1)]
 
     def _set_initial_input(self):
         pass
@@ -222,7 +222,7 @@ class Trajectories(ABC):
             mkdir(restart_directory)
             mkdir(nmr_directory)
 
-    def start_from_restart(self):
+    def start_from_restart(self, override):
         restart = self._user_input.restart_attempt
         job = self._job_suffix
         for traj in range(1, self._number_trajectories+1):
@@ -231,11 +231,15 @@ class Trajectories(ABC):
                                                                                   job,
                                                                                   traj,
                                                                                   restart)
-            if not os.path.isfile(source_path):
-                subprocess.call(['touch', source_path])
             output_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
                                                                                    restart,
                                                                                    job,
                                                                                    traj,
                                                                                    restart)
-            subprocess.call(['cp', source_path, output_path])
+            copy_file(source_path, output_path, force=override)
+
+    def restart_path(self, trajectory, restart):
+        return "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(self._job_suffix,
+                                                                      trajectory, restart,
+                                                                      self._job_suffix,
+                                                                      trajectory, restart)

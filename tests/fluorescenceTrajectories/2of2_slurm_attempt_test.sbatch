@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=MyJobFlu # A name for your job
+#SBATCH --job-name=MyJobflu # A name for your job
 #SBATCH --qos=roitberg # The queue for your job
-#SBATCH --output=MyJobFlu-%j.output # Output File
-#SBATCH --error=MyJobFlu-%j.err #Error File
+#SBATCH --output=MyJobflu-%j.output # Output File
+#SBATCH --error=MyJobflu-%j.err #Error File
 #SBATCH --mail-user=dtracy.uf@gmail.com # Email address
 #SBATCH --mail-type=END # What emails you want
 #SBATCH --nodes=1 #No. computers requested
@@ -18,8 +18,8 @@ do
     MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"
     FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"
     ID="$((${FIRST_COUNT} + ${i}))"
-    cd ${ID}
-    $AMBERHOME/bin/sander -O -i nasqm_flu_r1_t${ID}.in -o nasqm_flu_r1_t${ID}.out -c nasqm_flu_r0_t${ID}.rst -p m1.prmtop -r nasqm_flu_r1_t${ID}.rst -x nasqm_flu_r1_t${ID}.nc &
+    cd flu/traj_${ID}/restart_1
+    $AMBERHOME/bin/sander -O -i nasqm_flu_t${ID}_r1.in -o nasqm_flu_t${ID}_r1.out -c snap_for_flu_t${ID}_r1.rst -p m1.prmtop -r snap_for_flu_t${ID}_r2.rst -x nasqm_flu_t${ID}_r1.nc &
     cd ..
 done
 wait

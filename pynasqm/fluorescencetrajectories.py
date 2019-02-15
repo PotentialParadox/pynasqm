@@ -1,3 +1,5 @@
+import os
+from pynasqm.utils import copy_files
 from pynasqm.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
@@ -9,7 +11,7 @@ class FluTrajectories(Trajectories):
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_ex
         self._child_root = 'nasqm_flu_'
-        self._job_suffix = 'Flu'
+        self._job_suffix = 'flu'
         self._parent_restart_root = 'nasqm_abs_'
         self._amber_restart = True
 
@@ -17,11 +19,6 @@ class FluTrajectories(Trajectories):
         if index == -1:
             return "{}{}.rst".format(self._parent_restart_root, 1)
         return "{}{}.rst".format(self._parent_restart_root, index+1)
-
-    def _trajins(self):
-        trajs = self._number_trajectories
-        return ["{}/nasqm_abs_{}.rst".format(traj, traj)
-                for traj in range(1, trajs+1)]
 
     def doing_laser_excitation(self):
         return self._user_input.exc_state_init_ex_param == -1
@@ -39,6 +36,41 @@ class FluTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
+
+    @staticmethod
+    def test_for_abs():
+        if not os.path.isdir("abs"):
+            raise AssertionError("abs directory not found.\n"\
+                                 "Did you run the ground state?\n")
+
+    def start_from_abs(self, override):
+        self.copy_restarts_from_abs(override)
+        self.copy_nmr_from_abs()
+
+    def copy_nmr_from_abs(self):
+        source_files = ["abs/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
+        output_files = ["flu/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
+        copy_files(source_files, output_files)
+        source_files = ["abs/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indexes()]
+        output_files = ["flu/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indexes()]
+        copy_files(source_files, output_files)
+
+    def copy_restarts_from_abs(self, override):
+        self.test_for_abs()
+        r = self._user_input.n_abs_runs - 1
+        source_files = ["abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(t, r, t, r+1)
+                        for t in self.traj_indexes()]
+        output_files = ["flu/traj_{}/restart_0/snap_for_flu_t{}_r0.rst".format(t, t)
+                        for t in self.traj_indexes()]
+        copy_files(source_files, output_files, force=override)
+
+
+    def create_restarts_from_parent(self, override=True):
+        self._create_directories()
+        if self._user_input.restart_attempt == 0:
+            self.start_from_abs(override)
+        else:
+            self.start_from_restart(override)
 
     def _create_inputceon_copies(self):
         input_ceons = []
@@ -58,8 +90,11 @@ class FluTrajectories(Trajectories):
         self._input_ceons = input_ceons
 
     def hpc_coordinate_files(self):
-        return ["nasqm_abs_${ID}.rst"]
+        return ["snap_for_flu_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
 
     def pc_coordinate_files(self):
-        return ["nasqm_abs_{}.rst".format(traj)
+        return ["snap_for_flu_t{}_r{}.rst".format(traj, self._user_input.restart_attempt)
                 for traj in range(1, self._number_trajectories+1)]
+
+    def _nmrdirs(self):
+        return ["flu/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
