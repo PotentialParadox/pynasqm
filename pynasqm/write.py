@@ -116,7 +116,6 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     failed_jobs = []
     for traj in range(1, n_trajectories+1):
         amb_outs = amber_outputs(suffix, traj, n_restarts)
-        print(amb_outs)
         if traj_finished(amb_outs):
             for amber_outfile in amb_outs:
                 input_stream = open(amber_outfile, 'r')
