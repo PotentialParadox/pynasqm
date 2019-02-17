@@ -116,6 +116,7 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     failed_jobs = []
     for traj in range(1, n_trajectories+1):
         amb_outs = amber_outputs(suffix, traj, n_restarts)
+        print(amb_outs)
         if traj_finished(amb_outs):
             for amber_outfile in amb_outs:
                 input_stream = open(amber_outfile, 'r')
@@ -137,7 +138,7 @@ def write_spectra_abs_input(user_input):
     abs_string, _ = accumulate_spectra(user_input.n_snapshots_gs,
                                        user_input.n_abs_exc,
                                        suffix='abs',
-                                       n_restarts=user_input.n_abs_runs)
+                                       n_restarts=user_input.n_abs_runs-1)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
@@ -151,7 +152,7 @@ def write_spectra_flu_input(user_input):
     fluor_string, nfailed = accumulate_spectra(n_trajectories=user_input.n_snapshots_ex,
                                                n_states=user_input.n_exc_states_propagate_ex_param,
                                                suffix='flu',
-                                               n_restarts=user_input.n_exc_runs)
+                                               n_restarts=user_input.n_exc_runs-1)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step
     n_trajectories = user_input.n_snapshots_ex - nfailed
