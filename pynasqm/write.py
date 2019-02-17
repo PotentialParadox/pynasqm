@@ -137,7 +137,7 @@ def write_spectra_abs_input(user_input):
     abs_string, _ = accumulate_spectra(user_input.n_snapshots_gs,
                                        user_input.n_abs_exc,
                                        suffix='abs',
-                                       n_restarts=1)
+                                       n_restarts=user_input.n_abs_runs)
     time_step = user_input.time_step * user_input.n_steps_to_print_gs
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
@@ -150,7 +150,8 @@ def write_spectra_flu_input(user_input):
     '''
     fluor_string, nfailed = accumulate_spectra(n_trajectories=user_input.n_snapshots_ex,
                                                n_states=user_input.n_exc_states_propagate_ex_param,
-                                               suffix='flu')
+                                               suffix='flu',
+                                               n_restarts=user_input.n_exc_runs)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.time_step
     n_trajectories = user_input.n_snapshots_ex - nfailed
