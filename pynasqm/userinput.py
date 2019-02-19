@@ -76,56 +76,74 @@ class UserInput:
         # each trajectory
         self.time_step = float(data["time_step"]) # fs
 
-        # Change here the runtime of the initial ground state MD
-        self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
-
         # Change here the number of restarts of length ground_state_run_time you wish to run
         try:
             self.n_ground_runs = int(data["n_ground_runs"])
         except KeyError:
             self.n_ground_runs = 1
 
+        # Change here how often you want to print to the mcrds
+        try:
+            self.n_steps_print_gmcrd = int(data["n_steps_to_print_gmcrd"])
+        except KeyError:
+            self.n_steps_print_gmcrd = 100
+
+        # Change here the runtime of the initial ground state MD
+        self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
+        self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
+                                                          self.time_step,
+                                                          self.n_ground_runs,
+                                                          self.n_steps_print_gmcrd,
+                                                          self.n_snapshots_gs)
+
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
-
-        # Change here the runtime for the the trajectories
-        # used to create calculated the absorption
-        self.abs_run_time = float(data["abs_run_time"]) # ps
 
         # Change here the number of restarts of length abs_run_time you wish to run
         try:
             self.n_abs_runs = int(data["n_abs_runs"])
-            self.abs_run_time = self.abs_run_time / self.n_abs_runs
         except KeyError:
             self.n_abs_runs = 1
 
         # Change here how often you want to print the absorption trajectories
         self.n_steps_to_print_abs = int(data["n_steps_to_print_abs"])
 
-        # Change here how often you want to print to the mcrds
-        try:
-            self.n_steps_print_gmcrd = int(data["n_steps_to_print_gmcrd"])
-        except KeyError:
-            self.n_steps_print_gmcrd = 100
         try:
             self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
         except KeyError:
             self.n_steps_print_amcrd = 100
+
+        # Change here the runtime for the the trajectories
+        # used to create calculated the absorption
+        self.abs_run_time = float(data["abs_run_time"]) # ps
+        # Number of snapshots is negligible for adjustment because exc will use final snapshot
+        # and is set to 1
+        self.abs_run_time = self.adjust_run_time(self.abs_run_time,
+                                                 self.time_step,
+                                                 self.n_abs_runs,
+                                                 self.n_steps_print_amcrd,
+                                                 1)
+
+
         try:
             self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
         except KeyError:
             self.n_steps_print_emcrd = 100
 
-        # Change here the runtime for the the trajectories
-        # used to create calculated the fluorescence
-        self.exc_run_time = float(data["exc_run_time"]) # ps
-
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
             self.n_exc_runs = int(data["n_exc_runs"])
-            self.exc_run_time = self.exc_run_time / self.n_exc_runs
         except KeyError:
             self.n_exc_runs = 1
+
+        # Change here the runtime for the the trajectories
+        # used to create calculated the fluorescence
+        self.exc_run_time = float(data["exc_run_time"]) # ps
+        self.exc_run_time = self.adjust_run_time(self.exc_run_time,
+                                                 self.time_step,
+                                                 self.n_exc_runs,
+                                                 self.n_steps_print_emcrd,
+                                                 1)
 
         # Change here the number of excited states you
         # with to have in the CIS calculation
@@ -187,18 +205,42 @@ class UserInput:
         self.restart_attempt = 0
 
         ## Derived Values
-        self.n_steps_gs = int(self.ground_state_run_time / (self.time_step * self.n_ground_runs) * 1000)
-
+        self.n_steps_gs = self.n_steps(self.ground_state_run_time, self.time_step,
+                                       self.n_ground_runs)
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
-        self.n_steps_abs = int(self.abs_run_time / self.time_step * 1000)
-        # We will do absorption calculation on all
-        # steps printed out, so 1 would do absorption
-        # for each step during the run_abs_snapshot step
+        self.n_steps_abs = self.n_steps(self.abs_run_time, self.time_step, self.n_abs_runs)
         self.n_frames_abs = int(self.n_steps_abs / self.n_steps_to_print_abs)
         self.n_mcrd_frames_abs = int(self.n_steps_abs / self.n_steps_print_amcrd)
-        self.n_steps_exc = int(self.exc_run_time / self.time_step * 1000)
+        self.n_steps_exc = self.n_steps(self.exc_run_time, self.time_step, self.n_exc_runs)
 
 
+    @staticmethod
+    def n_steps(run_time, time_step, n_runs):
+        return int(run_time / (time_step * n_runs) * 1000)
+
+    def adjust_run_time(self, run_time, time_step, n_runs, n_print_trajs, n_trajs):
+        total_frames = self.time_to_frame(run_time, time_step, n_print_trajs)
+        new_frames = self.make_divisible(total_frames, n_trajs*n_print_trajs*n_runs)
+        new_time = self.frames_to_time(new_frames, time_step, n_print_trajs)
+        test_frames = self.time_to_frame(new_time, time_step, n_print_trajs)
+        if test_frames % (n_trajs*n_print_trajs*n_runs) != 0:
+            raise AssertionError("Time value is not evenly divisible by ntrajs and n_print_trajs")
+        if new_time != run_time:
+            print("Had to adjust runtime to allow for even distribution\n"\
+                  "Time changed from {} to {}".format(run_time, new_time))
+        return new_time
+
+    @staticmethod
+    def make_divisible(val, cons):
+        return val + (cons - (val % cons))
+
+    def time_to_frame(self, run_time, time_step, n_print_trajs):
+        return run_time / ((time_step/1000) * n_print_trajs)
+
+    def frames_to_time(self, n_frames, time_step, n_print_trajs):
+        new_time = n_frames * (time_step/1000) * n_print_trajs
+        print("new_time", new_time)
+        return new_time
 
     def get_data(self):
         p_comment = r"\s*#"
