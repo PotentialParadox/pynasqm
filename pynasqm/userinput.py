@@ -220,7 +220,7 @@ class UserInput:
 
     def adjust_run_time(self, run_time, time_step, n_runs, n_print_trajs, n_trajs):
         total_frames = self.time_to_frame(run_time, time_step, n_print_trajs)
-        divisor = pynasqm.utils.lcmoflist([n_trajs, n_print_trajs, n_runs])
+        divisor = pynasqm.utils.lcmoflist([n_trajs, n_runs])
         new_frames = self.make_divisible(total_frames, divisor)
         new_time = self.frames_to_time(new_frames, time_step, n_print_trajs)
         if new_time / total_frames > 1.1:
@@ -233,6 +233,8 @@ class UserInput:
 
     @staticmethod
     def make_divisible(val, cons):
+        if val % cons == 0:
+            return val
         newval = val + (cons - (val % cons))
         if newval % cons != 0:
             raise AssertionError("Failed to make {} divisible by {}".format(val, cons))
@@ -243,7 +245,6 @@ class UserInput:
 
     def frames_to_time(self, n_frames, time_step, n_print_trajs):
         new_time = n_frames * (time_step/1000) * n_print_trajs
-        print("new_time", new_time)
         return new_time
 
     def get_data(self):
