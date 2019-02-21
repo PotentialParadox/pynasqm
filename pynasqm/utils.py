@@ -5,6 +5,8 @@ import re
 import numpy as np
 import subprocess
 import os
+import operator
+from functools import reduce
 
 def numpy_element(numpy_array, i, j=0):
     try:
@@ -65,4 +67,18 @@ def copy_files(sources, outputs, force=False):
     for source, output in zip(sources, outputs):
         copy_file(source, output, force)
 
+def gcd(a,b,c):
+    """Compute the greatest common divisor of a and b"""
+    while b > 0 or c % a > 0:
+        a, b = b, a % b
+    return a
 
+def lcm(a, b):
+    """Compute the lowest common multiple of a and b"""
+    return a * b / gcd(a, b)
+
+def gcdoflist(a):
+    return reduce(operator.mul, a, 1) / lcmoflist(a)
+
+def lcmoflist(a):
+    return reduce(lcm, a, 1)

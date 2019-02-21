@@ -220,9 +220,13 @@ class UserInput:
 
     def adjust_run_time(self, run_time, time_step, n_runs, n_print_trajs, n_trajs):
         total_frames = self.time_to_frame(run_time, time_step, n_print_trajs)
-        new_frames = self.make_divisible(total_frames, n_trajs*n_print_trajs*n_runs)
+        divisor = pynasqm.utils.lcmoflist([n_trajs, n_print_trajs, n_runs])
+        new_frames = self.make_divisible(total_frames, divisor)
         new_time = self.frames_to_time(new_frames, time_step, n_print_trajs)
         test_frames = self.time_to_frame(new_time, time_step, n_print_trajs)
+        if new_time / total_frames > 1.1:
+            raise ValueError("Input values would require an adjustment to given time by more than 1.1.\n"\
+                             "Please adjust you inputs to allow an even distribution of time among restarts")
         if test_frames % (n_trajs*n_print_trajs*n_runs) != 0:
             raise AssertionError("Time value is not evenly divisible by ntrajs and n_print_trajs")
         if new_time != run_time:
