@@ -223,12 +223,9 @@ class UserInput:
         divisor = pynasqm.utils.lcmoflist([n_trajs, n_print_trajs, n_runs])
         new_frames = self.make_divisible(total_frames, divisor)
         new_time = self.frames_to_time(new_frames, time_step, n_print_trajs)
-        test_frames = self.time_to_frame(new_time, time_step, n_print_trajs)
         if new_time / total_frames > 1.1:
             raise ValueError("Input values would require an adjustment to given time by more than 1.1.\n"\
                              "Please adjust you inputs to allow an even distribution of time among restarts")
-        if test_frames % (n_trajs*n_print_trajs*n_runs) != 0:
-            raise AssertionError("Time value is not evenly divisible by ntrajs and n_print_trajs")
         if new_time != run_time:
             print("Had to adjust runtime to allow for even distribution\n"\
                   "Time changed from {} to {}".format(run_time, new_time))
@@ -236,7 +233,10 @@ class UserInput:
 
     @staticmethod
     def make_divisible(val, cons):
-        return val + (cons - (val % cons))
+        newval = val + (cons - (val % cons))
+        if newval % cons != 0:
+            raise AssertionError("Failed to make {} divisible by {}".format(val, cons))
+        return newval
 
     def time_to_frame(self, run_time, time_step, n_print_trajs):
         return run_time / ((time_step/1000) * n_print_trajs)
