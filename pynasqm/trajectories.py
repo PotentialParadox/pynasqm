@@ -33,7 +33,8 @@ class Trajectories(ABC):
     def gen_inputfiles(self):
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
-        self._update_nmr_info()
+        if self._user_input.number_nearest_solvents > 0:
+            self._update_nmr_info()
 
     @staticmethod
     def _print_header(header):
