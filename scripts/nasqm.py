@@ -19,7 +19,6 @@ from pynasqm.nasqmslurm import restart_nasqm
 import subprocess
 
 
-
 def main():
     '''
     The primary nasqm automation function call. All changable parameters can be
@@ -89,7 +88,6 @@ def restart(user_input, job_id, restart_attempt):
     else:
         restart_for_pc(job_id, restart_attempt)
     exit()
-
 
 def restart_for_pc(job_id, restart_attempt):
     subprocess.call(["nasqm.py", "--job", "{}".format(job_id),

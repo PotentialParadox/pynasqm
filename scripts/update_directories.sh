@@ -12,6 +12,8 @@ for traj in $trajs;do
     mv ${traj}/nasqm_abs_${traj}.rst $abshome/snap_for_abs_t${traj}_r1.rst
     mv ${traj}/nasqm_abs_${traj}.nc $abshome/nasqm_abs_t${traj}_r0.nc
     mv ${traj}/nasqm_abs_${traj}.out $abshome/nasqm_abs_t${traj}_r0.out
+    mv ${traj}/rst_${traj}.dist abs/traj_${traj}/nmr
+    mv ${traj}/closest_${traj}.txt abs/traj_${traj}/nmr
 
     fluhome=flu/traj_${traj}/restart_0
     mkdir -p $fluhome
