@@ -94,7 +94,9 @@ def restart_for_pc(job_id, restart_attempt):
                      "--restart", "{}".format(restart_attempt)])
 
 def manage_restart(job_id, user_input, restart_attempt):
-    if should_restart(user_input.n_ground_runs, restart_attempt):
+    runs = [user_input.n_ground_runs, user_input.n_abs_runs, user_input.n_exc_runs]
+    n_runs = runs[job_id]
+    if should_restart(n_runs, restart_attempt):
         print("restarting")
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
