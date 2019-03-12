@@ -11,6 +11,7 @@ from pynasqm.restrictedatoms import RestrictedAtoms
 from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
 from pynasqm.utils import mkdir, copy_file
+import pytraj as pt
 
 class Trajectories(ABC):
 
@@ -29,12 +30,30 @@ class Trajectories(ABC):
         self._print_header("Running Dynamics")
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
+        # if self.islastrun():
+        #     self.combine_trajectories()
 
     def gen_inputfiles(self):
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
         if self._user_input.number_nearest_solvents > 0:
             self._update_nmr_info()
+
+    def combine_trajectories(self):
+        suffix = self._job_suffix
+        prmtop = "m1.prmtop"
+        nruns = self._user_input.n_abs_runs if self._job_suffix == "abs" else self._user_input.n_exc_runs
+        for traj_id in self.traj_indexes():
+            trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
+                                                                        suffix, traj_id, restart)
+                     for restart in range(nruns)]
+            traj = pt.load(trajs, top=prmtop)
+            pt.io.write_traj("{}/traj_{}/nasqm_abs_{}.nc".format(suffix, traj_id, traj_id),
+                             traj, velocity=True, overwrite=True)
+
+    @abstractmethod
+    def islastrun(self):
+        pass
 
     @staticmethod
     def _print_header(header):

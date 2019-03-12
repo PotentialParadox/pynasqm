@@ -31,6 +31,11 @@ class AbsTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
 
+    def isrestarting(self):
+        return self._user_input.restart_attempt < self._user_input.n_abs_runs - 1
+
+    def islastrun(self):
+        return not self.isrestarting()
 
     def start_from_mmground(self):
         mm_traj = "mmground/nasqm_ground.nc"
