@@ -30,8 +30,8 @@ class Trajectories(ABC):
         self._print_header("Running Dynamics")
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
-        # if self.islastrun():
-        #     self.combine_trajectories()
+        if self.islastrun():
+            self.combine_trajectories()
 
     def gen_inputfiles(self):
         self.create_restarts_from_parent()

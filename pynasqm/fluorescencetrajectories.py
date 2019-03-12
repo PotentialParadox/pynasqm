@@ -43,9 +43,16 @@ class FluTrajectories(Trajectories):
             raise AssertionError("abs directory not found.\n"\
                                  "Did you run the ground state?\n")
 
+    def isrestarting(self):
+        return self._user_input.restart_attempt < self._user_input.n_exc_runs - 1
+
+    def islastrun(self):
+        return not self.isrestarting()
+
     def start_from_abs(self, override):
         self.copy_restarts_from_abs(override)
-        self.copy_nmr_from_abs()
+        if self._user_input.restrain_solvents:
+            self.copy_nmr_from_abs()
 
     def copy_nmr_from_abs(self):
         source_files = ["abs/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
