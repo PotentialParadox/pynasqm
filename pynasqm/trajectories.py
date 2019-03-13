@@ -267,7 +267,6 @@ def iscompleted(suffix, traj_id, n_runs):
     n_restarts = n_runs - 1
     filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(suffix, traj_id, n_restarts,
                                                                       suffix, traj_id, n_runs)
-    print(filename)
     return os.path.isfile(filename)
 
 
