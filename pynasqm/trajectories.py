@@ -30,26 +30,12 @@ class Trajectories(ABC):
         self._print_header("Running Dynamics")
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
-        if self.islastrun():
-            self.combine_trajectories()
 
     def gen_inputfiles(self):
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
         if self._user_input.number_nearest_solvents > 0:
             self._update_nmr_info()
-
-    def combine_trajectories(self):
-        suffix = self._job_suffix
-        prmtop = "m1.prmtop"
-        nruns = self._user_input.n_abs_runs if self._job_suffix == "abs" else self._user_input.n_exc_runs
-        for traj_id in self.traj_indexes():
-            trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
-                                                                        suffix, traj_id, restart)
-                     for restart in range(nruns)]
-            traj = pt.load(trajs, top=prmtop)
-            pt.io.write_traj("{}/traj_{}/nasqm_abs_{}.nc".format(suffix, traj_id, traj_id),
-                             traj, velocity=True, overwrite=True)
 
     @abstractmethod
     def islastrun(self):
@@ -247,15 +233,15 @@ class Trajectories(ABC):
         job = self._job_suffix
         for traj in range(1, self._number_trajectories+1):
             source_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
-                                                                                  restart-1,
-                                                                                  job,
-                                                                                  traj,
-                                                                                  restart)
+                                                                                 restart-1,
+                                                                                 job,
+                                                                                 traj,
+                                                                                 restart)
             output_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
-                                                                                   restart,
-                                                                                   job,
-                                                                                   traj,
-                                                                                   restart)
+                                                                                 restart,
+                                                                                 job,
+                                                                                 traj,
+                                                                                 restart)
             copy_file(source_path, output_path, force=override)
 
     def restart_path(self, trajectory, restart):
@@ -263,3 +249,27 @@ class Trajectories(ABC):
                                                                       trajectory, restart,
                                                                       self._job_suffix,
                                                                       trajectory, restart)
+
+def combine_trajectories(suffix, n_trajs, n_runs):
+    prmtop = "m1.prmtop"
+    for traj_id in range(1, n_trajs+1):
+        if iscompleted(suffix, traj_id, n_runs) and not iscombined(suffix, traj_id):
+            trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
+                                                                        suffix, traj_id, restart)
+                     for restart in range(n_runs)]
+            traj = pt.load(trajs, top=prmtop)
+            pt.io.write_traj("{}/traj_{}/nasqm_abs_{}.nc".format(suffix, traj_id, traj_id),
+                             traj, velocity=True, overwrite=True)
+            subprocess.call(['rm'] + trajs)
+
+
+def iscompleted(suffix, traj_id, n_runs):
+    n_restarts = n_runs - 1
+    filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(suffix, traj_id, n_restarts,
+                                                                      suffix, traj_id, n_runs)
+    print(filename)
+    return os.path.isfile(filename)
+
+
+def iscombined(suffix, traj_id):
+    return os.path.isfile("{}/traj_{}/nasqm_{}_{}.nc".format(suffix, traj_id, suffix, traj_id))

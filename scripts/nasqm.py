@@ -12,6 +12,7 @@ from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
 from pynasqm.userinput import UserInput
 from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
+from pynasqm.trajectories import combine_trajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
 from pynasqm.sed import sed_inplace, sed_global
@@ -126,6 +127,7 @@ def run_absorption_collection(user_input):
     file
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
+    combine_trajectories("abs", user_input.n_snapshots_gs, user_input.n_abs_runs)
     write_spectra_abs_input(user_input)
     energies, strengths = get_energies_and_strenghts('spectra_abs.input')
     print_energies_and_strengths(energies, strengths)
@@ -150,6 +152,7 @@ def run_fluorescence_collection(user_input):
     file
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Fluorescences !!!!!!!!!!!!!!!!!!!!")
+    combine_trajectories("flu", user_input.n_snapshots_ex, user_input.n_exc_runs)
     exc_state_init = user_input.exc_state_init_ex_param
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
     n_completed = write_spectra_flu_input(user_input)
@@ -157,4 +160,7 @@ def run_fluorescence_collection(user_input):
     if user_input.is_tully:
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 
-main()
+try:
+    main()
+except KeyboardInterrupt:
+    print("You canceled the operation")
