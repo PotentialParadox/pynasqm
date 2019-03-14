@@ -258,7 +258,7 @@ def combine_trajectories(suffix, n_trajs, n_runs):
                                                                         suffix, traj_id, restart)
                      for restart in range(n_runs)]
             traj = pt.load(trajs, top=prmtop)
-            pt.io.write_traj("{}/traj_{}/nasqm_abs_{}.nc".format(suffix, traj_id, traj_id),
+            pt.io.write_traj("{}/traj_{}/nasqm_{}_{}.nc".format(suffix, traj_id, suffix, traj_id),
                              traj, velocity=True, overwrite=True)
             subprocess.call(['rm'] + trajs)
 
