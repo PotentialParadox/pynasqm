@@ -80,7 +80,7 @@ def build_restart_command(job_id, restart_attempt):
 def nasqm_restart_script(user_input, job_id, restart_attempt):
     header = create_restart_header(user_input)
     restart_command = build_restart_command(job_id, restart_attempt)
-    title = "{}_r{}".format(user_input.job_name, restart_attempt)
+    title = "{}_r{}".format(user_input.job_name.capitalize(), restart_attempt)
     max_arrays = 1
     slurm_script = slurm.Slurm(header)
     return slurm_script.create_slurm_script(restart_command, title, max_arrays)

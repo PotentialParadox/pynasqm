@@ -26,6 +26,7 @@ def userinput():
     Create a test user input
     '''
     user_input = types.SimpleNamespace()
+    user_input.job_name = "test"
     user_input.email = "dtracy.uf@gmail.com"
     user_input.qos = "roitberg"
     user_input.email_options = 2
@@ -127,7 +128,6 @@ def test_slurm_trajectory_file_33(userinput):
     n_trajectories = 33
     directory = "${ID}"
     (result1, result2) = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories, directory)
-    open("temp_result.txt", 'w').write(result1)
     test_0 = open("nasqm_slurm_32.txt", 'r').read()
     test_1 = open("nasqm_slurm_33.txt", 'r').read()
     assert (result1, result2) == (test_0, test_1)

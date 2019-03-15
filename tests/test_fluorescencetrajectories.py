@@ -46,6 +46,7 @@ def userInput():
     user_input.n_flu_runs = 2
     user_input.n_abs_runs = 2
     user_input.restart_attempt = 0
+    user_input.restrain_solvents = True
     return user_input
 
 @pytest.fixture
