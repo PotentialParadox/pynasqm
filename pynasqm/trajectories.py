@@ -10,7 +10,8 @@ import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
 from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
-from pynasqm.utils import mkdir, copy_file
+from pynasqm.utils import mkdir
+from pynasqm.cpptraj import create_restarts
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -242,7 +243,7 @@ class Trajectories(ABC):
                                                                                  job,
                                                                                  traj,
                                                                                  restart)
-            copy_file(source_path, output_path, force=override)
+            create_restarts(source_path, output_path, override=override)
 
     def restart_path(self, trajectory, restart):
         return "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(self._job_suffix,
