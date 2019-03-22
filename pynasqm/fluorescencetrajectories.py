@@ -72,7 +72,7 @@ class FluTrajectories(Trajectories):
         copy_files(source_files, output_files, force=override)
 
 
-    def create_restarts_from_parent(self, override=True):
+    def create_restarts_from_parent(self, override=False):
         self._create_directories()
         if self._user_input.restart_attempt == 0:
             self.start_from_abs(override)

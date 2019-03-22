@@ -63,9 +63,13 @@ def copy_file(source_path, output_path, force=False):
             raise AssertionError("{} is missing".format(source_path))
     subprocess.call(['cp', source_path, output_path])
 
-def copy_files(sources, outputs, force=False):
+def copy_files(sources, outputs, force=False, strict=False):
     for source, output in zip(sources, outputs):
-        copy_file(source, output, force)
+        if strict or os.path.isfile(source):
+            copy_file(source, output, force)
+
+def is_empty_file(source):
+    return os.stat(source).st_size == 0
 
 def gcd(a,b):
     """Compute the greatest common divisor of a and b"""

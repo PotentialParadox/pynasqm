@@ -10,7 +10,7 @@ import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms
 from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
-from pynasqm.utils import mkdir
+from pynasqm.utils import mkdir, copy_file, is_empty_file
 from pynasqm.cpptraj import create_restarts
 import pytraj as pt
 
@@ -79,7 +79,7 @@ class Trajectories(ABC):
         nmrdirs = self._nmrdirs()
         center_mask = self._user_input.mask_for_center
         trajins = self._trajins()
-        self._check_trajins(trajins)
+        # self._check_trajins(trajins)
         closest_runner = ClosestRunner(n_qm_solvents, self._number_trajectories,
                                         trajins, center_mask, nmrdirs)
         closest_outputs = closest_runner.create_closest_outputs(run=self.should_update_nmr())
@@ -243,7 +243,10 @@ class Trajectories(ABC):
                                                                                  job,
                                                                                  traj,
                                                                                  restart)
-            create_restarts(source_path, output_path, override=override)
+            if os.path.isfile(source_path) and not is_empty_file(source_path):
+                create_restarts(source_path, output_path, override=override)
+            if os.path.isfile(source_path) and is_empty_file(source_path):
+                copy_file(source_path, output_path, override)
 
     def restart_path(self, trajectory, restart):
         return "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(self._job_suffix,
