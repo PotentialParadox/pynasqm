@@ -57,9 +57,10 @@ def test_prepareDynamcs1of1(userInput):
     '''
     userInput.restart_attempt = 0
     _, (_, slurm_file) = prepareDynamics(userInput)
+    result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of1_slurm_attempt_test.sbatch").read()
-    open("failed_test.txt", 'w').write(slurm_file)
-    assert slurm_file == answer
+    open("failed_test.txt", 'w').write(result)
+    assert result == answer
     subprocess.call(['rm', 'nasqm_ground.in', 'failed_test.txt'])
 
 def test_create_restarts(mdQmmmAmb, userInput):

@@ -23,7 +23,11 @@ def build_trajectory_command(directory, amber, n_trajectories, start):
     outputfile = amber.output_roots[0]
     startfile = amber.coordinate_files[0]
     restartfile = amber.restart_files[0]
-    command = "module load intel/2017\n\n"
+    command = "source ~/myapps/load_exports\n" \
+              "module load intel/2017\n" \
+              "source ~/myapps/load_boost\n" \
+              "source /ufrc/roitberg/dtracy/amber/amber.sh\n\n" \
+              "export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK\n\n"
     command += "for i in $(seq {} {})\n".format(start, start+n_trajectories-1)
     command += "do\n" \
                '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \

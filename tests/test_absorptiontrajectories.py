@@ -142,8 +142,9 @@ def test_absPrepareDynamics0(userInput, inputCeon):
     abs_traj = AbsTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = abs_traj.prepareDynamics()
     answer = open("1of2_slurm_attempt_test.sbatch").read()
-    open('failed_attempt.txt', 'w').write(slurm_file)
-    assert slurm_file == answer
+    result = "\n".join((slurm_file.splitlines())[-10:])+"\n"
+    open("failed0.txt", 'w').write(result)
+    assert result == answer
     subprocess.run(['rm', 'failed_attempt.txt'])
 
 def test_absPrepareDynamics1(userInput, inputCeon):
@@ -153,9 +154,10 @@ def test_absPrepareDynamics1(userInput, inputCeon):
     userInput.restart_attempt = 1
     abs_traj = AbsTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = abs_traj.prepareDynamics()
+    result = "\n".join((slurm_file.splitlines())[-10:])+"\n"
     answer = open("2of2_slurm_attempt_test.sbatch").read()
-    open('failed_attempt.txt', 'w').write(slurm_file)
-    assert slurm_file == answer
+    open("failed1.txt", 'w').write(result)
+    assert result == answer
     subprocess.run(['rm', 'failed_attempt.txt'])
 
 def test_restart_on_failed(userInput, inputCeon):

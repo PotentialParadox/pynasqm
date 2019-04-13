@@ -1,4 +1,9 @@
+source ~/myapps/load_exports
 module load intel/2017
+source ~/myapps/load_boost
+source /ufrc/roitberg/dtracy/amber/amber.sh
+
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 for i in $(seq 1 16)
 do

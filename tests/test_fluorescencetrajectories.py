@@ -157,16 +157,18 @@ def test_fluPrepareDynamics0(userInput, inputCeon):
     userInput.restart_attempt = 0
     fluTraj = FluTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = fluTraj.prepareDynamics()
+    result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of2_slurm_attempt_test.sbatch").read()
-    assert slurm_file == answer
+    assert result == answer
 
 
-def test_fluPrepareDynamics0(userInput, inputCeon):
+def test_fluPrepareDynamics1(userInput, inputCeon):
     '''
     Prepare dynamics for the first restart of two trajectories
     '''
     userInput.restart_attempt = 1
     fluTraj = FluTrajectories(userInput, inputCeon)
     _, (_, slurm_file) = fluTraj.prepareDynamics()
+    result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("2of2_slurm_attempt_test.sbatch").read()
-    assert slurm_file == answer
+    assert result == answer
