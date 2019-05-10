@@ -1,3 +1,5 @@
+# Converts from v1 directory layout to v2 layout.
+# For 128 trajectories use "update_directories.sh {1..128}"
 trajs=$@
 mkdir -p mmground/restart_0
 mv nasqm_ground.nc mmground
