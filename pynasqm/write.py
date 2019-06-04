@@ -128,8 +128,7 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
             completed_jobs.append(amb_outs)
         else:
             failed_jobs.append(traj)
-    for (traj, _) in zip(completed_jobs, range(n_trajectories)):
-        amb_outs = amber_outputs(suffix, traj, n_restarts)
+    for (amb_outs, _) in zip(completed_jobs, range(n_trajectories)):
         read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
