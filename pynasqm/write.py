@@ -108,22 +108,29 @@ def amber_outputs(suffix, traj_id, n_restarts):
     return ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.out".format(suffix, traj_id, r, suffix, traj_id, r)
             for r in range(n_restarts+1)]
 
+def read_excited_states_from_amberouts(amb_outs, n_states, output_stream):
+    for amber_outfile in amb_outs:
+        input_stream = open(amber_outfile, 'r')
+        find_nasqm_excited_state(input_stream, output_stream,
+                                 states=[j for j in range(1, n_states+1)])
+        input_stream.close()
+
 def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
     output_stream = io.StringIO()
     failed_jobs = []
+    completed_jobs = []
     for traj in range(1, n_trajectories+1):
         amb_outs = amber_outputs(suffix, traj, n_restarts)
         if traj_finished(amb_outs):
-            for amber_outfile in amb_outs:
-                input_stream = open(amber_outfile, 'r')
-                find_nasqm_excited_state(input_stream, output_stream,
-                                         states=[j for j in range(1, n_states+1)])
-                input_stream.close()
+            completed_jobs.append(amb_outs)
         else:
             failed_jobs.append(traj)
+    for (traj, _) in zip(completed_jobs, range(n_trajectories)):
+        amb_outs = amber_outputs(suffix, traj, n_restarts)
+        read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
