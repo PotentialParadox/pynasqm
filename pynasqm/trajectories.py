@@ -269,9 +269,11 @@ def combine_trajectories(suffix, n_trajs, n_runs):
 
 def iscompleted(suffix, traj_id, n_runs):
     n_restarts = n_runs - 1
-    filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(suffix, traj_id, n_restarts,
-                                                                      suffix, traj_id, n_runs)
-    return os.path.isfile(filename)
+    restart_filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(suffix, traj_id, n_restarts,
+                                                                              suffix, traj_id, n_runs)
+    traj_filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.nc".format(suffix, traj_id, n_restarts,
+                                                                          suffix, traj_id, n_runs)
+    return os.path.isfile(restart_filename) and os.path.isfile(traj_filename)
 
 
 def iscombined(suffix, traj_id):
