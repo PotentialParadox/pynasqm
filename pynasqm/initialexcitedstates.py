@@ -25,11 +25,12 @@ def calc_raw_probabilities(laser_energy, fwhm, energies, strenghts):
 
 def calc_raw_probability(laser_energy, fwhm, energy, strength):
     f = strength
-    s2 = pow(fwhm,2)
+    sigma = fwhm / 2.35482
+    s2 = pow(sigma,2)
     pi = math.pi
     w = laser_energy
     e = energy
-    return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*pi*s2))
+    return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*s2))
 
 def get_energies_and_strenghts(abs_spectra):
     return split_energies_and_strengths(get_averages(abs_spectra))
