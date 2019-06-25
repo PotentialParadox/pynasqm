@@ -12,7 +12,7 @@ for traj in $trajs;do
     mkdir -p abs/traj_${traj}/nmr
     mv ${traj}/nasqm_abs_${traj}.in $abshome/nasqm_abs_t${traj}_r0.in
     mv ${traj}/nasqm_abs_${traj}.rst $abshome/snap_for_abs_t${traj}_r1.rst
-    mv ${traj}/nasqm_abs_${traj}.nc abs/traj_${traj}/nasqm_abs_${traj}_r0.nc
+    mv ${traj}/nasqm_abs_${traj}.nc abs/traj_${traj}/nasqm_abs_${traj}.nc
     mv ${traj}/nasqm_abs_${traj}.out $abshome/nasqm_abs_t${traj}_r0.out
     mv ${traj}/rst_${traj}.dist abs/traj_${traj}/nmr
     mv ${traj}/closest_${traj}.txt abs/traj_${traj}/nmr
@@ -22,7 +22,7 @@ for traj in $trajs;do
     mkdir -p flu/traj_${traj}/nmr
     mv ${traj}/nasqm_flu_${traj}.in $fluhome/nasqm_flu_t${traj}_r0.in
     mv ${traj}/nasqm_flu_${traj}.rst $fluhome/snap_for_flu_t${traj}_r1.rst
-    mv ${traj}/nasqm_flu_${traj}.nc flu/traj_${traj}/nasqm_flu_${traj}_r0.nc
+    mv ${traj}/nasqm_flu_${traj}.nc flu/traj_${traj}/nasqm_flu_${traj}.nc
     mv ${traj}/nasqm_flu_${traj}.out $fluhome/nasqm_flu_t${traj}_r0.out
     rm -rf ${traj}
 done
