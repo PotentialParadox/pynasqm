@@ -83,9 +83,9 @@ def restart_finished(amber_outfile):
     '''
     try:
         lines = open(amber_outfile, 'r').readlines()
-        if "Could not go further" in lines[-1]:
-            return False
-        return True
+        if any (["wallclock() was called" in l for l in lines[-5:]]):
+            return True
+        return False
     except FileNotFoundError:
         return False
 
@@ -128,8 +128,9 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
             completed_jobs.append(amb_outs)
         else:
             failed_jobs.append(traj)
-    for (amb_outs, _) in zip(completed_jobs, range(n_trajectories)):
-        read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
+    for (amb_outs, n) in zip(completed_jobs, range(n_trajectories)):
+        if n in range(0,n_trajectories):
+            read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
@@ -212,6 +213,7 @@ def write_omega_vs_time(n_trajectories, n_states=1):
     '''
     average_omegas_time = open('omega_1_time.txt', 'w')
     data = np.loadtxt('spectra_flu.input')
+    print("Trajectories completed: {}".format(n_trajectories))
     n_rows_per_trajectory = int(data.shape[0] / n_trajectories)
     for i in range(n_rows_per_trajectory):
         omega = np.average(data[i::n_rows_per_trajectory, 0])
