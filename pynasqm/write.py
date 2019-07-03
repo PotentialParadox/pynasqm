@@ -26,6 +26,7 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     Remove the data from the equilibration time given by time_delay
     Time is in fs
     '''
+    print("Stripping time delay of {} from {} trajectories".format(time_delay, n_trajectories))
     row1 = spectra_string.split('\n', 1)[0]
     row1_data = np.fromstring(row1, sep=" ")
     n_columns = len(row1_data)
@@ -33,8 +34,12 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
     data = data.reshape((n_rows, n_columns))
+    print("Timestep: {}".format(time_step))
+    print("ntpr: {}".format(ntpr))
     n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
+    print("Removing first {} rows from each trajectory".format(n_rows_to_remove_traj))
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
+    print("Removing {} rows total".format(n_rows_to_remove))
     n_rows_data2 = n_rows - n_rows_to_remove
     if n_rows_data2 < 0:
         raise ValueError('Time delay greater than the runtime.\n'\
@@ -145,7 +150,7 @@ def write_spectra_abs_input(user_input):
                                        user_input.n_abs_exc,
                                        suffix='abs',
                                        n_restarts=user_input.n_abs_runs-1)
-    time_step = user_input.time_step * user_input.n_steps_to_print_gs
+    time_step = user_input.time_step
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
