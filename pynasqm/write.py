@@ -146,11 +146,12 @@ def write_spectra_abs_input(user_input):
     Writes the approriately formatted data to spectra_abs.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    abs_string, _ = accumulate_spectra(user_input.n_snapshots_gs,
-                                       user_input.n_abs_exc,
-                                       suffix='abs',
-                                       n_restarts=user_input.n_abs_runs-1)
+    abs_string, nfailed = accumulate_spectra(user_input.n_snapshots_gs,
+                                            user_input.n_abs_exc,
+                                            suffix='abs',
+                                            n_restarts=user_input.n_abs_runs-1)
     time_step = user_input.time_step
+    n_trajectories = user_input.n_snapshots_ex - nfailed
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
