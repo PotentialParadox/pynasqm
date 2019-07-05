@@ -257,6 +257,14 @@ class Trajectories(ABC):
 def combine_trajectories(suffix, n_trajs, n_runs):
     prmtop = "m1.prmtop"
     for traj_id in range(1, n_trajs+1):
+        if iscompleted(suffix, traj_id, n_runs):
+            print("traj {} is completed".format(traj_id))
+        else:
+            print("traj {} is not completed".format(traj_id))
+        if iscombined(suffix, traj_id):
+            print("traj {} is already combined".format(traj_id))
+        else:
+            print("traj {} is not combined".format(traj_id))
         if iscompleted(suffix, traj_id, n_runs) and not iscombined(suffix, traj_id):
             trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
                                                                         suffix, traj_id, restart)
@@ -266,13 +274,12 @@ def combine_trajectories(suffix, n_trajs, n_runs):
                              traj, velocity=True, overwrite=True)
             subprocess.call(['rm'] + trajs)
 
-
 def iscompleted(suffix, traj_id, n_runs):
     n_restarts = n_runs - 1
     restart_filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(suffix, traj_id, n_restarts,
                                                                               suffix, traj_id, n_runs)
-    traj_filename = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.nc".format(suffix, traj_id, n_restarts,
-                                                                          suffix, traj_id, n_runs)
+    traj_filename = "{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, n_restarts,
+                                                                          suffix, traj_id, n_restarts)
     return os.path.isfile(restart_filename) and os.path.isfile(traj_filename)
 
 

@@ -26,6 +26,7 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     Remove the data from the equilibration time given by time_delay
     Time is in fs
     '''
+    print("Stripping time delay of {} from {} trajectories".format(time_delay, n_trajectories))
     row1 = spectra_string.split('\n', 1)[0]
     row1_data = np.fromstring(row1, sep=" ")
     n_columns = len(row1_data)
@@ -33,8 +34,12 @@ def strip_timedelay(spectra_string, n_trajectories, time_step, time_delay, ntpr=
     n_rows = int(len(data) / n_columns)
     n_elements_traj = int(n_rows / n_trajectories)
     data = data.reshape((n_rows, n_columns))
+    print("Timestep: {}".format(time_step))
+    print("ntpr: {}".format(ntpr))
     n_rows_to_remove_traj = int(time_delay / (time_step*ntpr))
+    print("Removing first {} rows from each trajectory".format(n_rows_to_remove_traj))
     n_rows_to_remove = n_rows_to_remove_traj * n_trajectories
+    print("Removing {} rows total".format(n_rows_to_remove))
     n_rows_data2 = n_rows - n_rows_to_remove
     if n_rows_data2 < 0:
         raise ValueError('Time delay greater than the runtime.\n'\
@@ -83,9 +88,9 @@ def restart_finished(amber_outfile):
     '''
     try:
         lines = open(amber_outfile, 'r').readlines()
-        if "Could not go further" in lines[-1]:
-            return False
-        return True
+        if any (["wallclock() was called" in l for l in lines[-5:]]):
+            return True
+        return False
     except FileNotFoundError:
         return False
 
@@ -128,8 +133,9 @@ def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
             completed_jobs.append(amb_outs)
         else:
             failed_jobs.append(traj)
-    for (amb_outs, _) in zip(completed_jobs, range(n_trajectories)):
-        read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
+    for (amb_outs, n) in zip(completed_jobs, range(n_trajectories)):
+        if n in range(0,n_trajectories):
+            read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
     print_failed(failed_jobs)
     output_string = output_stream.getvalue()
     output_stream.close()
@@ -140,11 +146,12 @@ def write_spectra_abs_input(user_input):
     Writes the approriately formatted data to spectra_abs.input.
     Use hist_spectra_lifetime, and naesmd_spectra_plotter to get the spectra.
     '''
-    abs_string, _ = accumulate_spectra(user_input.n_snapshots_gs,
-                                       user_input.n_abs_exc,
-                                       suffix='abs',
-                                       n_restarts=user_input.n_abs_runs-1)
-    time_step = user_input.time_step * user_input.n_steps_to_print_gs
+    abs_string, nfailed = accumulate_spectra(user_input.n_snapshots_gs,
+                                            user_input.n_abs_exc,
+                                            suffix='abs',
+                                            n_restarts=user_input.n_abs_runs-1)
+    time_step = user_input.time_step
+    n_trajectories = user_input.n_snapshots_ex - nfailed
     abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
@@ -212,6 +219,7 @@ def write_omega_vs_time(n_trajectories, n_states=1):
     '''
     average_omegas_time = open('omega_1_time.txt', 'w')
     data = np.loadtxt('spectra_flu.input')
+    print("Trajectories completed: {}".format(n_trajectories))
     n_rows_per_trajectory = int(data.shape[0] / n_trajectories)
     for i in range(n_rows_per_trajectory):
         omega = np.average(data[i::n_rows_per_trajectory, 0])
