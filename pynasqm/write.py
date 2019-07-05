@@ -151,8 +151,8 @@ def write_spectra_abs_input(user_input):
                                             suffix='abs',
                                             n_restarts=user_input.n_abs_runs-1)
     time_step = user_input.time_step
-    n_trajectories = user_input.n_snapshots_ex - nfailed
-    abs_string = strip_timedelay(abs_string, user_input.n_snapshots_gs, time_step,
+    n_trajectories = user_input.n_snapshots_gs - nfailed
+    abs_string = strip_timedelay(abs_string, n_trajectories, time_step,
                                  user_input.abs_time_delay, user_input.n_steps_to_print_abs)
     open('spectra_abs.input', 'w').write(abs_string)
 
