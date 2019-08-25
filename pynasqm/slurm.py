@@ -41,6 +41,8 @@ class Slurm:
                 '#SBATCH --qos='+self.header['qos']+' # The queue for your job\n' \
                 '#SBATCH --output='+title_used+'-%j.output # Output File\n' \
                 '#SBATCH --error='+title_used+'-%j.err #Error File\n' \
+                '#SBATCH --partition=hpg2-compute\n' \
+                '#SBATCH --constraint=haswell\n' \
                 '#SBATCH --mail-user='+self.header['email']+' # Email address\n' \
                 '#SBATCH --mail-type='+self.email_preferences+' # What emails you want\n' \
                 '#SBATCH --nodes='+str(self.header['n_nodes'])+' #No. computers requested\n' \
