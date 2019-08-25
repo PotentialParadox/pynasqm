@@ -32,7 +32,7 @@ class Trajectories(ABC):
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
 
-    def gen_inputfiles(self):
+  def gen_inputfiles(self):
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
         if self._user_input.number_nearest_solvents > 0:
@@ -265,7 +265,7 @@ def combine_trajectories(suffix, n_trajs, n_runs):
             print("traj {} is already combined".format(traj_id))
         else:
             print("traj {} is not combined".format(traj_id))
-        if iscompleted(suffix, traj_id, n_runs) and not iscombined(suffix, traj_id):
+        if iscompleted(suffix, traj_id, n_runs):
             trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
                                                                         suffix, traj_id, restart)
                      for restart in range(n_runs)]
