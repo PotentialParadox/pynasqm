@@ -32,7 +32,7 @@ class Trajectories(ABC):
         (amber, slurm) = self.prepareDynamics()
         self.runDynamics(amber, slurm)
 
-  def gen_inputfiles(self):
+    def gen_inputfiles(self):
         self.create_restarts_from_parent()
         self.create_inputceon_copies()
         if self._user_input.number_nearest_solvents > 0:
