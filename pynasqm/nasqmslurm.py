@@ -30,10 +30,8 @@ def build_trajectory_command(directory, amber):
               "export OMP_NUM_THREADS=${{SLURM_CPUS_PER_TASK}}\n\n" \
               "ID=${{SLURM_ARRAY_TASK_ID}}\n"\
               "cd {0}\n"\
-              "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc &\n"\
-              "cd ../../..\n" \
-              "done\n" \
-              "wait\n".format(directory, inputfile, outputfile, startfile, restartfile)
+              "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc\n"\
+              "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile)
     return command
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
