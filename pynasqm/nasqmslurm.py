@@ -27,8 +27,8 @@ def build_trajectory_command(directory, amber):
               "module load intel/2017\n" \
               "source ~/myapps/load_boost\n" \
               "source /ufrc/roitberg/dtracy/amber/amber.sh\n\n" \
-              "export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}\n\n" \
-              "ID=${SLURM_ARRAY_TASK_ID}\n"\
+              "export OMP_NUM_THREADS=${{SLURM_CPUS_PER_TASK}}\n\n" \
+              "ID=${{SLURM_ARRAY_TASK_ID}}\n"\
               "cd {0}\n"\
               "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc &\n"\
               "cd ../../..\n" \
