@@ -62,7 +62,11 @@ class Trajectories(ABC):
             mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
             directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
             input_ceons.append(self._input_ceons[0].copy(directory, file_name))
+        set_excited_states()
         self._input_ceons = input_ceons
+
+    def set_excited_states(self):
+        pass
 
     @abstractmethod
     def _nmrdirs(self):
