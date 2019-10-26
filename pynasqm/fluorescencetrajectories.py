@@ -79,7 +79,7 @@ class FluTrajectories(Trajectories):
         else:
             self.start_from_restart(override)
 
-    def set_excited_states(self):
+    def set_excited_states(self, input_ceons):
         if self.doing_laser_excitation():
             init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
                                                                        'spectra_abs.input',
@@ -87,8 +87,9 @@ class FluTrajectories(Trajectories):
                                                                        self._user_input.fwhm)
         else:
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
-        for inputceon, state in zip(self._input_ceons, init_states):
+        for inputceon, state in zip(input_ceons, init_states):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
+        return input_ceons
 
     def hpc_coordinate_files(self):
         return ["snap_for_flu_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]

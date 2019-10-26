@@ -199,7 +199,7 @@ def verify_coeffs(coeffs):
 
 def write_average_coeffs(n_trajectories, n_states=1):
     N = n_trajectories
-    filenames = ["{}/coeff-n.out".format(x) for x in range(1, N+1)]
+    filenames = ["flu/traj_{}/restart_0/coeff-n.out".format(x) for x in range(1, N+1)]
     coeffs = np.array([get_coeffs(f) for f in filenames])
     completed_trajectories = verify_coeffs(coeffs)
     coeffs = [coeffs[x] for x in completed_trajectories]
