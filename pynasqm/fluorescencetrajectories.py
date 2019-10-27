@@ -79,12 +79,7 @@ class FluTrajectories(Trajectories):
         else:
             self.start_from_restart(override)
 
-    def _create_inputceon_copies(self):
-        input_ceons = []
-        for index in range(1, self._number_trajectories+1):
-            file_name = "{}{}.in".format(self._child_root, index)
-            input_ceons.append(self._input_ceons[0].copy("{}/".format(index), file_name))
-        init_states = None
+    def set_excited_states(self, input_ceons):
         if self.doing_laser_excitation():
             init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
                                                                        'spectra_abs.input',
@@ -94,7 +89,7 @@ class FluTrajectories(Trajectories):
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
         for inputceon, state in zip(input_ceons, init_states):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
-        self._input_ceons = input_ceons
+        return input_ceons
 
     def hpc_coordinate_files(self):
         return ["snap_for_flu_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]

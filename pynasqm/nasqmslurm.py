@@ -15,7 +15,7 @@ def create_slurm_header(user_input):
             'memory': user_input.memory_per_node, 'walltime': user_input.walltime,
             'max_jobs': user_input.max_jobs, 'qos': user_input.qos}
 
-def build_trajectory_command(directory, amber, n_trajectories, start):
+def build_trajectory_command(directory, amber):
     '''
     Returns the command for the slurm script
     '''
@@ -27,39 +27,23 @@ def build_trajectory_command(directory, amber, n_trajectories, start):
               "module load intel/2017\n" \
               "source ~/myapps/load_boost\n" \
               "source /ufrc/roitberg/dtracy/amber/amber.sh\n\n" \
-              "export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK\n\n"
-    command += "for i in $(seq {} {})\n".format(start, start+n_trajectories-1)
-    command += "do\n" \
-               '    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"\n' \
-               '    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"\n' \
-               '    ID="$((${FIRST_COUNT} + ${i}))"\n'
-    command += "    cd {}\n".format(directory)
-    command += "    $AMBERHOME/bin/sander -O -i {}.in -o {}.out ".format(inputfile,
-                                                                    outputfile)
-    command += "-c {} -p m1.prmtop ".format(startfile)
-    command += "-r {} -x {}.nc &\n".format(restartfile, outputfile) \
-               + "    cd ../../..\n" \
-               "done\n" \
-               "wait\n"
+              "export OMP_NUM_THREADS=${{SLURM_CPUS_PER_TASK}}\n\n" \
+              "ID=${{SLURM_ARRAY_TASK_ID}}\n"\
+              "cd {0}\n"\
+              "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc\n"\
+              "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile)
     return command
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
     '''
     Run multiple sander trajectories over hpc
     '''
-    n_arrays_max = math.floor(n_trajectories/user_input.processors_per_node)
-    n_trajectories_remaining = n_trajectories - n_arrays_max * user_input.processors_per_node
     slurm_header = create_slurm_header(user_input)
     slurm_script = slurm.Slurm(slurm_header)
     slurm_script_max = None
     slurm_script_nmax = None
-    if n_arrays_max != 0:
-        command = build_trajectory_command(directory, amber, user_input.processors_per_node, 1)
-        slurm_script_max = slurm_script.create_slurm_script(command, title, n_arrays_max)
-    if n_trajectories_remaining != 0:
-        start_trajectory = n_arrays_max*user_input.processors_per_node+1
-        command = build_trajectory_command(directory, amber, n_trajectories_remaining, start_trajectory)
-        slurm_script_nmax = slurm_script.create_slurm_script(command, title, 1)
+    command = build_trajectory_command(directory, amber)
+    slurm_script_max = slurm_script.create_slurm_script(command, title, n_trajectories)
     return slurm_script_max, slurm_script_nmax
 
 def run_nasqm_slurm_files(slurm_files):

@@ -41,11 +41,11 @@ class Slurm:
                 '#SBATCH --qos='+self.header['qos']+' # The queue for your job\n' \
                 '#SBATCH --output='+title_used+'-%j.output # Output File\n' \
                 '#SBATCH --error='+title_used+'-%j.err #Error File\n' \
+                '#SBATCH --partition=hpg2-compute\n' \
+                '#SBATCH --constraint=haswell\n' \
                 '#SBATCH --mail-user='+self.header['email']+' # Email address\n' \
                 '#SBATCH --mail-type='+self.email_preferences+' # What emails you want\n' \
-                '#SBATCH --nodes='+str(self.header['n_nodes'])+' #No. computers requested\n' \
-                '#SBATCH --tasks-per-node='+str(self.header['ppn'])+\
-                ' # No. processors per node\n' \
+                '#SBATCH --tasks=1\n' \
                 '#SBATCH --mem-per-cpu='+self.header['memory']+\
                 ' #Per processor memory requested\n' \
                 '#SBATCH --array=1-'+str(n_arrays)+'%'+str(self.header['max_jobs'])+'\n' \

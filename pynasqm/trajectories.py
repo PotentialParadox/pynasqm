@@ -62,7 +62,11 @@ class Trajectories(ABC):
             mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
             directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
             input_ceons.append(self._input_ceons[0].copy(directory, file_name))
+        input_ceons = self.set_excited_states(input_ceons)
         self._input_ceons = input_ceons
+
+    def set_excited_states(self, inputceons):
+        pass
 
     @abstractmethod
     def _nmrdirs(self):
@@ -261,6 +265,14 @@ def combine_trajectories(suffix, n_trajs, n_runs):
         combined = "combined" if iscombined(suffix, traj_id) else "uncombined"
         completed = "completed" if iscompleted(suffix, traj_id, n_runs) else "uncompleted"
         print ("Traj {} {} while previously {}".format(traj_id, completed, combined))
+        if iscompleted(suffix, traj_id, n_runs):
+            print("traj {} is completed".format(traj_id))
+        else:
+            print("traj {} is not completed".format(traj_id))
+        if iscombined(suffix, traj_id):
+            print("traj {} is already combined".format(traj_id))
+        else:
+            print("traj {} is not combined".format(traj_id))
         if iscompleted(suffix, traj_id, n_runs):
             trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
                                                                         suffix, traj_id, restart)
