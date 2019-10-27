@@ -4,6 +4,15 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pynasqm.utils
 from scipy.interpolate import spline
+from scipy.optimize.minpack import curve_fit
+
+def gaus(x,a,x0,sigma):
+    return a*np.exp(-(x-x0)**2/(2*sigma**2))
+
+def fit_nonlinear(t, y, mean, sigma):
+    opt_parms, _ = curve_fit(gaus, t, y, maxfev=1000, p0=[1, mean, sigma])
+    A, u, s = opt_parms
+    return A, u, s
 
 def main():
     parser = argparse.ArgumentParser()
@@ -29,13 +38,15 @@ def main():
     data = np.loadtxt(args.inputfile)
     state_intensity_index_start = 2
     state_intensity_index_end = 2 + args.number_states
-    X = data[:, args.x_units]
     Ys = data[:, state_intensity_index_start:state_intensity_index_end]
-    plotter(args, X, Ys)
+    X_ev = data[:, 0]
+    X_nm = data[:, 1]
+    plotter(args, X_ev, X_nm, Ys, args.x_units)
 
-def plotter(args, x, ys):
+def plotter(args, x_ev, x_nm, ys, units):
+    (x_ev, x_nm, ys) = filter_range(x_ev, x_nm, ys, args.range, units)
     ys = normalize_individuals(ys) if args.comparison else normalize_set(ys)
-    (x, ys) = filter_range(x, ys, args.range)
+    x = x_ev if units == 0 else x_nm
 
     sns.set()
     sns.set_style("white")
@@ -48,10 +59,15 @@ def plotter(args, x, ys):
     for i in range(args.number_states):
         y = ys[:, i]
         label = args.labels[i]
+        mean = sum(x*y)/sum(y)
+        std = sum(y*(x-mean)**2)/sum(y)
+        A, u, s = fit_nonlinear(x, y, mean, std)
+        fit_y = gaus(x, A, u, s)
         ax.plot(x, y, label=label, color=colors[i])
-        xmax= find_max_x(zip(x, y))
-        print("{} peak at {}".format(label, xmax))
-        ax.axvline(x=xmax, linestyle="dashed", linewidth=1, color=colors[i])
+        x_ev_max, x_nm_max = find_max_x(zip(x_ev, x_nm, fit_y))
+        print("{} peak at {} eV and {} nm".format(label, x_ev_max, x_nm_max))
+        x_max = x_ev_max if units == 0 else x_nm_max
+        ax.axvline(x=x_max, linestyle="dashed", linewidth=1, color=colors[i])
     xlabel = "Energy (eV)" if args.x_units == 0 else "Wavelength (nm)"
     ax.set_xlabel(xlabel)
     ax.set_ylabel(args.ylabel)
@@ -61,11 +77,11 @@ def plotter(args, x, ys):
     ax.text(-0.05, 0.95, args.letter, transform=ax.transAxes,
             fontsize=17, fontweight='bold', va='top')
     fig.savefig(args.outputfile, bbox_inches='tight')
-    # plt.show()
+    plt.show()
 
-def find_max_x(pairs):
-    (x, _) = max(pairs, key=lambda item: item[1])
-    return x
+def find_max_x(sets):
+    (xev, xnm, _) = max(sets, key=lambda item: item[2])
+    return xev, xnm
 
 def normalize_individuals(ys):
     '''
@@ -80,14 +96,17 @@ def normalize_set(ys):
     return np.divide(ys, np.max(ys))
 
 
-def filter_range(xin, yin, my_range):
+def filter_range(xev_in, xnm_in, yin, my_range, units):
     y_fitered = []
-    x_filtered = []
-    for x_temp, y_temp in zip(xin, yin):
+    xev_filtered = []
+    xnm_filtered = []
+    for xev_temp, xnm_temp, y_temp in zip(xev_in, xnm_in, yin):
+        x_temp = xev_temp if units == 0 else xnm_temp
         if my_range[0] <= x_temp <= my_range[1]:
             y_fitered.append(y_temp)
-            x_filtered.append(x_temp)
-    return (np.array(x_filtered), np.array(y_fitered))
+            xev_filtered.append(xev_temp)
+            xnm_filtered.append(xnm_temp)
+    return (np.array(xev_filtered), np.array(xnm_filtered), np.array(y_fitered))
 
 
 
