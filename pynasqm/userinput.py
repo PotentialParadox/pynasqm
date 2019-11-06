@@ -111,14 +111,14 @@ class UserInput:
         try:
             self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
         except KeyError:
-            self.n_steps_print_amcrd = -1
+            self.n_steps_print_amcrd = 0 
 
         # Change here the runtime for the the trajectories
         # used to create calculated the absorption
         self.abs_run_time = float(data["abs_run_time"]) # ps
         # Number of snapshots is negligible for adjustment because exc will use final snapshot
         # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
-        if self.abs_run_time != 0 and self.n_steps_print_amcrd != 0:
+        if self.abs_run_time != 0 and self.n_steps_print_amcrd >= 0:
             self.abs_run_time = self.adjust_run_time(self.abs_run_time,
                                                      self.time_step,
                                                      self.n_abs_runs,
@@ -129,7 +129,7 @@ class UserInput:
         try:
             self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
         except KeyError:
-            self.n_steps_print_emcrd = -1
+            self.n_steps_print_emcrd = 0
 
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
@@ -140,7 +140,7 @@ class UserInput:
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
-        if self.n_steps_print_emcrd != 1:
+        if self.n_steps_print_emcrd >= 0:
             self.exc_run_time = self.adjust_run_time(self.exc_run_time,
                                                     self.time_step,
                                                     self.n_exc_runs,
