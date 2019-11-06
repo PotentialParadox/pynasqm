@@ -66,6 +66,7 @@
 # the runs for shorter run times, and to allow restarting if failure arises
     "n_abs_runs": "1",
 # Change here how often you want to print the absorption trajectory files
+# Use -1 to skip
     "n_steps_to_print_amcrd": "5",
 # Change here how often you want to print the absorption trajectories
     "n_steps_to_print_abs": "4",
@@ -95,6 +96,7 @@
 # the runs for shorter run times, and to allow restarting if failure arises
     "n_exc_runs": "2",
 # Change here how often you want to print the excited state trajectory files
+# Use -1 to skip
     "n_steps_to_print_emcrd": "5",
 # Change here how often you want to print the excited state trajectories
     "n_steps_to_print_exc": "10",
