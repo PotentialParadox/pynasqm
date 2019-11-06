@@ -15,5 +15,6 @@ setup(
             'scripts/find_spectra_shift.py',
             'scripts/amber_nexmd_converter.py',
             'scripts/print_quantum_coeffs.py',
+            'scripts/population_plotter.py',
            ]
 )
