@@ -32,7 +32,7 @@ def convert_laserfwhm_to_sigma2(fwhm):
 def calc_raw_probability(laser_energy, fwhm, energy, strength):
     f = strength
     pi = math.pi
-    s2 = convert_laserfwhm_to_sigma2(fwhme)
+    s2 = convert_laserfwhm_to_sigma2(fwhm)
     w = laser_energy
     e = energy
     return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*s2))
