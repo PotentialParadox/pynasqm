@@ -23,11 +23,15 @@ def normalize(v):
 def calc_raw_probabilities(laser_energy, fwhm, energies, strenghts):
     return [calc_raw_probability(laser_energy, fwhm, e, s) for e, s in zip(energies, strenghts)]
 
+def convert_laserfwhm_to_sigma2(fwhm):
+    alpha = 2.35482 # fwhm = alpha * sigma
+    fc_fwhm = pow(alpha,2) * fwhm / math.sqrt(2)
+    return pow(alpha*fwhm,2)/2
+
 def calc_raw_probability(laser_energy, fwhm, energy, strength):
     f = strength
-    sigma = fwhm / 2.35482
-    s2 = pow(sigma,2)
     pi = math.pi
+    s2 = convert_laserfwhm_to_sigma2(fwhm)
     w = laser_energy
     e = energy
     return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*s2))
