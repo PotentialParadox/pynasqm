@@ -107,9 +107,9 @@
     "exc_state_init": "1",
 # Change here the energy of the laser used for excitation?
     "laser_energy": "4.2",
-# Change here the full width half max of the laser (100fs ~ 0.04136eV)
-# Note that 0.04136eV FWHM of a laser will correspond to a 0.162eV FWHM FC broadening
-    "fwhm": "0.04136",
+# Change here the full width half max of the laser in fs
+# Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening
+    "fwhm": "100",
 # Do you want to collect the data from the exctied state trajectory
 # calculations?
     "run_fluorescence_collection": "False",
