@@ -111,7 +111,7 @@ class UserInput:
         try:
             self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
         except KeyError:
-            self.n_steps_print_amcrd = 0 
+            self.n_steps_print_amcrd = 0
 
         # Change here the runtime for the the trajectories
         # used to create calculated the absorption
