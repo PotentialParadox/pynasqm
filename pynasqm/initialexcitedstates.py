@@ -5,7 +5,7 @@ using information supplied by abs_spectra, which is a file in the format with ea
 import numpy as np
 import math
 import random
-from conversions import fs_to_ev
+from pynasqm.conversions import fs_to_ev
 
 def get_n_initial_states_w_laser_energy_and_fwhm(n, abs_spectra, laser_energy, fwhm):
     return [choose(get_probabilities_from(abs_spectra, laser_energy, fwhm)) + 1 for _ in range(n)]
