@@ -1,8 +1,12 @@
 import numpy as np
 import sys
 
+def filter_completed(data):
+    max_length = max([len(d) for d in data])
+    return [d for d in data if len(d) == max_length]
+
 def load_data_from_files():
-    return [np.loadtxt(fin) for fin in sys.argv[1:]]
+    return filter_completed([np.loadtxt(fin) for fin in sys.argv[1:]])
 
 def get_nstates(data):
     ncols_not_coefficients=3
@@ -38,7 +42,6 @@ def main():
     times = get_times(data)
     state_data = get_states(data)
     pops = pop_of_nstates(state_data,nstates)
-    # print_population_chart(times, pops)
     print(string_population_chart(times,pops))
 
 main()
