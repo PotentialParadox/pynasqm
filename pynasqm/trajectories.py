@@ -66,7 +66,7 @@ class Trajectories(ABC):
         self._input_ceons = input_ceons
 
     def set_excited_states(self, inputceons):
-        pass
+        return inputceons
 
     @abstractmethod
     def _nmrdirs(self):
