@@ -16,5 +16,6 @@ setup(
             'scripts/amber_nexmd_converter.py',
             'scripts/print_quantum_coeffs.py',
             'scripts/population_plotter.py',
+            'scripts/population_fitter.py',
            ]
 )
