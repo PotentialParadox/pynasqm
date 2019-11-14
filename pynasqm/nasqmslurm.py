@@ -40,17 +40,14 @@ def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
     '''
     slurm_header = create_slurm_header(user_input)
     slurm_script = slurm.Slurm(slurm_header)
-    slurm_script_max = None
-    slurm_script_nmax = None
     command = build_trajectory_command(directory, amber)
-    slurm_script_max = slurm_script.create_slurm_script(command, title, n_trajectories)
-    return slurm_script_max, slurm_script_nmax
+    return slurm_script.create_slurm_script(command, title, n_trajectories)
 
-def run_nasqm_slurm_files(slurm_files):
+def run_nasqm_slurm_file(slurm_file):
     '''
     Run the files produced by slurm_trajectory_files
     '''
-    slurm.run_slurm(slurm_files[0], slurm_files[1])
+    slurm.run_slurm(slurm_file)
 
 def create_restart_header(user_input):
     header = create_slurm_header(user_input)
