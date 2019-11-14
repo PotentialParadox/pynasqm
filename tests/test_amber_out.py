@@ -68,12 +68,14 @@ def test_find_nasqm_excited_state_1():
     '''
     input_stream = open("nasqm_flu_1.out")
     result = amber_out.find_nasqm_excited_state(input_stream)
-    assert result == "    2.90923255131416E+00    9.08120295476811E-01\n" \
+    print(result)
+    assert result == ""\
+        "    2.90923223491635E+00    9.08434161983220E-01\n" \
+        "    2.90923255131416E+00    9.08120295476811E-01\n" \
         "    2.90923255131440E+00    9.08120295476795E-01\n" \
         "    2.90576054156170E+00    9.12245042622513E-01\n" \
         "    2.89718863282344E+00    9.17508693665317E-01\n" \
         "    2.88542766911918E+00    9.23660450221756E-01\n"
-
 
 def test_find_dipole():
     '''

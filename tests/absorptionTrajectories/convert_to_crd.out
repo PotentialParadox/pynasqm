@@ -1,11 +1,11 @@
 
-CPPTRAJ: Trajectory Analysis. V18.01
+CPPTRAJ: Trajectory Analysis. V18.00
     ___  ___  ___  ___
      | \/ | \/ | \/ | 
     _|_/\_|_/\_|_/\_|_
 
-| Date/time: 07/01/19 09:06:31
-| Available memory: 871.166 MB
+| Date/time: 11/14/19 17:17:47
+| Available memory: 5.865 GB
 
 INPUT: Reading input from 'convert_to_crd.in'
   [parm m1.prmtop]
@@ -48,21 +48,21 @@ ACTIVE OUTPUT TRAJECTORIES (1):
  0% 14% 29% 43% 57% 71% 86% 100% Complete.
 
 Read 8 frames and processed 8 frames.
-TIME: Avg. throughput= 52.5521 frames / second.
+TIME: Avg. throughput= 53.4320 frames / second.
 
 ACTION OUTPUT:
 TIME: Analyses took 0.0000 seconds.
 
 RUN TIMING:
 TIME:		Init               : 0.0000 s (  0.00%)
-TIME:		Trajectory Process : 0.1522 s ( 99.94%)
+TIME:		Trajectory Process : 0.1497 s ( 99.94%)
 TIME:		Action Post        : 0.0000 s (  0.00%)
 TIME:		Analysis           : 0.0000 s (  0.00%)
 TIME:		Data File Write    : 0.0000 s (  0.00%)
 TIME:		Other              : 0.0001 s (  0.00%)
-TIME:	Run Total 0.1523 s
+TIME:	Run Total 0.1498 s
 ---------- RUN END ---------------------------------------------------
-TIME: Total execution time: 0.1614 seconds.
+TIME: Total execution time: 0.1584 seconds.
 --------------------------------------------------------------------------------
 To cite CPPTRAJ use:
 Daniel R. Roe and Thomas E. Cheatham, III, "PTRAJ and CPPTRAJ: Software for
