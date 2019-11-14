@@ -118,7 +118,7 @@ class UserInput:
         self.abs_run_time = float(data["abs_run_time"]) # ps
         # Number of snapshots is negligible for adjustment because exc will use final snapshot
         # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
-        if self.abs_run_time != 0 and self.n_steps_print_amcrd >= 0:
+        if self.abs_run_time != 0 or self.n_steps_print_amcrd >= 0:
             self.abs_run_time = self.adjust_run_time(self.abs_run_time,
                                                      self.time_step,
                                                      self.n_abs_runs,
