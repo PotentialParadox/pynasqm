@@ -1,0 +1,5 @@
+parm m1.prmtop
+trajin abs/traj_2/restart_0/snap_for_abs_t2_r0.rst
+atominfo :* out atominfo.out
+run
+exit

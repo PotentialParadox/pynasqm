@@ -1,0 +1,16 @@
+&qmmm
+&endqmmm
+
+&moldyn
+  time_step=0.05,
+&endmoldyn
+
+
+&coord
+&endcoord
+
+&veloc
+&endveloc
+
+&coeff
+&endcoeff

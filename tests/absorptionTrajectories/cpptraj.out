@@ -1,0 +1,73 @@
+
+CPPTRAJ: Trajectory Analysis. V18.01
+    ___  ___  ___  ___
+     | \/ | \/ | \/ | 
+    _|_/\_|_/\_|_/\_|_
+
+| Date/time: 07/01/19 09:06:31
+| Available memory: 868.200 MB
+
+INPUT: Reading input from 'abs/traj_2/nmr/closest_2.traj'
+  [parm m1.prmtop]
+	Reading 'm1.prmtop' as Amber Topology
+	Radius Set: modified Bondi radii (mbondi)
+  [solvent !:1]
+	Solvent Mask [!:1]: 1664 solvent molecules, 8320 solvent atoms
+  [trajin abs/traj_2/restart_0/snap_for_abs_t2_r0.rst]
+	Reading 'abs/traj_2/restart_0/snap_for_abs_t2_r0.rst' as Amber Restart
+  [closest 1 :1 closestout abs/traj_2/nmr/closest_2.txt]
+    CLOSEST: Finding closest 1 solvent molecules to atoms in mask :1
+	Closest molecules will be saved to closest_2.txt
+  [run]
+---------- RUN BEGIN -------------------------------------------------
+
+PARAMETER FILES (1 total):
+ 0: m1.prmtop, 8370 atoms, 1665 res, box: Orthogonal, 1665 mol, 1664 solvent
+
+INPUT TRAJECTORIES (1 total):
+ 0: 'snap_for_abs_t2_r0.rst' is an AMBER restart file with velocity info, Parm m1.prmtop (Orthogonal box) (reading 1 of 1)
+  Coordinate processing will occur on 1 frames.
+
+BEGIN TRAJECTORY PROCESSING:
+.....................................................
+ACTION SETUP FOR PARM 'm1.prmtop' (1 actions):
+  0: [closest 1 :1 closestout abs/traj_2/nmr/closest_2.txt]
+	Distances will be imaged.
+	Mask [:1] corresponds to 50 atoms.
+	Keeping 5 solvent atoms.
+	Closest topology: 55 atoms, 2 res, box: Orthogonal, 2 mol, 1 solvent
+----- snap_for_abs_t2_r0.rst (1-1, 1) -----
+100% Complete.
+
+Read 1 frames and processed 1 frames.
+TIME: Avg. throughput= 295.3337 frames / second.
+
+ACTION OUTPUT:
+TIME: Analyses took 0.0000 seconds.
+
+DATASETS (4 total):
+	CLOSEST_00001[Frame] "CLOSEST_00001[Frame]" (integer), size is 1
+	CLOSEST_00001[Mol] "CLOSEST_00001[Mol]" (integer), size is 1
+	CLOSEST_00001[Dist] "CLOSEST_00001[Dist]" (double), size is 1
+	CLOSEST_00001[FirstAtm] "CLOSEST_00001[FirstAtm]" (integer), size is 1
+
+DATAFILES (1 total):
+  closest_2.txt (Standard Data File):  CLOSEST_00001[Frame] CLOSEST_00001[Mol] CLOSEST_00001[Dist] CLOSEST_00001[FirstAtm]
+
+RUN TIMING:
+TIME:		Init               : 0.0000 s (  0.14%)
+TIME:		Trajectory Process : 0.0034 s ( 96.72%)
+TIME:		Action Post        : 0.0000 s (  0.00%)
+TIME:		Analysis           : 0.0000 s (  0.00%)
+TIME:		Data File Write    : 0.0001 s (  1.57%)
+TIME:		Other              : 0.0001 s (  0.02%)
+TIME:	Run Total 0.0035 s
+---------- RUN END ---------------------------------------------------
+  [quit]
+TIME: Total execution time: 0.0178 seconds.
+--------------------------------------------------------------------------------
+To cite CPPTRAJ use:
+Daniel R. Roe and Thomas E. Cheatham, III, "PTRAJ and CPPTRAJ: Software for
+  Processing and Analysis of Molecular Dynamics Trajectory Data". J. Chem.
+  Theory Comput., 2013, 9 (7), pp 3084-3095.
+
