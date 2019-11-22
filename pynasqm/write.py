@@ -115,31 +115,64 @@ def amber_outputs(suffix, traj_id, n_restarts):
 
 def read_excited_states_from_amberouts(amb_outs, n_states, output_stream):
     for amber_outfile in amb_outs:
-        input_stream = open(amber_outfile, 'r')
-        find_nasqm_excited_state(input_stream, output_stream,
+        print("finding excited states from {}".format(amber_outfile))
+        find_nasqm_excited_state(amber_outfile, output_stream,
                                  states=[j for j in range(1, n_states+1)])
-        input_stream.close()
+
+def create_spectra_inputs(suffix, n_trajectories, n_restarts, n_states):
+    script = "suffix={}\n".format(suffix)
+    script += "ntrajs={}\n".format(n_trajectories)
+    script += "nrestarts={}\n".format(n_restarts)
+    script += "nstates={}\n".format(n_states)
+    script += "nlines=$((nstates+1))\n"
+    script += "awklines=$((nstates+3))\n"\
+            "mkdir -p abs_spectra\n"\
+            "for ((traj=1;traj<=$ntrajs;++traj)) do\n"\
+            "    fileout=abs_spectra/traj_${traj}.out\n"\
+            "    > $fileout\n"\
+            "    for ((restart=0;restart<=$nrestarts;++restart)) do\n"\
+            "        filename=${suffix}/traj_${traj}/restart_${restart}/nasqm_abs_t${traj}_r${restart}.out\n"\
+            "        if [ -f $filename ]; then\n"\
+            "            grep -A $nlines 'Frequencies (eV) and Oscillator' $filename\\\n"\
+            "                | awk -v nlines=\"$awklines\" 'BEGIN{ORS=\"    \"};\n"\
+            "{\n"\
+            "    if (NR%nlines >2)\n"\
+            "    {\n"\
+            "      printf \"%24.14E%24.14E\", $2, $6;\n"\
+            "    }\n"\
+            "    if (NR%nlines ==0)\n"\
+            "    {\n"\
+            "      printf \"\\n\";\n"\
+            "    }\n"\
+            "}END{printf \"\\n\"}' >> $fileout \n"\
+            "        fi\n"\
+            "    done\n"\
+            "done\n"
+    open('spectra.sh', 'w').write(script)
+    subprocess.run("bash spectra.sh", shell=True)
+
+def filter_completed(data):
+    maxlength = max([len(d) for d in data])
+    failed = []
+    completed = []
+    for i, d in enumerate(data):
+        if len(d) == maxlength:
+            completed.append(d)
+        else:
+            failed.append(i)
+    return completed, failed
 
 def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):
     """
     Create the spectra_flu.input file using the nasqm_flu_*.out files
     """
-    output_stream = io.StringIO()
-    failed_jobs = []
-    completed_jobs = []
-    for traj in range(1, n_trajectories+1):
-        amb_outs = amber_outputs(suffix, traj, n_restarts)
-        if traj_finished(amb_outs):
-            completed_jobs.append(amb_outs)
-        else:
-            failed_jobs.append(traj)
-    for (amb_outs, n) in zip(completed_jobs, range(n_trajectories)):
-        if n in range(0,n_trajectories):
-            read_excited_states_from_amberouts(amb_outs, n_states, output_stream)
+    create_spectra_inputs(suffix, n_trajectories, n_restarts, n_states)
+    omegas_and_strengths = [open("{}_spectra/traj_{}.out".format(suffix, traj), 'r').read()
+                            for traj in range(1, n_trajectories+1)]
+    completed, failed_jobs = filter_completed(omegas_and_strengths)
     print_failed(failed_jobs)
-    output_string = output_stream.getvalue()
-    output_stream.close()
-    return output_string, len(failed_jobs)
+    spectra_input = "".join(completed)
+    return spectra_input, len(failed_jobs)
 
 def write_spectra_abs_input(user_input):
     '''
@@ -226,3 +259,87 @@ def write_omega_vs_time(n_trajectories, n_states=1):
         average_omegas_time.write(str(omega) + '\n')
     average_omegas_time.close()
 
+def test_accumulate_spectra():
+    '''
+    Test reading from one trajectory and one state for 0 restarts
+    '''
+    results, _ = accumulate_spectra(n_trajectories=1, n_states=1, suffix='abs')
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00\n'\
+
+def test_accumulate_spectra1r():
+    '''
+    Test reading from one trajectory and one state for 1 restart
+    '''
+    results, _ = accumulate_spectra(n_trajectories=1, n_states=1, suffix='abs', n_restarts=1)
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00\n'\
+                      '    2.83499537579971E+00    1.09712749914004E+00\n'\
+                      '    2.83499537590646E+00    1.09712749898366E+00\n'\
+                      '    2.84494863011054E+00    1.09014408841436E+00\n'\
+
+def test_accumulate_spectra2s():
+    '''
+    Test reading from one trajectory and two states for 0 restarts
+    Format line = omega1 dipole1 omega2 dipole2
+    '''
+    results, _ = accumulate_spectra(n_trajectories=1, n_states=2, suffix='abs', n_restarts=0)
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00    3.11283401561629E+00    1.71114020911819E-03\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00    3.11283401572716E+00    1.71114021120587E-03\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00    3.13879515381299E+00    1.40558935033439E-03\n'\
+
+def test_accumulate_spectra2t():
+    '''
+    Test reading from two trajectories and one state for 0 restarts
+    '''
+    results, _ = accumulate_spectra(n_trajectories=2, n_states=1, suffix='abs', n_restarts=0)
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00\n'\
+                      '    2.79251675025885E+00    9.97596401377230E-01\n'\
+                      '    2.79251675255889E+00    9.97596395053960E-01\n'\
+                      '    2.77394015210517E+00    1.02463291276291E+00\n'\
+
+def test_accumulate_spectra3t2rf():
+    '''
+    Test discarding a failed job that completes the zeroth restart but not the first restart
+    '''
+    results, _ = accumulate_spectra(n_trajectories=3, n_states=1, suffix='abs', n_restarts=1)
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00\n'\
+                      '    2.83499537579971E+00    1.09712749914004E+00\n'\
+                      '    2.83499537590646E+00    1.09712749898366E+00\n'\
+                      '    2.84494863011054E+00    1.09014408841436E+00\n'\
+                      '    2.79251675025885E+00    9.97596401377230E-01\n'\
+                      '    2.79251675255889E+00    9.97596395053960E-01\n'\
+                      '    2.77394015210517E+00    1.02463291276291E+00\n'\
+                      '    2.76745094266644E+00    1.08681417088910E+00\n'\
+                      '    2.76745094348021E+00    1.08681416841911E+00\n'\
+                      '    2.75412095067397E+00    1.11226755671165E+00\n'\
+
+def test_as_missing_file():
+    '''
+    For accumulate spectra, make sure it can discard trajectories that don't start all their restarts
+    '''
+    results, _ = accumulate_spectra(n_trajectories=4, n_states=1, suffix='abs', n_restarts=1)
+    print(results)
+    assert results == '    2.81546056752562E+00    1.08396426502947E+00\n'\
+                      '    2.81546056803794E+00    1.08396426443482E+00\n'\
+                      '    2.82143633193210E+00    1.07674514101601E+00\n'\
+                      '    2.83499537579971E+00    1.09712749914004E+00\n'\
+                      '    2.83499537590646E+00    1.09712749898366E+00\n'\
+                      '    2.84494863011054E+00    1.09014408841436E+00\n'\
+                      '    2.79251675025885E+00    9.97596401377230E-01\n'\
+                      '    2.79251675255889E+00    9.97596395053960E-01\n'\
+                      '    2.77394015210517E+00    1.02463291276291E+00\n'\
+                      '    2.76745094266644E+00    1.08681417088910E+00\n'\
+                      '    2.76745094348021E+00    1.08681416841911E+00\n'\
+                      '    2.75412095067397E+00    1.11226755671165E+00\n'
