@@ -56,10 +56,10 @@ def test_prepareDynamcs1of1(userInput):
     Test for a ground state trajectory using no restarts
     '''
     userInput.restart_attempt = 0
-    _, (_, slurm_file) = prepareDynamics(userInput)
+    _, slurm_file = prepareDynamics(userInput)
     result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of1_slurm_attempt_test.sbatch").read()
-    open("failed_test.txt", 'w').write(result)
+    open("failed.txt", 'w').write(result)
     assert result == answer
     subprocess.call(['rm', 'nasqm_ground.in', 'failed_test.txt'])
 

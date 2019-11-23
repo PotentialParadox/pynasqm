@@ -3,15 +3,9 @@ module load intel/2017
 source ~/myapps/load_boost
 source /ufrc/roitberg/dtracy/amber/amber.sh
 
-export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
-for i in $(seq 1 16)
-do
-    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"
-    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"
-    ID="$((${FIRST_COUNT} + ${i}))"
-    cd ${ID}
-    $AMBERHOME/bin/sander -O -i nasqm_abs_${ID}.in -o nasqm_abs_${ID}.out -c ground_snap.${ID} -p m1.prmtop -r nasqm_abs_${ID}.rst -x nasqm_abs_${ID}.nc &
-    cd ../../..
-done
-wait
+ID=${SLURM_ARRAY_TASK_ID}
+cd ${ID}
+$AMBERHOME/bin/sander -O -i nasqm_abs_${ID}.in -o nasqm_abs_${ID}.out -c ground_snap.${ID} -p m1.prmtop -r nasqm_abs_${ID}.rst -x nasqm_abs_${ID}.nc
+cd ../../..

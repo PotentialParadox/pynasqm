@@ -67,7 +67,7 @@ class Trajectories(ABC):
         self._input_ceons = input_ceons
 
     def set_excited_states(self, inputceons):
-        pass
+        return inputceons
 
     @abstractmethod
     def _nmrdirs(self):
@@ -140,9 +140,9 @@ class Trajectories(ABC):
     def _set_initial_input(self):
         pass
 
-    def runDynamics(self, amber, slurm_files):
+    def runDynamics(self, amber, slurm_file):
         if self._user_input.is_hpc:
-            nasqm_slurm.run_nasqm_slurm_files(slurm_files)
+            nasqm_slurm.run_nasqm_slurm_file(slurm_file)
         else:
             amber.run_amber(number_processors=self._user_input.processors_per_node,
                             is_ground_state=False)
@@ -199,13 +199,14 @@ class Trajectories(ABC):
 
     def create_slurm(self, amber):
         if self._user_input.is_hpc:
+            print("Dustin running slurm creation")
             job_name = self._user_input.job_name + self._job_suffix
             directory = "{}/traj_${{ID}}/restart_{}".format(self._job_suffix, self._user_input.restart_attempt)
-            slurm_files = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
+            slurm_file = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
                                                              job_name, self._number_trajectories, directory)
         else:
-            slurm_files = None
-        return slurm_files
+            slurm_file = None
+        return slurm_file
 
     def prepareDynamics(self):
         amber = self.create_amber()

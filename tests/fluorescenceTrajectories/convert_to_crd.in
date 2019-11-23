@@ -1,0 +1,7 @@
+parm m1.prmtop
+trajin flu/traj_2/restart_0/snap_for_flu_t2_r1.rst
+center :1
+trajout flu/traj_2/restart_1/snap_for_flu_t2_r1.rst restart
+image
+run
+quit

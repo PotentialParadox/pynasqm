@@ -1,0 +1,5 @@
+parm m1.prmtop
+trajin abs/traj_1/restart_0/snap_for_abs_t1_r0.rst
+distance :1 :896 out abs/traj_1/nmr/distance_1.dat
+run
+exit

@@ -1,10 +1,10 @@
-for i in $(seq 1 2)
-do
-    MULTIPLIER="$((${SLURM_ARRAY_TASK_ID} - 1))"
-    FIRST_COUNT="$((${SLURM_CPUS_ON_NODE} * ${MULTIPLIER}))"
-    ID="$((${FIRST_COUNT} + ${i}))"
-    cd flu/traj_${ID}/restart_0
-    $AMBERHOME/bin/sander -O -i nasqm_flu_t${ID}_r0.in -o nasqm_flu_t${ID}_r0.out -c snap_for_flu_t${ID}_r0.rst -p m1.prmtop -r snap_for_flu_t${ID}_r1.rst -x nasqm_flu_t${ID}_r0.nc &
-    cd ../../..
-done
-wait
+module load intel/2017
+source ~/myapps/load_boost
+source /ufrc/roitberg/dtracy/amber/amber.sh
+
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
+
+ID=${SLURM_ARRAY_TASK_ID}
+cd flu/traj_${ID}/restart_0
+$AMBERHOME/bin/sander -O -i nasqm_flu_t${ID}_r0.in -o nasqm_flu_t${ID}_r0.out -c snap_for_flu_t${ID}_r0.rst -p m1.prmtop -r snap_for_flu_t${ID}_r1.rst -x nasqm_flu_t${ID}_r0.nc
+cd ../../..

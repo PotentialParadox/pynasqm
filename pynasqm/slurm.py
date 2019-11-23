@@ -45,7 +45,7 @@ class Slurm:
                 '#SBATCH --constraint=haswell\n' \
                 '#SBATCH --mail-user='+self.header['email']+' # Email address\n' \
                 '#SBATCH --mail-type='+self.email_preferences+' # What emails you want\n' \
-                '#SBATCH --tasks=1\n' \
+                '#SBATCH --ntasks=1\n' \
                 '#SBATCH --mem-per-cpu='+self.header['memory']+\
                 ' #Per processor memory requested\n' \
                 '#SBATCH --array=1-'+str(n_arrays)+'%'+str(self.header['max_jobs'])+'\n' \
@@ -70,22 +70,15 @@ def wait_for_job_finish(slurm_id):
         if not re.search(p_id, stdout_value):
             condition = False
 
-def run_slurm(slurm_script1, slurm_script2=None):
+def run_slurm(slurm_script):
     '''
     Run the slurm script
     '''
-    slurm_id1 = None
-    slurm_id2 = None
-    if slurm_script1:
-        file_name = 'nasqm1.sbatch'
-        slurm_id1 = submit_job(file_name, slurm_script1)
-    if slurm_script2:
-        file_name = 'nasqm2.sbatch'
-        slurm_id2 = submit_job(file_name, slurm_script2)
-    if slurm_script1:
-        wait_for_job(slurm_id1)
-    if slurm_script2:
-        wait_for_job(slurm_id2)
+    slurm_id = None
+    if slurm_script:
+        file_name = 'nasqm.sbatch'
+        slurm_id = submit_job(file_name, slurm_script)
+    wait_for_job(slurm_id)
 
 def wait_for_job(slurm_id):
     print("Waiting for {}".format(slurm_id))

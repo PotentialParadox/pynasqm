@@ -5,6 +5,7 @@ using information supplied by abs_spectra, which is a file in the format with ea
 import numpy as np
 import math
 import random
+from pynasqm.conversions import fs_to_ev
 
 def get_n_initial_states_w_laser_energy_and_fwhm(n, abs_spectra, laser_energy, fwhm):
     return [choose(get_probabilities_from(abs_spectra, laser_energy, fwhm)) + 1 for _ in range(n)]
@@ -23,11 +24,15 @@ def normalize(v):
 def calc_raw_probabilities(laser_energy, fwhm, energies, strenghts):
     return [calc_raw_probability(laser_energy, fwhm, e, s) for e, s in zip(energies, strenghts)]
 
+def convert_laserfwhm_to_sigma2(fwhm):
+    alpha = 2.35482 # fwhm = alpha * sigma
+    fc_fwhm = pow(alpha,2) * fs_to_ev(fwhm) / math.sqrt(2)
+    return pow(alpha*fs_to_ev(fwhm),2)/2
+
 def calc_raw_probability(laser_energy, fwhm, energy, strength):
     f = strength
-    sigma = fwhm / 2.35482
-    s2 = pow(sigma,2)
     pi = math.pi
+    s2 = convert_laserfwhm_to_sigma2(fwhm)
     w = laser_energy
     e = energy
     return f * 1.0 / math.sqrt(2.0 * pi * s2) * math.exp(-pow(e-w,2) / (2*s2))
