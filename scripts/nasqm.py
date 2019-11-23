@@ -126,8 +126,9 @@ def run_absorption_collection(user_input):
     Parse the output data from amber for absorption energies and create a spectra_abs.input
     file
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!! Combining Absorbance !!!!!!!!!!!!!!!!!!!")
     combine_trajectories("abs", user_input.n_snapshots_gs, user_input.n_abs_runs)
+    print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
     write_spectra_abs_input(user_input)
     energies, strengths = get_energies_and_strenghts('spectra_abs.input')
     print_energies_and_strengths(energies, strengths)
@@ -136,7 +137,7 @@ def print_energies_and_strengths(energies, strengths):
     with open('absorption_summary.txt', 'w') as fout:
         fout.write('Energies and Strengths\n')
         for i, (e, s) in enumerate(zip(energies, strengths)):
-            fout.write('State {}: Energy: {}, Strength: {}\n'.format(i+1, e, s))
+            fout.write('State {}: Energy: { :18.10f}, Strength: { :18.10f}\n'.format(i+1, e, s))
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''

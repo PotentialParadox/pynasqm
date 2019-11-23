@@ -69,9 +69,10 @@ def plotter(args, x_ev, x_nm, ys, units):
         x_max = x_ev_max if units == 0 else x_nm_max
         ax.axvline(x=x_max, linestyle="dashed", linewidth=1, color=colors[i])
     xlabel = "Energy (eV)" if args.x_units == 0 else "Wavelength (nm)"
+    ax.set_title(args.title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(args.ylabel)
-    ax.legend(frameon=False, loc=1)
+    ax.legend(frameon=False)
     ax.axes.get_yaxis().set_ticks([])
     ax.set_ylim((0, 1.5))
     ax.text(-0.05, 0.95, args.letter, transform=ax.transAxes,
