@@ -126,12 +126,12 @@ def create_spectra_inputs(suffix, n_trajectories, n_restarts, n_states):
     script += "nstates={}\n".format(n_states)
     script += "nlines=$((nstates+1))\n"
     script += "awklines=$((nstates+3))\n"\
-            "mkdir -p abs_spectra\n"\
+            "mkdir -p ${suffix}_spectra\n"\
             "for ((traj=1;traj<=$ntrajs;++traj)) do\n"\
-            "    fileout=abs_spectra/traj_${traj}.out\n"\
+            "    fileout=${suffix}_spectra/traj_${traj}.out\n"\
             "    > $fileout\n"\
             "    for ((restart=0;restart<=$nrestarts;++restart)) do\n"\
-            "        filename=${suffix}/traj_${traj}/restart_${restart}/nasqm_abs_t${traj}_r${restart}.out\n"\
+            "        filename=${suffix}/traj_${traj}/restart_${restart}/nasqm_${suffix}_t${traj}_r${restart}.out\n"\
             "        if [ -f $filename ]; then\n"\
             "            grep -A $nlines 'Frequencies (eV) and Oscillator' $filename\\\n"\
             "                | awk -v nlines=\"$awklines\" 'BEGIN{ORS=\"    \"};\n"\
