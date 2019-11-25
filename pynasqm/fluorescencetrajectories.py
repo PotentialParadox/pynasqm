@@ -81,6 +81,7 @@ class FluTrajectories(Trajectories):
             self.start_from_restart(override)
 
     def set_excited_states(self, input_ceons):
+        print("Setting Initial Excited States")
         if self.doing_laser_excitation():
             init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
                                                                        'spectra_abs.input',
@@ -90,9 +91,11 @@ class FluTrajectories(Trajectories):
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
         for inputceon, state in zip(input_ceons, init_states):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
+        print("Finished Setting Initial Excited States")
         return input_ceons
 
     def set_nexmd_seed(self, inputceons):
+        print("Setting NEXMD Random Seeds")
         random_seeds = [randint(1,10000) for i in range(len(inputceons))]
         for inputceon, seed in zip(inputceons, random_seeds):
             inputceon.set_nexmd_seed(seed)
