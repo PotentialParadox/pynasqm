@@ -137,7 +137,7 @@ def print_energies_and_strengths(energies, strengths):
     with open('absorption_summary.txt', 'w') as fout:
         fout.write('Energies and Strengths\n')
         for i, (e, s) in enumerate(zip(energies, strengths)):
-            fout.write('State {}: Energy: { :18.10f}, Strength: { :18.10f}\n'.format(i+1, e, s))
+            fout.write('State {}: Energy:{:14.10f}, Strength: {:14.10f}\n'.format(i+1, e, s))
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''

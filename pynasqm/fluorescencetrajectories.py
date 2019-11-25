@@ -1,4 +1,5 @@
 import os
+from random import randint
 from pynasqm.utils import copy_files
 from pynasqm.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
@@ -90,6 +91,12 @@ class FluTrajectories(Trajectories):
         for inputceon, state in zip(input_ceons, init_states):
             inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         return input_ceons
+
+    def set_nexmd_seed(self, inputceons):
+        random_seeds = [randint(1,10000) for i in range(len(inputceons))]
+        for inputceon, seed in zip(inputceons, random_seeds):
+            inputceon.set_nexmd_seed(seed)
+        return inputceons
 
     def hpc_coordinate_files(self):
         return ["snap_for_flu_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]

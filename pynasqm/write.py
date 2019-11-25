@@ -152,14 +152,16 @@ def create_spectra_inputs(suffix, n_trajectories, n_restarts, n_states):
     subprocess.run("bash spectra.sh", shell=True)
 
 def filter_completed(data):
-    maxlength = max([len(d) for d in data])
+    nlines = [len(d.splitlines()) for d in data]
+    print(nlines)
+    maxlines = max (nlines)
     failed = []
     completed = []
-    for i, d in enumerate(data):
-        if len(d) == maxlength:
-            completed.append(d)
+    for i, n in enumerate(nlines):
+        if n == maxlines:
+            completed.append(data[i])
         else:
-            failed.append(i)
+            failed.append(i+1)
     return completed, failed
 
 def accumulate_spectra(n_trajectories, n_states=10, suffix='flu', n_restarts=0):

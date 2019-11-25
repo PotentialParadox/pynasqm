@@ -23,6 +23,10 @@ class InputCeon:
         self.inputceonmanager.set_excited_state(state, states_to_prop)
         self.inputceonmanager.write()
 
+    def set_nexmd_seed(self, seed):
+        self.inputceonmanager.set_nexmd_seed(seed)
+        self.inputceonmanager.write()
+
     def set_bo(self, isTully, qsteps=0):
         self.inputceonmanager.set_is_tully(isTully, qsteps)
         self.inputceonmanager.write()

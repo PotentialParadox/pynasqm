@@ -18,6 +18,9 @@ class InputceonManager:
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
         self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
+    def set_nexmd_seed(self, seed):
+        self.moldyn.set_value('rnd_seed', seed)
+
     def set_is_tully(self, isTully, qsteps):
         if isTully:
             self.moldyn.set_value('bo_dynamics_flag', 0)

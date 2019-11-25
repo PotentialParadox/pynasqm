@@ -52,7 +52,7 @@ class Trajectories(ABC):
         pass
 
     def create_inputceon_copies(self):
-        input_ceons = []
+        inputceons = []
         attempt = self._user_input.restart_attempt
         job = self._job_suffix
         mkdir("{}".format(job))
@@ -61,10 +61,13 @@ class Trajectories(ABC):
             mkdir("{}/traj_{}".format(job, index))
             mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
             directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
-            input_ceons.append(self._input_ceons[0].copy(directory, file_name))
-        if self._job_suffix == "flu":
-            input_ceons = self.set_excited_states(input_ceons)
-        self._input_ceons = input_ceons
+            inputceons.append(self._input_ceons[0].copy(directory, file_name))
+            inputceons = self.set_excited_states(inputceons)
+            inputceons = self.set_nexmd_seed(inputceons)
+        self._input_ceons = inputceons
+
+    def set_nexmd_seed(self, inputceons):
+        return inputceons
 
     def set_excited_states(self, inputceons):
         return inputceons
