@@ -118,7 +118,7 @@ class UserInput:
         self.abs_run_time = float(data["abs_run_time"]) # ps
         # Number of snapshots is negligible for adjustment because exc will use final snapshot
         # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
-        if self.abs_run_time != 0 or self.n_steps_print_amcrd >= 0:
+        if self.abs_run_time != 0 and self.n_steps_print_amcrd != 0:
             self.abs_run_time = self.adjust_run_time(self.abs_run_time,
                                                      self.time_step,
                                                      self.n_abs_runs,
@@ -140,7 +140,7 @@ class UserInput:
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
-        if self.n_steps_print_emcrd >= 0:
+        if self.n_steps_print_emcrd != 0:
             self.exc_run_time = self.adjust_run_time(self.exc_run_time,
                                                     self.time_step,
                                                     self.n_exc_runs,
@@ -212,7 +212,6 @@ class UserInput:
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
         self.n_steps_abs = self.n_steps(self.abs_run_time, self.time_step, self.n_abs_runs)
         self.n_frames_abs = int(self.n_steps_abs / self.n_steps_to_print_abs)
-        self.n_mcrd_frames_abs = int(self.n_steps_abs / self.n_steps_print_amcrd)
         self.n_steps_exc = self.n_steps(self.exc_run_time, self.time_step, self.n_exc_runs)
 
 
