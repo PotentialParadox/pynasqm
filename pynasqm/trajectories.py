@@ -62,8 +62,8 @@ class Trajectories(ABC):
             mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
             directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
             inputceons.append(self._input_ceons[0].copy(directory, file_name))
-            inputceons = self.set_excited_states(inputceons)
-            inputceons = self.set_nexmd_seed(inputceons)
+        inputceons = self.set_nexmd_seed(inputceons)
+        inputceons = self.set_excited_states(inputceons)
         self._input_ceons = inputceons
 
     def set_nexmd_seed(self, inputceons):
@@ -202,7 +202,6 @@ class Trajectories(ABC):
 
     def create_slurm(self, amber):
         if self._user_input.is_hpc:
-            print("Dustin running slurm creation")
             job_name = self._user_input.job_name + self._job_suffix
             directory = "{}/traj_${{ID}}/restart_{}".format(self._job_suffix, self._user_input.restart_attempt)
             slurm_file = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
