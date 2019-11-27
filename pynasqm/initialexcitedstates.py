@@ -8,7 +8,8 @@ import random
 from pynasqm.conversions import fs_to_ev
 
 def get_n_initial_states_w_laser_energy_and_fwhm(n, abs_spectra, laser_energy, fwhm):
-    return [choose(get_probabilities_from(abs_spectra, laser_energy, fwhm)) + 1 for _ in range(n)]
+    probabilities = get_probabilities_from(abs_spectra, laser_energy, fwhm)
+    return [choose(probabilities) + 1 for _ in range(n)]
 
 def get_probabilities_from(abs_spectra, laser_energy, fwhm):
     energies, strengths = get_energies_and_strenghts(abs_spectra)
