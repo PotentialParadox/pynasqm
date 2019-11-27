@@ -153,7 +153,6 @@ def create_spectra_inputs(suffix, n_trajectories, n_restarts, n_states):
 
 def filter_completed(data):
     nlines = [len(d.splitlines()) for d in data]
-    print(nlines)
     maxlines = max (nlines)
     failed = []
     completed = []
