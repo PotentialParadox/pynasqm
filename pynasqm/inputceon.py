@@ -73,6 +73,8 @@ class InputCeon:
         Set the number of steps between print outs
         '''
         sed_inplace(self.amber_input, r'ntwx=\s*\d*', 'ntwx=' + str(n_steps_to_print))
+        if n_steps_to_print == 0:
+            sed_inplace(self.amber_input, r'ntwv=\s*\d*', 'ntwv=0')
 
     def write_log(self):
         '''
