@@ -80,9 +80,6 @@ class FluTrajectories(Trajectories):
             self.start_from_abs(override)
         else:
             self.start_from_restart(override)
-        if self._user_input.is_pulse_pump:
-            self.copy_to_pulse_pump_dir()
-            self.adjust_inputs_for_pump_pulse()
 
     def adjust_inputs_for_pump_pulse(self):
         dirs = ["flu/traj_{}/pump_pulse_prep".format(traj) for traj in self.traj_indexes()]
