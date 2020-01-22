@@ -1,7 +1,7 @@
 import os
 from random import randint
 from pynasqm.utils import copy_files, mkdir
-from pynasqm.flutrajectories import FluTrajectories
+from pynasqm.fluorescencetrajectories import FluTrajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
@@ -12,7 +12,7 @@ class PulsePump(FluTrajectories):
         self._user_input = user_input
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_ex
-        self._child_root = 'nasqm_pulse_pump'
+        self._child_root = 'nasqm_pulse_pump_'
         self._job_suffix = 'pulse_pump'
         self._parent_restart_root = 'nasqm_abs_'
         self._amber_restart = True

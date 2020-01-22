@@ -150,13 +150,13 @@ class Trajectories(ABC):
             amber.run_amber(number_processors=self._user_input.processors_per_node,
                             is_ground_state=False)
 
-    @abstractmethod
     def hpc_coordinate_files(self):
-        pass
+        return ["snap_for_{}_t${{ID}}_r{}.rst".format(self._job_suffix,
+                                                      self._user_input.restart_attempt)]
 
-    @abstractmethod
     def pc_coordinate_files(self):
-        pass
+        return ["snap_for_{}_t{}_r{}.rst".format(self._job_suffix, traj, self._user_input.restart_attempt)
+                for traj in range(1, self._number_trajectories+1)]
 
     def coordinate_files(self):
         if self._user_input.is_hpc:

@@ -53,8 +53,9 @@ def main():
         run_absorption_trajectories(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
-    if user_input.is_pump_pulse():
+    if user_input.is_pulse_pump:
         run_pulse_pump_prep(input_ceon, user_input)
+        exit()
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)
     if user_input.run_fluorescence_collection:
@@ -143,7 +144,7 @@ def print_energies_and_strengths(energies, strengths):
             fout.write('State {}: Energy:{:14.10f}, Strength: {:14.10f}\n'.format(i+1, e, s))
 
 def run_pulse_pump_prep(input_ceon, user_input):
-    PumpPulse(user_input, input_ceon).run()
+    PulsePump(user_input, input_ceon).run()
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''
