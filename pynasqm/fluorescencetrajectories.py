@@ -69,7 +69,7 @@ class FluTrajectories(Trajectories):
         r = self._user_input.n_abs_runs - 1
         source_files = ["abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(t, r, t, r+1)
                         for t in self.traj_indexes()]
-        output_files = ["flu/traj_{}/restart_0/snap_for_flu_t{}_r0.rst".format(t, t)
+        output_files = ["flu/traj_{}/restart_0/snap_for_{}_t{}_r0.rst".format(t, self._job_suffix, t)
                         for t in self.traj_indexes()]
         copy_files(source_files, output_files, force=override)
 
@@ -80,42 +80,6 @@ class FluTrajectories(Trajectories):
             self.start_from_abs(override)
         else:
             self.start_from_restart(override)
-
-    def adjust_inputs_for_pump_pulse(self):
-        dirs = ["flu/traj_{}/pump_pulse_prep".format(traj) for traj in self.traj_indexes()]
-        amber_inputs = ["{}/nasqm_pump_pulse_t{}.in".format(d, traj)
-                        for d, traj in zip(dirs, self.traj_indexes())]
-        input_managers = [InputCeon(amber, d)
-                          for amber, d in zip(amber_inputs, dirs)]
-        for input_manager in input_managers:
-            input_manager.set_pump_pulse_prep()
-
-    def copy_to_pulse_pump_dir(self):
-        restart_sources = ["flu/traj_{}/restart_0/snap_for_flu_t{}_r0.rst".format(traj, traj)
-                           for traj in self.traj_indexes()]
-        inputceon_sources = ["flu/traj_{}/restart_0/input.ceon".format(traj)
-                             for traj in self.traj_indexes()]
-        mdin_sources = ["flu/traj_{}/restart_0/nasqm_flu_t{}_r0.in".format(traj, traj)
-                        for traj in self.traj_indexes()]
-        prmtop_sources = ["flu/traj_{}/restart_0/m1.prmtop".format(traj)
-                          for traj in self.traj_indexes()]
-        sources = restart_sources + inputceon_sources + mdin_sources + prmtop_sources
-        restart_targets = ["flu/traj_{}/pump_pulse_prep/snap_for_pump_pulse_t{}.rst".format(traj, traj)
-                           for traj in self.traj_indexes()]
-        inputceon_targets = ["flu/traj_{}/pump_pulse_prep/input.ceon".format(traj)
-                             for traj in self.traj_indexes()]
-        mdin_targets = ["flu/traj_{}/pump_pulse_prep/nasqm_pump_pulse_t{}.in".format(traj, traj)
-                        for traj in self.traj_indexes()]
-        prmtop_targets = ["flu/traj_{}/pump_pulse_prep/m1.prmtop".format(traj)
-                          for traj in self.traj_indexes()]
-        targets = restart_targets + inputceon_targets + mdin_targets + prmtop_targets
-        dirs = ["flu/traj_{}/pump_pulse_prep".format(traj)
-                for traj in self.traj_indexes()]
-        for d in dirs:
-            mkdir(d)
-        copy_files(sources, targets)
-
-
 
     def set_excited_states(self, input_ceons):
         print("Setting Initial Excited States")
