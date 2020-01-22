@@ -62,13 +62,6 @@ class UserInput:
         #################################
         # Do you want to run ground state dynamics
         self.run_ground_state_dynamics = pynasqm.utils.str2bool(data["run_ground_state_dynamics"])
-        # Change here the runtime of the initial ground state MD
-        self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
-        self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
-                                                          self.time_step,
-                                                          self.n_ground_runs,
-                                                          self.n_steps_print_gmcrd,
-                                                          self.n_snapshots_gs)
         # Change here the number of restarts of length ground_state_run_time you wish to run
         try:
             self.n_ground_runs = int(data["n_ground_runs"])
@@ -81,6 +74,13 @@ class UserInput:
             self.n_steps_print_gmcrd = 100
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
+        # Change here the runtime of the initial ground state MD
+        self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
+        self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
+                                                          self.time_step,
+                                                          self.n_ground_runs,
+                                                          self.n_steps_print_gmcrd,
+                                                          self.n_snapshots_gs)
 
         #################################
         # QM Ground State
@@ -93,17 +93,6 @@ class UserInput:
             self.n_abs_runs = int(data["n_abs_runs"])
         except KeyError:
             self.n_abs_runs = 1
-        # Change here the runtime for the the trajectories
-        # used to create calculated the absorption
-        self.abs_run_time = float(data["abs_run_time"]) # ps
-        # Number of snapshots is negligible for adjustment because exc will use final snapshot
-        # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
-        if self.abs_run_time != 0 and self.n_steps_print_amcrd != 0:
-            self.abs_run_time = self.adjust_run_time(self.abs_run_time,
-                                                     self.time_step,
-                                                     self.n_abs_runs,
-                                                     self.n_steps_print_amcrd,
-                                                     1)
         # Change here the number of snapshots you wish to take
         # from the initial ground state trajectory to run the
         # further ground state dynamics
@@ -128,6 +117,17 @@ class UserInput:
         except KeyError:
             print("Absorption time delay wasn't given defaulting to 1ps")
             self.abs_time_delay = 1000
+        # Change here the runtime for the the trajectories
+        # used to create calculated the absorption
+        # Number of snapshots is negligible for adjustment because exc will use final snapshot
+        # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
+        self.abs_run_time = float(data["abs_run_time"]) # ps
+        if self.abs_run_time != 0 and self.n_steps_print_amcrd != 0:
+            self.abs_run_time = self.adjust_run_time(self.abs_run_time,
+                                                     self.time_step,
+                                                     self.n_abs_runs,
+                                                     self.n_steps_print_amcrd,
+                                                     1)
 
         #################################
         # QM Excited State
@@ -147,15 +147,6 @@ class UserInput:
         if self.n_snapshots_ex > self.n_snapshots_gs:
             raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
                              "therefore n_snapshots_ex must less than or equal to n_snapshots_gs")
-        # Change here the runtime for the the trajectories
-        # used to create calculated the fluorescence
-        self.exc_run_time = float(data["exc_run_time"]) # ps
-        if self.n_steps_print_emcrd != 0:
-            self.exc_run_time = self.adjust_run_time(self.exc_run_time,
-                                                    self.time_step,
-                                                    self.n_exc_runs,
-                                                    self.n_steps_print_emcrd,
-                                                    1)
         # Do you want to collect the data from the exctied state trajectory
         # calculations?
         self.run_fluorescence_collection = pynasqm.utils.str2bool(
@@ -194,6 +185,15 @@ class UserInput:
         self.fluorescence_time_delay = float(data["fluorescence_time_delay"]) # fs
         # Truncation will remove so many fs off the back of the trajectory
         self.fluorescence_time_truncation = float(data["fluorescence_time_truncation"]) # fs
+        # Change here the runtime for the the trajectories
+        # used to create calculated the fluorescence
+        self.exc_run_time = float(data["exc_run_time"]) # ps
+        if self.n_steps_print_emcrd != 0:
+            self.exc_run_time = self.adjust_run_time(self.exc_run_time,
+                                                    self.time_step,
+                                                    self.n_exc_runs,
+                                                    self.n_steps_print_emcrd,
+                                                    1)
 
 
         #################################
