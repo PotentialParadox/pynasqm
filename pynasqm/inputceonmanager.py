@@ -18,6 +18,12 @@ class InputceonManager:
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
         self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
+    def set_calcxdens(self, set_val):
+        if set_val:
+            self.moldyn.set_value('calcxdens', '.true.')
+        else:
+            self.moldyn.set_value('calcxdens', '.false.')
+
     def set_nexmd_seed(self, seed):
         self.moldyn.set_value('rnd_seed', seed)
 

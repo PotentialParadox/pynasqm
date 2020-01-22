@@ -31,6 +31,10 @@ class InputCeon:
         self.inputceonmanager.set_is_tully(isTully, qsteps)
         self.inputceonmanager.write()
 
+    def set_pump_pulse_prep(self):
+        self.inputceonmanager.set_calcxdens(True)
+        self.set_n_steps(0)
+
     def find_path(self):
         '''
         Return the full naesmd path

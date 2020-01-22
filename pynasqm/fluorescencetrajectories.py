@@ -4,6 +4,7 @@ from pynasqm.utils import copy_files, mkdir
 from pynasqm.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
+from pynasqm.inputceon import InputCeon
 
 class FluTrajectories(Trajectories):
 
@@ -81,6 +82,16 @@ class FluTrajectories(Trajectories):
             self.start_from_restart(override)
         if self._user_input.is_pulse_pump:
             self.copy_to_pulse_pump_dir()
+            self.adjust_inputs_for_pump_pulse()
+
+    def adjust_inputs_for_pump_pulse(self):
+        dirs = ["flu/traj_{}/pump_pulse_prep".format(traj) for traj in self.traj_indexes()]
+        amber_inputs = ["{}/nasqm_pump_pulse_t{}".format(d, traj)
+                        for d, traj in zip(dirs, self.traj_indexes())]
+        input_managers = [InputCeon(amber, d)
+                          for amber, d in zip(amber_inputs, dirs)]
+        for input_manager in input_managers:
+            input_manager.set_pump_pulse_prep()
 
     def copy_to_pulse_pump_dir(self):
         restart_sources = ["flu/traj_{}/restart_0/snap_for_flu_t{}_r0.rst".format(traj, traj)
