@@ -110,6 +110,7 @@
 # Change here the full width half max of the laser in fs
 # Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening
     "fwhm": "100",
+# Is this a pump pulse experiment | Excited state must be set to -2
 # Do you want to collect the data from the exctied state trajectory
 # calculations?
     "run_fluorescence_collection": "False",
