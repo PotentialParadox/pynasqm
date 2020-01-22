@@ -29,7 +29,7 @@ class Trajectories(ABC):
         self._set_initial_input()
         self.gen_inputfiles()
         self._print_header("Running Dynamics")
-        (amber, slurm) = self.prepareDynamics()
+        (amber, slurm) = self.prepareScript()
         self.runDynamics(amber, slurm)
 
     def gen_inputfiles(self):
@@ -210,7 +210,7 @@ class Trajectories(ABC):
             slurm_file = None
         return slurm_file
 
-    def prepareDynamics(self):
+    def prepareScript(self):
         amber = self.create_amber()
         slurm_files = self.create_slurm(amber)
         return amber, slurm_files
