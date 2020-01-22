@@ -37,9 +37,6 @@ class Trajectories(ABC):
         self.create_inputceon_copies()
         if self._user_input.number_nearest_solvents > 0:
             self._update_nmr_info()
-        if self._user_input.is_pulse_pump:
-            self.copy_to_pulse_pump_dir()
-            self.adjust_inputs_for_pump_pulse()
 
     @abstractmethod
     def islastrun(self):
@@ -50,12 +47,6 @@ class Trajectories(ABC):
         print(50*"*")
         print(15 * " " + header)
         print(50*"*")
-
-    def copy_to_pulse_pump_dir(self):
-        pass
-
-    def adjust_inputs_for_pump_pulse(self):
-        pass
 
     def create_restarts_from_parent(self):
         pass

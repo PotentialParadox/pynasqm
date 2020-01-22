@@ -31,9 +31,8 @@ class InputCeon:
         self.inputceonmanager.set_is_tully(isTully, qsteps)
         self.inputceonmanager.write()
 
-    def set_pump_pulse_prep(self):
-        self.inputceonmanager.set_calcxdens(True)
-        self.set_n_steps(0)
+    def calc_transition_dipoles(self, should_calc):
+        self.inputceonmanager.set_calcxdens(should_calc)
         self.inputceonmanager.write()
 
     def find_path(self):
