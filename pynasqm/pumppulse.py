@@ -1,7 +1,7 @@
 import os
 from random import randint
 from pynasqm.utils import copy_files, mkdir
-from pynasqm.trajectories import Trajectories
+from pynasqm.flutrajectories import FluTrajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
