@@ -87,7 +87,7 @@ class FluTrajectories(Trajectories):
                            for traj in self.traj_indexes()]
         inputceon_sources = ["flu/traj_{}/restart_0/input.ceon".format(traj)
                              for traj in self.traj_indexes()]
-        mdin_sources = ["flu/traj_{}/restart_0/nasqm_flu_t{traj}_r0.in".format(traj)
+        mdin_sources = ["flu/traj_{}/restart_0/nasqm_flu_t{}_r0.in".format(traj, traj)
                         for traj in self.traj_indexes()]
         prmtop_sources = ["flu/traj_{}/restart_0/m1.prmtop".format(traj)
                           for traj in self.traj_indexes()]
