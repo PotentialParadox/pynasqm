@@ -79,10 +79,10 @@ class FluTrajectories(Trajectories):
             self.start_from_abs(override)
         else:
             self.start_from_restart(override)
-        if self._user_input.is_pump_pulse:
-            self.copy_to_pump_pulse_dir()
+        if self._user_input.is_pulse_pump:
+            self.copy_to_pulse_pump_dir()
 
-    def copy_to_pump_pulse_dir(self):
+    def copy_to_pulse_pump_dir(self):
         restart_sources = ["flu/traj_{traj}/restart_0/snap_for_flu_t{traj}_r0.rst"
                            for traj in self.traj_indexes()]
         inputceon_sources = ["flu/traj_{traj}/restart_0/input.ceon"
