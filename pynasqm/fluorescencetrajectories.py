@@ -69,7 +69,7 @@ class FluTrajectories(Trajectories):
         r = self._user_input.n_abs_runs - 1
         source_files = ["abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(t, r, t, r+1)
                         for t in self.traj_indexes()]
-        output_files = ["flu/traj_{}/restart_0/snap_for_{}_t{}_r0.rst".format(t, self._job_suffix, t)
+        output_files = ["{2}/traj_{1}/restart_0/snap_for_{2}_t{1}_r0.rst".format(t, self._job_suffix)
                         for t in self.traj_indexes()]
         copy_files(source_files, output_files, force=override)
 
