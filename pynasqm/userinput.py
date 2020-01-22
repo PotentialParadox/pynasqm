@@ -175,7 +175,7 @@ class UserInput:
         try:
             self.is_pulse_pump = pynasqm.utils.str2bool(data["is_pump_pulse"])
         except KeyError:
-            self.is_pulse_pump = false
+            self.is_pulse_pump = False
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
         # Some time will be needed for the molecule to equilibrate
