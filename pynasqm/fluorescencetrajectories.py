@@ -83,7 +83,7 @@ class FluTrajectories(Trajectories):
 
     def adjust_inputs_for_pump_pulse(self):
         dirs = ["flu/traj_{}/pump_pulse_prep".format(traj) for traj in self.traj_indexes()]
-        amber_inputs = ["{}/nasqm_pump_pulse_t{}".format(d, traj)
+        amber_inputs = ["{}/nasqm_pump_pulse_t{}.in".format(d, traj)
                         for d, traj in zip(dirs, self.traj_indexes())]
         input_managers = [InputCeon(amber, d)
                           for amber, d in zip(amber_inputs, dirs)]
