@@ -1,6 +1,6 @@
 import os
 from random import randint
-from pynasqm.utils import copy_files
+from pynasqm.utils import copy_files, mkdir
 from pynasqm.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
@@ -79,6 +79,31 @@ class FluTrajectories(Trajectories):
             self.start_from_abs(override)
         else:
             self.start_from_restart(override)
+        if self._user_input.is_pump_pulse:
+            self.copy_to_pump_pulse_dir()
+
+    def copy_to_pump_pulse_dir(self):
+        restart_sources = ["flu/traj_{traj}/restart_0/snap_for_flu_t{traj}_r0.rst"
+                           for traj in self.traj_indexes()]
+        inputceon_sources = ["flu/traj_{traj}/restart_0/input.ceon"
+                             for traj in self.traj_indexes()]
+        mdin_sources = ["flu/traj_{traj}/restart_0/nasqm_flu_t{traj}_r0.in"
+                        for traj in self.traj_indexes()]
+        prmtop_sources = ["flu/traj_{traj}/restart_0/m1.prmtop"
+                          for traj in self.traj_indexes()]
+        sources = restart_sources + inputceon_sources + mdin_sources + prmtop_sources
+        restart_targets = ["flu/traj_{traj}/pump_pulse_prep/snap_for_pump_pulse_t{traj}.rst"
+                           for traj in self.traj_indexes()]
+        inputceon_targets = ["flu/traj_{traj}/pump_pulse_prep/input.ceon"
+                             for traj in self.traj_indexes()]
+        mdin_targets = ["flu/traj_{traj}/pump_pulse_prep/nasqm_pump_pulse_t{traj}.in"
+                        for traj in self.traj_indexes()]
+        prmtop_targets = ["flu/traj_{traj}/pump_pulse_prep/m1.prmtop"
+                          for traj in self.traj_indexes()]
+        targets = restart_targets + inputceon_targets + mdin_targets + prmtop_targets
+        copy_files(sources, targets)
+
+
 
     def set_excited_states(self, input_ceons):
         print("Setting Initial Excited States")
