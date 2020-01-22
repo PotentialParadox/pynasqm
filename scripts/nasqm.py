@@ -12,7 +12,7 @@ from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
 from pynasqm.userinput import UserInput
 from pynasqm.absorptiontrajectories import AbsTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
-from pynasqm.pumppulse import PumpPulse
+from pynasqm.pulsepump import PulsePump
 from pynasqm.trajectories import combine_trajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
@@ -54,7 +54,7 @@ def main():
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
     if user_input.is_pump_pulse():
-        run_pump_pulse_prep(input_ceon, user_input)
+        run_pulse_pump_prep(input_ceon, user_input)
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)
     if user_input.run_fluorescence_collection:
@@ -142,9 +142,8 @@ def print_energies_and_strengths(energies, strengths):
         for i, (e, s) in enumerate(zip(energies, strengths)):
             fout.write('State {}: Energy:{:14.10f}, Strength: {:14.10f}\n'.format(i+1, e, s))
 
-def run_pump_pulse_prep(input_ceon, user_input):
+def run_pulse_pump_prep(input_ceon, user_input):
     PumpPulse(user_input, input_ceon).run()
-
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''

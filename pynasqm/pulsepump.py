@@ -6,14 +6,14 @@ import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
 
-class PumpPulse(FluTrajectories):
+class PulsePump(FluTrajectories):
 
     def __init__(self, user_input, input_ceon):
         self._user_input = user_input
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_ex
-        self._child_root = 'nasqm_pump_pulse'
-        self._job_suffix = 'pump_pulse'
+        self._child_root = 'nasqm_pulse_pump'
+        self._job_suffix = 'pulse_pump'
         self._parent_restart_root = 'nasqm_abs_'
         self._amber_restart = True
 
