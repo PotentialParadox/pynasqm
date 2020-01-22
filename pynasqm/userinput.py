@@ -10,6 +10,9 @@ class UserInput:
     '''
     '''
     def __init__(self, file_name="pynasqm.in"):
+        #################################
+        # Slurm Specific
+        #################################
         self.file_name = file_name
         data = self.get_data()
         # Change here whether your simulation is qmmm
@@ -41,53 +44,24 @@ class UserInput:
         self.walltime = data["walltime"]
         # Whats queue do you want the job to go to
         self.qos = data["qos"]
-        # Do you want to run ground state dynamics
-        self.run_ground_state_dynamics = pynasqm.utils.str2bool(data["run_ground_state_dynamics"])
-        # Do you want to run the trajectories used for the abjorption specta
-        self.run_absorption_trajectories = pynasqm.utils.str2bool(
-            data["run_absorption_trajectories"])
-        # Do you want to collect the data from the absorption calculations?
-        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
-        # Do you want to run the exctied state trajectories?
-        self.run_excited_state_trajectories = pynasqm.utils.str2bool(
-            data["run_excited_state_trajectories"])
-        # Do you want to collect the data from the exctied state trajectory
-        # calculations?
-        self.run_fluorescence_collection = pynasqm.utils.str2bool(
-            data["run_fluorescence_collection"])
-        # Change here the number of snapshots you wish to take
-        # from the initial ground state trajectory to run the
-        # further ground state dynamics
-        self.n_snapshots_gs = int(data["n_snapshots_gs"])
+        # Email
+        self.email = data["email"]
+        # Additive Choice: 1-Begin, 2-End, 4-Fail
+        self.email_options = int(data["email_options"])
 
-        # Change here the number of states you wish to
-        # calculate in the absorption singlpoint calculations
-        self.n_abs_exc = int(data["n_abs_exc"])
 
-        # Change here the number of snapshots you wish to take
-        # from the initial ground state trajectory to run the
-        # new excited state dynamics
-        self.n_snapshots_ex = int(data["n_snapshots_ex"])
-        if self.n_snapshots_ex > self.n_snapshots_gs:
-            raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
-                             "therefore n_snapshots_ex must less than or equal to n_snapshots_gs")
-
+        #################################
+        # Global Trajectory
+        #################################
         # Change here the time step that will be shared by
         # each trajectory
         self.time_step = float(data["time_step"]) # fs
 
-        # Change here the number of restarts of length ground_state_run_time you wish to run
-        try:
-            self.n_ground_runs = int(data["n_ground_runs"])
-        except KeyError:
-            self.n_ground_runs = 1
-
-        # Change here how often you want to print to the mcrds
-        try:
-            self.n_steps_print_gmcrd = int(data["n_steps_to_print_gmcrd"])
-        except KeyError:
-            self.n_steps_print_gmcrd = 100
-
+        #################################
+        # MM Ground State
+        #################################
+        # Do you want to run ground state dynamics
+        self.run_ground_state_dynamics = pynasqm.utils.str2bool(data["run_ground_state_dynamics"])
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
         self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
@@ -95,24 +69,30 @@ class UserInput:
                                                           self.n_ground_runs,
                                                           self.n_steps_print_gmcrd,
                                                           self.n_snapshots_gs)
-
+        # Change here the number of restarts of length ground_state_run_time you wish to run
+        try:
+            self.n_ground_runs = int(data["n_ground_runs"])
+        except KeyError:
+            self.n_ground_runs = 1
+        # Change here how often you want to print to the groundstae mcrds
+        try:
+            self.n_steps_print_gmcrd = int(data["n_steps_to_print_gmcrd"])
+        except KeyError:
+            self.n_steps_print_gmcrd = 100
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
 
+        #################################
+        # QM Ground State
+        #################################
+        # Do you want to run the trajectories used for the abjorption specta
+        self.run_absorption_trajectories = pynasqm.utils.str2bool(
+            data["run_absorption_trajectories"])
         # Change here the number of restarts of length abs_run_time you wish to run
         try:
             self.n_abs_runs = int(data["n_abs_runs"])
         except KeyError:
             self.n_abs_runs = 1
-
-        # Change here how often you want to print the absorption trajectories
-        self.n_steps_to_print_abs = int(data["n_steps_to_print_abs"])
-
-        try:
-            self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
-        except KeyError:
-            self.n_steps_print_amcrd = 0
-
         # Change here the runtime for the the trajectories
         # used to create calculated the absorption
         self.abs_run_time = float(data["abs_run_time"]) # ps
@@ -124,19 +104,49 @@ class UserInput:
                                                      self.n_abs_runs,
                                                      self.n_steps_print_amcrd,
                                                      1)
-
-
+        # Change here the number of snapshots you wish to take
+        # from the initial ground state trajectory to run the
+        # further ground state dynamics
+        self.n_snapshots_gs = int(data["n_snapshots_gs"])
+        # Change here the number of states you wish to
+        # calculate in the absorption singlpoint calculations
+        self.n_abs_exc = int(data["n_abs_exc"])
+        # Change here how often you want to print the absorption trajectories
+        self.n_steps_to_print_abs = int(data["n_steps_to_print_abs"])
         try:
-            self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
+            self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
         except KeyError:
-            self.n_steps_print_emcrd = 0
+            self.n_steps_print_amcrd = 0
+        # Do you want to collect the data from the absorption calculations?
+        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
+        # Some time will be needed for the molecule to equilibrate
+        # from jumping from MM to QM.
+        # We don't want to include this data in the calculation
+        # of the fluorescence. We therefore set a time delay.
+        try:
+            self.abs_time_delay = float(data["absorption_time_delay"]) # fs
+        except KeyError:
+            print("Absorption time delay wasn't given defaulting to 1ps")
+            self.abs_time_delay = 1000
 
+        #################################
+        # QM Excited State
+        #################################
+        # Do you want to run the exctied state trajectories?
+        self.run_excited_state_trajectories = pynasqm.utils.str2bool(
+            data["run_excited_state_trajectories"])
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
             self.n_exc_runs = int(data["n_exc_runs"])
         except KeyError:
             self.n_exc_runs = 1
-
+        # Change here the number of snapshots you wish to take
+        # from the initial ground state trajectory to run the
+        # new excited state dynamics
+        self.n_snapshots_ex = int(data["n_snapshots_ex"])
+        if self.n_snapshots_ex > self.n_snapshots_gs:
+            raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
+                             "therefore n_snapshots_ex must less than or equal to n_snapshots_gs")
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
@@ -146,20 +156,33 @@ class UserInput:
                                                     self.n_exc_runs,
                                                     self.n_steps_print_emcrd,
                                                     1)
-
+        # Do you want to collect the data from the exctied state trajectory
+        # calculations?
+        self.run_fluorescence_collection = pynasqm.utils.str2bool(
+            data["run_fluorescence_collection"])
+        # Change here how often you want to print the fluorescence trajectories
+        try:
+            self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
+        except KeyError:
+            self.n_steps_print_emcrd = 0
         # Change here the number of excited states you
         # with to have in the CIS calculation
         self.n_exc_states_propagate_ex_param = int(data["n_exc_states_propagate"])
-
         # Change here the initial state
         try:
             self.exc_state_init_ex_param = int(data["exc_state_init"])
         except KeyError:
             self.exc_state_init_ex_param = -1
-
+        try:
+            self.laser_energy = float(data['laser_energy'])
+            self.fwhm = float(data['fwhm'])
+        except KeyError:
+            if self.run_excited_state_trajectories and self.exc_state_init_ex_param == -1:
+                raise KeyError('laser energy and fwhm needed for excited state runs')
+            else:
+                pass
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
-
         # Some time will be needed for the molecule to equilibrate
         # from jumping from the ground state to the excited state.
         # We don't want to include this data in the calculation
@@ -168,19 +191,10 @@ class UserInput:
         # Truncation will remove so many fs off the back of the trajectory
         self.fluorescence_time_truncation = float(data["fluorescence_time_truncation"]) # fs
 
-        # A similar argument can be made for absorption, we need to account for the equilibration
-        # time from full mm to qm/mm
-        try:
-            self.abs_time_delay = float(data["absorption_time_delay"]) # fs
-        except KeyError:
-            print("Absorption time delay wasn't given defaulting to 1ps")
-            self.abs_time_delay = 1000
 
-        self.email = data["email"]
-        # Additive Choice: 1-Begin, 2-End, 4-Fail
-        self.email_options = int(data["email_options"])
-
+        #################################
         # Solvent Settings
+        #################################
         # This nasqm script will use cpptraj to include the nearest
         # solvent molecule in the fluorescene and absorption calculations
         # but not the initial ground state run.
@@ -195,18 +209,11 @@ class UserInput:
         except KeyError:
             self.restrain_solvents = False
 
-        try:
-            self.laser_energy = float(data['laser_energy'])
-            self.fwhm = float(data['fwhm'])
-        except KeyError:
-            if self.run_excited_state_trajectories and self.exc_state_init_ex_param == -1:
-                raise KeyError('laser energy and fwhm needed for excited state runs')
-            else:
-                pass
 
+        #################################
+        # Derived Values
+        #################################
         self.restart_attempt = 0
-
-        ## Derived Values
         self.n_steps_gs = self.n_steps(self.ground_state_run_time, self.time_step,
                                        self.n_ground_runs)
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
