@@ -20,9 +20,9 @@ class InputceonManager:
 
     def set_calcxdens(self, set_val):
         if set_val:
-            self.moldyn.set_value('calcxdens', '.true.')
+            self.qmmm.set_value('calcxdens', '.true.')
         else:
-            self.moldyn.set_value('calcxdens', '.false.')
+            self.qmmm.set_value('calcxdens', '.false.')
 
     def set_nexmd_seed(self, seed):
         self.moldyn.set_value('rnd_seed', seed)
