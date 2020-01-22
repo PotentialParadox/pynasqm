@@ -177,6 +177,8 @@ class UserInput:
                     pass
         if self.exc_state_init_ex_param == -2:
             self.is_pulse_pump = True
+        else:
+            self.is_pulse_pump = False
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
         # Some time will be needed for the molecule to equilibrate
