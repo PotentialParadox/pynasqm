@@ -88,6 +88,8 @@ class FluTrajectories(Trajectories):
                                                                        'spectra_abs.input',
                                                                        self._user_input.laser_energy,
                                                                        self._user_input.fwhm)
+        elif self._user_input.is_pulse_pump:
+            print("setting excited states using pump pulse")
         else:
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
         for inputceon, state in zip(input_ceons, init_states):
