@@ -163,19 +163,20 @@ class UserInput:
         try:
             self.exc_state_init_ex_param = int(data["exc_state_init"])
         except KeyError:
-            self.exc_state_init_ex_param = -1
-        try:
-            self.laser_energy = float(data['laser_energy'])
-            self.fwhm = float(data['fwhm'])
-        except KeyError:
-            if self.run_excited_state_trajectories and self.exc_state_init_ex_param == -1:
-                raise KeyError('laser energy and fwhm needed for excited state runs')
-            else:
-                pass
-        try:
-            self.is_pulse_pump = pynasqm.utils.str2bool(data["is_pump_pulse"])
-        except KeyError:
-            self.is_pulse_pump = False
+            raise KeyError(
+                'excited_state init param not set, please use either -2 for pump-pulse, -1 for'\
+                'laser, or manually set initial state')
+        if self.exc_state_init_ex_param == -1:
+            try:
+                self.laser_energy = float(data['laser_energy'])
+                self.fwhm = float(data['fwhm'])
+            except KeyError:
+                if self.run_excited_state_trajectories:
+                    raise KeyError('laser energy and fwhm needed for excited state runs')
+                else:
+                    pass
+        if self.exc_state_init_ex_param == -2:
+            self.is_pulse_pump = True
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
         # Some time will be needed for the molecule to equilibrate

@@ -104,14 +104,13 @@
 # with to have in the CIS calculation
     "n_exc_states_propagate": "5",
 # Change here the initial state, set to '-1' if you want to simulate laser exitation.
+# Change to -2 for pump pulse simulation
     "exc_state_init": "1",
 # Change here the energy of the laser used for excitation?
     "laser_energy": "4.2",
 # Change here the full width half max of the laser in fs
 # Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening
     "fwhm": "100",
-# Is this a pump pulse experiment | Excited state must be set to -2
-    "is_pump_pulse": "False",
 # Do you want to collect the data from the exctied state trajectory
 # calculations?
     "run_fluorescence_collection": "False",
