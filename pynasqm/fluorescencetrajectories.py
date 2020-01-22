@@ -69,7 +69,7 @@ class FluTrajectories(Trajectories):
         r = self._user_input.n_abs_runs - 1
         source_files = ["abs/traj_{}/restart_{}/snap_for_abs_t{}_r{}.rst".format(t, r, t, r+1)
                         for t in self.traj_indexes()]
-        output_files = ["{2}/traj_{1}/restart_0/snap_for_{2}_t{1}_r0.rst".format(t, self._job_suffix)
+        output_files = ["{1}/traj_{0}/restart_0/snap_for_{1}_t{0}_r0.rst".format(t, self._job_suffix)
                         for t in self.traj_indexes()]
         copy_files(source_files, output_files, force=override)
 
@@ -101,13 +101,6 @@ class FluTrajectories(Trajectories):
         for inputceon, seed in zip(inputceons, random_seeds):
             inputceon.set_nexmd_seed(seed)
         return inputceons
-
-    def hpc_coordinate_files(self):
-        return ["snap_for_flu_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
-
-    def pc_coordinate_files(self):
-        return ["snap_for_flu_t{}_r{}.rst".format(traj, self._user_input.restart_attempt)
-                for traj in range(1, self._number_trajectories+1)]
 
     def _nmrdirs(self):
         return ["flu/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
