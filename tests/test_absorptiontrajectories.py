@@ -141,7 +141,7 @@ def test_absPrepareDynamics0(userInput, inputCeon):
     userInput.restart_attempt = 0
     userInput.is_hpc = True
     abs_traj = AbsTrajectories(userInput, inputCeon)
-    _, slurm_file = abs_traj.prepareDynamics()
+    _, slurm_file = abs_traj.prepareScript()
     answer = open("1of2_slurm_attempt_test.sbatch").read()
     result = "\n".join((slurm_file.splitlines())[-10:])+"\n"
     open("failed0.txt", 'w').write(result)
@@ -155,7 +155,7 @@ def test_absPrepareDynamics1(userInput, inputCeon):
     userInput.restart_attempt = 1
     userInput.is_hpc = True
     abs_traj = AbsTrajectories(userInput, inputCeon)
-    _, slurm_file = abs_traj.prepareDynamics()
+    _, slurm_file = abs_traj.prepareScript()
     result = "\n".join((slurm_file.splitlines())[-10:])+"\n"
     answer = open("2of2_slurm_attempt_test.sbatch").read()
     open("failed1.txt", 'w').write(result)

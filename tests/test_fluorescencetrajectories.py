@@ -156,7 +156,7 @@ def test_fluPrepareDynamics0(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     fluTraj = FluTrajectories(userInput, inputCeon)
-    _, slurm_file = fluTraj.prepareDynamics()
+    _, slurm_file = fluTraj.prepareScript()
     result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of2_slurm_attempt_test.sbatch").read()
     assert result == answer
@@ -168,7 +168,7 @@ def test_fluPrepareDynamics1(userInput, inputCeon):
     '''
     userInput.restart_attempt = 1
     fluTraj = FluTrajectories(userInput, inputCeon)
-    _, slurm_file = fluTraj.prepareDynamics()
+    _, slurm_file = fluTraj.prepareScript()
     result = "\n".join((slurm_file.splitlines())[-10:])
     open("failed.txt",'w').write(result)
     answer = open("2of2_slurm_attempt_test.sbatch").read()
