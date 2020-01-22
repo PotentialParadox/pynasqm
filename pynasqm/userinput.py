@@ -74,6 +74,10 @@ class UserInput:
             self.n_steps_print_gmcrd = 100
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
+        # Change here the number of snapshots you wish to take
+        # from the initial ground state trajectory to run the
+        # further ground state dynamics
+        self.n_snapshots_gs = int(data["n_snapshots_gs"])
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
         self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
@@ -93,10 +97,6 @@ class UserInput:
             self.n_abs_runs = int(data["n_abs_runs"])
         except KeyError:
             self.n_abs_runs = 1
-        # Change here the number of snapshots you wish to take
-        # from the initial ground state trajectory to run the
-        # further ground state dynamics
-        self.n_snapshots_gs = int(data["n_snapshots_gs"])
         # Change here the number of states you wish to
         # calculate in the absorption singlpoint calculations
         self.n_abs_exc = int(data["n_abs_exc"])
