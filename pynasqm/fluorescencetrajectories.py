@@ -1,4 +1,5 @@
 import os
+import subprocess
 from random import randint
 from pynasqm.utils import copy_files, mkdir
 from pynasqm.trajectories import Trajectories
@@ -37,6 +38,7 @@ class FluTrajectories(Trajectories):
         input_ceon.set_verbosity(1)
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
+        input_ceon.calc_transition_dipoles(False)
         input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
 
     @staticmethod
@@ -89,13 +91,36 @@ class FluTrajectories(Trajectories):
                                                                        self._user_input.laser_energy,
                                                                        self._user_input.fwhm)
         elif self._user_input.is_pulse_pump:
-            print("setting excited states using pump pulse")
+            sm_states = self.get_sm_states()
         else:
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
-        for inputceon, state in zip(input_ceons, init_states):
-            inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
+            for inputceon, state in zip(input_ceons, init_states):
+                inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         print("Finished Setting Initial Excited States")
         return input_ceons
+
+    def get_sm_states(self):
+        pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/nasqm_pulse_pump_t{0}_r0.out".format(traj)
+                              for traj in self.traj_indexes()]
+        nstates = self._user_input.n_exc_states_propagate_ex_param
+        sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
+        print("getting sm states")
+        print(sms)
+        exit()
+
+    @staticmethod
+    def get_strengths_from_sn(filename, nstates):
+        print(nstates)
+        p1 = subprocess.run(['grep', '-A{}'.format(nstates+1), 'mu_alpha_beta', filename], stdout=subprocess.PIPE)
+        p2 = subprocess.run(['tail', '-n', '{}'.format(nstates)], input=p1.stdout, stdout=subprocess.PIPE)
+        outputstring = (p2.stdout).decode("utf-8")
+        print(outputstring)
+        lines = outputstring.split("\n")
+        return [float((line.split())[-1]) for line in lines if line != '']
+
+    def find_sm(self, filename, nstates):
+        strengths = self.get_strengths_from_sn(filename, nstates)
+        return strengths.index(max(strengths)) + 1
 
     def set_nexmd_seed(self, inputceons):
         print("Setting NEXMD Random Seeds")
