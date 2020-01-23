@@ -91,11 +91,11 @@ class FluTrajectories(Trajectories):
                                                                        self._user_input.laser_energy,
                                                                        self._user_input.fwhm)
         elif self._user_input.is_pulse_pump:
-            sm_states = self.get_sm_states()
+            init_states = self.get_sm_states()
         else:
             init_states = [self._user_input.exc_state_init_ex_param for _ in range(self._number_trajectories)]
-            for inputceon, state in zip(input_ceons, init_states):
-                inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
+        for inputceon, state in zip(input_ceons, init_states):
+            inputceon.set_excited_state(state, self._user_input.n_exc_states_propagate_ex_param)
         print("Finished Setting Initial Excited States")
         return input_ceons
 
@@ -104,9 +104,7 @@ class FluTrajectories(Trajectories):
                               for traj in self.traj_indexes()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
-        print("getting sm states")
-        print(sms)
-        exit()
+        return sms
 
     @staticmethod
     def get_strengths_from_sn(filename, nstates):
