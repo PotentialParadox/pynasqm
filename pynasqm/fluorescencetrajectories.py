@@ -104,15 +104,16 @@ class FluTrajectories(Trajectories):
                               for traj in self.traj_indexes()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
+        print("PulsePump Sm States:")
+        print(sms)
         return sms
 
     @staticmethod
     def get_strengths_from_sn(filename, nstates):
-        print(nstates)
         p1 = subprocess.run(['grep', '-A{}'.format(nstates+1), 'mu_alpha_beta', filename], stdout=subprocess.PIPE)
         p2 = subprocess.run(['tail', '-n', '{}'.format(nstates)], input=p1.stdout, stdout=subprocess.PIPE)
         outputstring = (p2.stdout).decode("utf-8")
-        print(outputstring)
+        # print(outputstring) # Print the transition dipoles
         lines = outputstring.split("\n")
         return [float((line.split())[-1]) for line in lines if line != '']
 
