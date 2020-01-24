@@ -1,5 +1,5 @@
 import os
-import subprocess
+import numpy as np
 from random import randint
 from pynasqm.utils import copy_files, mkdir
 from pynasqm.trajectories import Trajectories
@@ -100,24 +100,22 @@ class FluTrajectories(Trajectories):
         return input_ceons
 
     def get_sm_states(self):
-        pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/nasqm_pulse_pump_t{0}_r0.out".format(traj)
+        pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/muab.out".format(traj)
                               for traj in self.traj_indexes()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         print("PulsePump Sm States:")
         with open('pump_pulse_states.txt', 'w') as fout:
-            for s in sms:
-                fout.write(s)
+            fout.write("Traj\tInit State\n")
+            for i, s in enumerate(sms):
+                fout.write("{}\t{}\n".format(i+1, s))
         return sms
 
     @staticmethod
     def get_strengths_from_sn(filename, nstates):
-        p1 = subprocess.run(['grep', '-A{}'.format(nstates+1), 'mu_alpha_beta', filename], stdout=subprocess.PIPE)
-        p2 = subprocess.run(['tail', '-n', '{}'.format(nstates)], input=p1.stdout, stdout=subprocess.PIPE)
-        outputstring = (p2.stdout).decode("utf-8")
-        # print(outputstring) # Print the transition dipoles
-        lines = outputstring.split("\n")
-        return [float((line.split())[-1]) for line in lines if line != '']
+        data = np.loadtxt(filename)
+        fromState1 = np.array([x for x in data if x[0] == 1])
+        return list(fromState1[:,-1])
 
     def find_sm(self, filename, nstates):
         strengths = self.get_strengths_from_sn(filename, nstates)
