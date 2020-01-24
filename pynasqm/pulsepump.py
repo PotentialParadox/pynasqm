@@ -36,6 +36,7 @@ class PulsePump(FluTrajectories):
         input_ceon.set_random_velocities(False)
         input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
         input_ceon.calc_transition_dipoles(True)
+        user_input.walltime="01:00:00" # This calculation does not take a lot of time
 
     def create_restarts_from_parent(self, override=False):
         self._create_directories()
