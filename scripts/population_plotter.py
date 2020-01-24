@@ -70,10 +70,10 @@ def get_pulse_pump_pops(state_data):
     ntrajs = len(state_data)
     return tuple((frame[0]/ntrajs,frame[1]/ntrajs) for frame in get_s1pop_smpop_sum(state_data))
 
-def string_list_of_pairs(pairs):
+def string_list_of_pairs(times, pairs):
     return_value = ""
-    for pair in pairs:
-        return_value += "{:8.4f}{:8.4f}\n".format(pair[0], pair[1])
+    for time, pair in zip(times, pairs):
+        return_value += "{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1])
     return return_value
 
 def main():
@@ -83,7 +83,7 @@ def main():
     times = get_times(data)
     state_data = get_states(data)
     if args.pulsepump:
-        print(string_list_of_pairs(get_pulse_pump_pops(state_data)))
+        print(string_list_of_pairs(times, get_pulse_pump_pops(state_data)))
     else:
         pops = pop_of_nstates(state_data,nstates)
         print(string_population_chart(times,pops))
