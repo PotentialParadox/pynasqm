@@ -105,7 +105,9 @@ class FluTrajectories(Trajectories):
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         print("PulsePump Sm States:")
-        print(sms)
+        with open('pump_pulse_states.txt', 'w') as fout:
+            for s in sms:
+                fout.write(s)
         return sms
 
     @staticmethod
