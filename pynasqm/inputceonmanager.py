@@ -41,6 +41,8 @@ class InputceonManager:
     @staticmethod
     def generate_initial_coeffs(state, states_to_prop):
         A =  np.zeros((states_to_prop, 2), dtype=float)
+        if state >= states_to_prop:
+            raise ValueError("Initial state greater than states_to_prop")
         if state != 0:
             A[state-1,0] = 1
         return A
