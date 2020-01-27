@@ -14,8 +14,9 @@ def parser():
     return parser.parse_args()
 
 def filter_completed(data):
-    max_length = max([len(d) for d in data])
-    return [d for d in data if len(d) == max_length]
+    # max_length = max([len(d) for d in data])
+    # return [d for d in data if len(d) == max_length]
+    return [d for d in data]
 
 def load_data_from_files(files):
     return filter_completed([np.loadtxt(fin) for fin in files])
@@ -28,7 +29,7 @@ def get_times(data):
     return data[0][:,1]
 
 def get_states(data):
-    return [d[:,0] for d in data]
+    return [d[:,0] for d in data if d[0,0] > 8]
 
 def isstate(data, state):
     return (data == state).astype(int)
@@ -57,16 +58,30 @@ def sum_two_list_of_pairs(s1_sm_as, s1_sm_bs):
 
 
 def trajectory_s1_sm(states):
+    '''
+    Returns a tuple where each element represents a frames condition
+    (is_S1, is_Sm)
+    '''
     sm = states[0]
     return tuple(s1_sm(frame_state, sm) for frame_state in states)
 
 def get_s1pop_smpops(state_data):
+    '''
+    Returns a tuple where each element is a nested tuple where each element represents a frame
+    (is_S1, is_Sm)
+    '''
     return tuple(trajectory_s1_sm(traj) for traj in state_data)
 
 def get_s1pop_smpop_sum(state_data):
+    '''
+    Returns a tuple with each element being (number of s_1, number of s_m)
+    '''
     return functools.reduce(sum_two_list_of_pairs, get_s1pop_smpops(state_data))
 
 def get_pulse_pump_pops(state_data):
+    '''
+    Returns a tuple with each element being (pop of s_1, pop of s_m)
+    '''
     ntrajs = len(state_data)
     return tuple((frame[0]/ntrajs,frame[1]/ntrajs) for frame in get_s1pop_smpop_sum(state_data))
 
