@@ -53,7 +53,7 @@ def main():
         run_absorption_trajectories(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
-    if user_input.is_pulse_pump:
+    if user_input.is_pulse_pump and user_input.run_pulse_pump_singlepoints:
         run_pulse_pump_prep(input_ceon, user_input)
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)

@@ -135,6 +135,8 @@ class UserInput:
         # Do you want to run the exctied state trajectories?
         self.run_excited_state_trajectories = pynasqm.utils.str2bool(
             data["run_excited_state_trajectories"])
+        self.run_pulse_pump_singlepoints = pynasqm.utils.str2bool(
+            data["run_pulse_point_singlepoints"])
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
             self.n_exc_runs = int(data["n_exc_runs"])
