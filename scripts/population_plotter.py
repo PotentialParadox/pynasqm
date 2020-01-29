@@ -6,20 +6,37 @@ import numpy as np
 import sys
 import argparse
 import functools
+from collections import namedtuple
 
 def parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--pulsepump", help="simulating a pulse pump experiment", action="store_true")
     parser.add_argument("--files", "-l", help="coeff-n.out files", nargs="+")
+    parser.add_argument("--muab_files", help="the muab files whose energies"\
+                        " and oscillators strengths will be used to filter", nargs="+")
+    parser.add_argument("--min_energy", help="minimum energy differece (ev) from ground state for state S_m", type=float)
+    parser.add_argument("--max_energy", help="maximum energy differece (ev) from ground state for state S_m", type=float)
+    parser.add_argument("--min_strength", help="minimum oscillator from S1 for state S_m", type=float)
     return parser.parse_args()
 
 def filter_completed(data):
-    # max_length = max([len(d) for d in data])
-    # return [d for d in data if len(d) == max_length]
-    return [d for d in data]
+    return data
+    # max_length = max([len(d[0]) for d in data])
+    # return [d for d in data if len(d[0]) == max_length]
 
-def load_data_from_files(files):
-    return filter_completed([np.loadtxt(fin) for fin in files])
+def muab_line(line):
+    MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
+    return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+
+def read_muab(muab_file):
+    muab_data = np.loadtxt(muab_file)
+    return [muab_line(line) for line in muab_data]
+
+def load_data_from_files(files, muab_files):
+    DataFiles = namedtuple('DataFiles', 'coeff, muab')
+    if muab_files:
+        return filter_completed([DataFiles(np.loadtxt(fin), read_muab(muab)) for fin, muab in zip(files, muab_files)])
+    return filter_completed([(np.loadtxt(fin), None) for fin in files])
 
 def get_nstates(data):
     ncols_not_coefficients=3
@@ -29,7 +46,7 @@ def get_times(data):
     return data[0][:,1]
 
 def get_states(data):
-    return [d[:,0] for d in data if d[0,0] > 8]
+    return [d[:,0] for d in data]
 
 def isstate(data, state):
     return (data == state).astype(int)
@@ -91,12 +108,39 @@ def string_list_of_pairs(times, pairs):
         return_value += "{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1])
     return return_value
 
+def is_atleast(min_value, test):
+    if min_value is None:
+        return True
+    return test >= min_value
+
+def is_atmost(max_value, test):
+    if max_value is None:
+        return True
+    return test >= max_value
+
+def satisfies_pulse_pump(restraints, muab_for_sm):
+    return is_atleast(restraints.min_energy, muab_for_sm.energy) \
+        and is_atmost(restraints.max_energy, muab_for_sm.energy) \
+        and is_atleast(restraints.min_strength, muab_for_sm.strength)
+
+def filter_pump_pulse(state_data, muab_data, restraints):
+    def sm_index(states):
+        sm = states[0]
+        return int(sm-1)
+    return [states for (states, muab) in zip(state_data, muab_data)
+            if satisfies_pulse_pump(restraints, muab[sm_index(states)])]
+
 def main():
     args = parser()
-    data = load_data_from_files(args.files)
-    nstates = get_nstates(data)
-    times = get_times(data)
-    state_data = get_states(data)
+    data = load_data_from_files(args.files, args.muab_files)
+    coeff_data = [d.coeff for d in data]
+    muab_data = [d.muab for d in data]
+    state_data = get_states(coeff_data)
+    Restraints = namedtuple('Restraints', 'min_energy, max_energy, min_strength')
+    restraints = Restraints(args.min_energy, args.max_energy, args.min_strength)
+    filtered_state_data = filter_pump_pulse(state_data, muab_data, restraints)
+    nstates = get_nstates(coeff_data)
+    times = get_times(coeff_data)
     if args.pulsepump:
         print(string_list_of_pairs(times, get_pulse_pump_pops(state_data)))
     else:
