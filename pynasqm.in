@@ -81,12 +81,21 @@
 # We therefore set a time delay in fs.
     "absorption_time_delay": "000",
 ############################################################
+#                  Pump Pulse Simulation
+############################################################
+# Do you want to run the pulse pump singlepoins?
+    "run_pulse_point_singlepoints": "False",
+# Whats the minimum energy of the pump pulse state Sm?
+    "pump_pulse_min_energy": "0",
+# Whats the minimum energy of the pump pulse state Sm?
+    "pump_pulse_max_energy": "0",
+# Whats the minimum energy of the pump pulse state Sm?
+    "pump_pulse_min_strength": "0",
+############################################################
 #                  Excited State Calculation
 ############################################################
 # Do you want to run the exctied state trajectories?
     "run_excited_state_trajectories": "False",
-# Do you want to run the pulse pump singlepoins?
-    "run_pulse_point_singlepoints": "False",
 # Change here the number of snapshots you wish to take
 # from the initial ground state trajectory to run the
 # new excited state dynamics. Needs to be <= n_snapshots_gs

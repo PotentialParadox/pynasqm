@@ -130,13 +130,22 @@ class UserInput:
                                                      1)
 
         #################################
+        # Pulse Pump Snapshots
+        #################################
+        # Are you performing pulse pump simulation?
+        self.run_pulse_pump_singlepoints = pynasqm.utils.str2bool(
+            data["run_pulse_point_singlepoints"])
+        self.pump_pulse_min_energy = data["pump_pulse_min_energy"]
+        self.pump_pulse_max_energy = data["pump_pulse_max_energy"]
+        self.pump_pulse_min_strength = data["pump_pulse_min_strength"]
+
+
+        #################################
         # QM Excited State
         #################################
         # Do you want to run the exctied state trajectories?
         self.run_excited_state_trajectories = pynasqm.utils.str2bool(
             data["run_excited_state_trajectories"])
-        self.run_pulse_pump_singlepoints = pynasqm.utils.str2bool(
-            data["run_pulse_point_singlepoints"])
         # Change here the number of restarts of length exc_run_time you wish to run
         try:
             self.n_exc_runs = int(data["n_exc_runs"])
