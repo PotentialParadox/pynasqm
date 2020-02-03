@@ -87,9 +87,9 @@
     "run_pulse_point_singlepoints": "False",
 # Whats the minimum energy of the pump pulse state Sm?
     "pump_pulse_min_energy": "0",
-# Whats the minimum energy of the pump pulse state Sm?
+# Whats the maximum energy of the pump pulse state Sm?
     "pump_pulse_max_energy": "0",
-# Whats the minimum energy of the pump pulse state Sm?
+# Whats the minimum oscillator strength from S1 of the pump pulse state Sm?
     "pump_pulse_min_strength": "0",
 ############################################################
 #                  Excited State Calculation
