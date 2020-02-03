@@ -38,7 +38,7 @@ def createAmber(user_input):
 
 def runDynamics(user_input, amber, slurm_files):
     if user_input.is_hpc:
-        nasqm_slurm.run_nasqm_slurm_files(slurm_files)
+        nasqm_slurm.run_nasqm_slurm_file(slurm_files)
     else:
         amber.run_amber(number_processors=1, is_ground_state=True)
 
