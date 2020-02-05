@@ -1,5 +1,6 @@
 import os
 import numpy as np
+from collections import namedtuple
 from random import randint
 from pynasqm.utils import copy_files, mkdir
 from pynasqm.trajectories import Trajectories
@@ -100,26 +101,49 @@ class FluTrajectories(Trajectories):
         return input_ceons
 
     def get_sm_states(self):
+        print("Dustin reading pump outputs")
         pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/muab.out".format(traj)
                               for traj in self.traj_indexes()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
+        print("Dustin finding sm's")
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         print("PulsePump Sm States:")
         with open('pump_pulse_states.txt', 'w') as fout:
-            fout.write("Traj\tInit State\n")
+            fout.write("{:15s}{:15s}\n".format("Traj","Init State"))
             for i, s in enumerate(sms):
-                fout.write("{}\t{}\n".format(i+1, s))
+                fout.write("{:<15d}{:<15d}\n".format(i+1, s))
         return sms
 
     @staticmethod
-    def get_strengths_from_sn(filename, nstates):
-        data = np.loadtxt(filename)
-        fromState1 = np.array([x for x in data if x[0] == 1])
-        return list(fromState1[:,-1])
+    def read_muab_line(line):
+        MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
+        return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+
+    def read_muab(self, muab_file):
+        muab_data = np.loadtxt(muab_file)
+        return [self.read_muab_line(line) for line in muab_data]
+
+    def muab_from_s1(self, filename):
+        data = self.read_muab(filename)
+        return [x for x in data if x.init_state == 1]
 
     def find_sm(self, filename, nstates):
-        strengths = self.get_strengths_from_sn(filename, nstates)
-        return strengths.index(max(strengths)) + 1
+        print("Dustin reading muab file")
+        from_s1 = self.muab_from_s1(filename)
+        print("Dustin read muab file")
+        strengths = [x.strength for x in from_s1]
+        tentative_sm_index = strengths.index(max(strengths))
+        sm_state = None
+        if self.satisfies_pulse_pump_criteria(from_s1[tentative_sm_index]):
+            sm_state = tentative_sm_index + 1
+        else:
+            sm_state = -1
+        return sm_state
+
+    def satisfies_pulse_pump_criteria(self, muab_line):
+        return muab_line.strength > self._user_input.pump_pulse_min_strength \
+            and muab_line.energy >= self._user_input.pump_pulse_min_energy \
+            and muab_line.energy <= self._user_input.pump_pulse_max_energy
 
     def set_nexmd_seed(self, inputceons):
         print("Setting NEXMD Random Seeds")
@@ -130,3 +154,20 @@ class FluTrajectories(Trajectories):
 
     def _nmrdirs(self):
         return ["flu/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
+
+    @staticmethod
+    def is_atleast(min_value, test):
+        if min_value is None:
+            return True
+        return test >= min_value
+
+    @staticmethod
+    def is_atmost(max_value, test):
+        if max_value is None:
+            return True
+        return test >= max_value
+
+    def satisfies_pulse_pump(self, restraints, muab_for_sm):
+        return is_atleast(restraints.min_energy, muab_for_sm.energy) \
+            and is_atmost(restraints.max_energy, muab_for_sm.energy) \
+            and is_atleast(restraints.min_strength, muab_for_sm.strength)

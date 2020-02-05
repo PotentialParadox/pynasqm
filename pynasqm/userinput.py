@@ -135,9 +135,9 @@ class UserInput:
         # Are you performing pulse pump simulation?
         self.run_pulse_pump_singlepoints = pynasqm.utils.str2bool(
             data["run_pulse_point_singlepoints"])
-        self.pump_pulse_min_energy = data["pump_pulse_min_energy"]
-        self.pump_pulse_max_energy = data["pump_pulse_max_energy"]
-        self.pump_pulse_min_strength = data["pump_pulse_min_strength"]
+        self.pump_pulse_min_energy = float(data["pump_pulse_min_energy"])
+        self.pump_pulse_max_energy = float(data["pump_pulse_max_energy"])
+        self.pump_pulse_min_strength = float(data["pump_pulse_min_strength"])
 
 
         #################################
