@@ -39,8 +39,8 @@ class Slurm:
         job_script = '#!/bin/bash\n' \
                 '#SBATCH --job-name='+title_used+' # A name for your job\n' \
                 '#SBATCH --qos='+self.header['qos']+' # The queue for your job\n' \
-                '#SBATCH --output='+title_used+'-%j.output # Output File\n' \
-                '#SBATCH --error='+title_used+'-%j.err #Error File\n' \
+                '#SBATCH --output=./Reports/'+title_used+'-%j.output # Output File\n' \
+                '#SBATCH --error=./Reports/'+title_used+'-%j.err #Error File\n' \
                 '#SBATCH --partition=hpg2-compute\n' \
                 '#SBATCH --constraint=haswell\n' \
                 '#SBATCH --mail-user='+self.header['email']+' # Email address\n' \
@@ -86,6 +86,7 @@ def wait_for_job(slurm_id):
     print("Job: ", slurm_id, "completed")
 
 def submit_job(file_name, slurm_script):
+    subprocess.call(['mkdir', '-p', 'Reports'])
     open(file_name, 'w').write(slurm_script)
     p_id = re.compile(r'\d+')
     try:
