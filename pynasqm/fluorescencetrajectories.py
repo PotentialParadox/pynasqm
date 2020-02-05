@@ -101,11 +101,9 @@ class FluTrajectories(Trajectories):
         return input_ceons
 
     def get_sm_states(self):
-        print("Dustin reading pump outputs")
         pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/muab.out".format(traj)
                               for traj in self.traj_indexes()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
-        print("Dustin finding sm's")
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         print("PulsePump Sm States:")
         with open('pump_pulse_states.txt', 'w') as fout:
@@ -128,9 +126,7 @@ class FluTrajectories(Trajectories):
         return [x for x in data if x.init_state == 1]
 
     def find_sm(self, filename, nstates):
-        print("Dustin reading muab file")
         from_s1 = self.muab_from_s1(filename)
-        print("Dustin read muab file")
         strengths = [x.strength for x in from_s1]
         tentative_sm_index = strengths.index(max(strengths))
         sm_state = None
