@@ -43,7 +43,7 @@ class InputceonManager:
         A =  np.zeros((states_to_prop, 2), dtype=float)
         if state != 0 and state >= states_to_prop:
             raise ValueError("Initial excited state greater than states_to_prop")
-        if state != 0:
+        if state > 0:
             A[state-1,0] = 1
         return A
 
