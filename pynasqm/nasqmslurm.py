@@ -15,6 +15,13 @@ def create_slurm_header(user_input):
             'memory': user_input.memory_per_node, 'walltime': user_input.walltime,
             'max_jobs': user_input.max_jobs, 'qos': user_input.qos}
 
+skip_flag_check = "if test -f input.ceon; then\n"\
+    "    init_state=`grep \"exc_state_init.-\" input.ceon`\n"\
+    "    if [ \"$init_state\" != \"\" ];then\n"\
+    "        exit\n"\
+    "    fi\n"\
+    "fi\n"
+
 def build_trajectory_command(directory, amber):
     '''
     Returns the command for the slurm script
@@ -30,8 +37,9 @@ def build_trajectory_command(directory, amber):
               "export OMP_NUM_THREADS=${{SLURM_CPUS_PER_TASK}}\n\n" \
               "ID=${{SLURM_ARRAY_TASK_ID}}\n"\
               "cd {0}\n"\
+              "{5}"\
               "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc\n"\
-              "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile)
+              "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile, skip_flag_check)
     return command
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
