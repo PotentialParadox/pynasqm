@@ -28,13 +28,12 @@ class PulsePump(FluTrajectories):
         input_ceon.set_quantum(True)
         input_ceon.set_n_steps(0)
         input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
-        input_ceon.set_excited_state(user_input.exc_state_init_ex_param,
-                                     user_input.n_exc_states_propagate_ex_param)
+        input_ceon.set_excited_state(1, user_input.n_exc_states_propagate_ex_param)
         input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
         input_ceon.set_verbosity(1)
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
-        input_ceon.set_istully(user_input.is_tully, user_input.qsteps)
+        input_ceon.set_istully(False, user_input.qsteps)
         input_ceon.calc_transition_dipoles(True)
         user_input.walltime="01:00:00" # This calculation does not take a lot of time
 
