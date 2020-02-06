@@ -27,8 +27,8 @@ class InputCeon:
         self.inputceonmanager.set_nexmd_seed(seed)
         self.inputceonmanager.write()
 
-    def set_bo(self, isTully, qsteps=0):
-        self.inputceonmanager.set_is_tully(isTully, qsteps)
+    def set_istully(self, isTully, qsteps=0):
+        self.inputceonmanager.set_istully(isTully, qsteps)
         self.inputceonmanager.write()
 
     def calc_transition_dipoles(self, should_calc):

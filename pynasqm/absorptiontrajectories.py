@@ -31,6 +31,7 @@ class AbsTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.calc_transition_dipoles(False)
+        input_ceon.set_istully(False, 0)
 
     def isrestarting(self):
         return self._user_input.restart_attempt < self._user_input.n_abs_runs - 1

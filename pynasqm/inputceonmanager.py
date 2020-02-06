@@ -27,7 +27,7 @@ class InputceonManager:
     def set_nexmd_seed(self, seed):
         self.moldyn.set_value('rnd_seed', seed)
 
-    def set_is_tully(self, isTully, qsteps):
+    def set_istully(self, isTully, qsteps):
         if isTully:
             self.moldyn.set_value('bo_dynamics_flag', 0)
             self.moldyn.set_value('n_quant_steps', qsteps)
