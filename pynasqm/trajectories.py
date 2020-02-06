@@ -28,7 +28,7 @@ class Trajectories(ABC):
     def run(self):
         self._set_initial_input()
         self.gen_inputfiles()
-        self._print_header("Running Dynamics")
+        self._print_header("Running {} Dynamics".format(self._job_suffix))
         (amber, slurm) = self.prepareScript()
         self.runDynamics(amber, slurm)
 
