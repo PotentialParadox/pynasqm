@@ -40,7 +40,7 @@ class FluTrajectories(Trajectories):
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.calc_transition_dipoles(False)
-        input_ceon.set_bo(user_input.is_tully, user_input.qsteps)
+        input_ceon.set_istully(user_input.is_tully, user_input.qsteps)
 
     @staticmethod
     def test_for_abs():
