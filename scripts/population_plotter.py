@@ -22,8 +22,8 @@ def parser():
 
 def filter_completed(data):
     # return data
-    max_length = max([len(d[0]) for d in data])
-    return [d for d in data if len(d[0]) == max_length]
+    # max_length = max([len(d[0]) for d in data])
+    return [d for d in data if len(d[0]) == 1000]
 
 def muab_line(line):
     MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
@@ -43,7 +43,7 @@ def read_coeff(coeff_file):
 def load_data_from_files(files, muab_files):
     DataFiles = namedtuple('DataFiles', 'coeff, muab')
     if muab_files:
-        return filter_completed([DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files)])
+        return filter_completed(DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files))
     return filter_completed([(np.loadtxt(fin), None) for fin in files])
 
 def get_nstates(data):
