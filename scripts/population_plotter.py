@@ -4,6 +4,7 @@ t | P(S1) | P(S2) | ... | P(Sn) |
 '''
 import numpy as np
 import sys
+from os import path
 import argparse
 import functools
 from collections import namedtuple
@@ -20,22 +21,29 @@ def parser():
     return parser.parse_args()
 
 def filter_completed(data):
-    return data
-    # max_length = max([len(d[0]) for d in data])
-    # return [d for d in data if len(d[0]) == max_length]
+    # return data
+    max_length = max([len(d[0]) for d in data])
+    return [d for d in data if len(d[0]) == max_length]
 
 def muab_line(line):
     MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
     return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
 
 def read_muab(muab_file):
+    if not path.exists(muab_file):
+        return []
     muab_data = np.loadtxt(muab_file)
     return [muab_line(line) for line in muab_data]
+
+def read_coeff(coeff_file):
+    if not path.exists(coeff_file):
+        return np.array([])
+    return np.loadtxt(coeff_file)
 
 def load_data_from_files(files, muab_files):
     DataFiles = namedtuple('DataFiles', 'coeff, muab')
     if muab_files:
-        return filter_completed([DataFiles(np.loadtxt(fin), read_muab(muab)) for fin, muab in zip(files, muab_files)])
+        return filter_completed([DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files)])
     return filter_completed([(np.loadtxt(fin), None) for fin in files])
 
 def get_nstates(data):
