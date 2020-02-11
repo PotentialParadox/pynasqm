@@ -54,25 +54,25 @@
 #                  QM Ground State Calculation
 ############################################################
 # Do you want to run the trajectories used for the abjorption specta
-    "run_absorption_trajectories": "True",
+    "run_qmground_trajectories": "True",
 # Change here the number of snapshots you wish to take
 # from the initial ground state trajectory to run the
 # further ground state dynamics
-    "n_snapshots_gs": "2",
+    "n_snapshots_qmground": "2",
 # Change here the runtime in PS for the the trajectories
 # used to create calculated the absorption
-    "abs_run_time": "0.004",
+    "qmground_run_time": "0.004",
 # Number of restarts = this number - 1. Controls how you want to segmentate
 # the runs for shorter run times, and to allow restarting if failure arises
-    "n_abs_runs": "1",
+    "n_qmground_runs": "1",
 # Change here how often you want to print the absorption trajectory files
 # Use -1 to skip
-    "n_steps_to_print_amcrd": "5",
+    "n_steps_to_print_qmgmcrd": "5",
 # Change here how often you want to print the absorption trajectories
-    "n_steps_to_print_abs": "4",
+    "n_steps_to_print_qmground": "4",
 # Change here the number of states you wish to
 # calculate in the absorption singlpoint calculations
-    "n_abs_exc": "5",
+    "n_qmground_exc": "5",
 # Do you want to collect the data from the absorption calculations?
     "run_absorption_collection": "False",
 # Some time will be needed for the molecule to equilibrate

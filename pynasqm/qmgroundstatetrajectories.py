@@ -12,7 +12,7 @@ class QmGroundTrajectories(Trajectories):
     def __init__(self, user_input, input_ceon):
         self._user_input = user_input
         self._input_ceons = [input_ceon]
-        self._number_trajectories = user_input.n_snapshots_gs
+        self._number_trajectories = user_input.n_snapshots_qmground
         self._child_root = 'nasqm_qmground_'
         self._job_suffix = 'qmground'
         self._parent_restart_root = 'ground_snap'
@@ -22,11 +22,11 @@ class QmGroundTrajectories(Trajectories):
     def _set_initial_input(self):
         input_ceon = self._input_ceons[0]
         user_input = self._user_input
-        input_ceon.set_n_steps(user_input.n_steps_abs)
-        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_amcrd)
+        input_ceon.set_n_steps(user_input.n_steps_qmground)
+        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_qmgmcrd)
         input_ceon.set_quantum(True)
-        input_ceon.set_excited_state(0, user_input.n_abs_exc)
-        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
+        input_ceon.set_excited_state(0, user_input.n_qmground_exc)
+        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_qmground)
         input_ceon.set_verbosity(1)
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
@@ -34,7 +34,7 @@ class QmGroundTrajectories(Trajectories):
         input_ceon.set_istully(False, 0)
 
     def isrestarting(self):
-        return self._user_input.restart_attempt < self._user_input.n_abs_runs - 1
+        return self._user_input.restart_attempt < self._user_input.n_qmground_runs - 1
 
     def islastrun(self):
         return not self.isrestarting()

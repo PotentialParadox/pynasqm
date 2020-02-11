@@ -54,12 +54,12 @@ class FluTrajectories(Trajectories):
     def islastrun(self):
         return not self.isrestarting()
 
-    def start_from_abs(self, override):
-        self.copy_restarts_from_abs(override)
+    def start_from_qmground(self, override):
+        self.copy_restarts_from_qmground(override)
         if self._user_input.restrain_solvents:
-            self.copy_nmr_from_abs()
+            self.copy_nmr_from_qmground()
 
-    def copy_nmr_from_abs(self):
+    def copy_nmr_from_qmground(self):
         source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
         output_files = ["flu/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
         copy_files(source_files, output_files)
@@ -67,9 +67,9 @@ class FluTrajectories(Trajectories):
         output_files = ["flu/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indexes()]
         copy_files(source_files, output_files)
 
-    def copy_restarts_from_abs(self, override):
+    def copy_restarts_from_qmground(self, override):
         self.test_for_qmground()
-        r = self._user_input.n_abs_runs - 1
+        r = self._user_input.n_qmground_runs - 1
         source_files = ["qmground/traj_{}/restart_{}/snap_for_qmground_t{}_r{}.rst".format(t, r, t, r+1)
                         for t in self.traj_indexes()]
         output_files = ["{1}/traj_{0}/restart_0/snap_for_{1}_t{0}_r0.rst".format(t, self._job_suffix)
@@ -80,7 +80,7 @@ class FluTrajectories(Trajectories):
     def create_restarts_from_parent(self, override=False):
         self._create_directories()
         if self._user_input.restart_attempt == 0:
-            self.start_from_abs(override)
+            self.start_from_qmground(override)
         else:
             self.start_from_restart(override)
 

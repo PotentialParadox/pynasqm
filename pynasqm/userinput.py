@@ -77,56 +77,56 @@ class UserInput:
         # Change here the number of snapshots you wish to take
         # from the initial ground state trajectory to run the
         # further ground state dynamics
-        self.n_snapshots_gs = int(data["n_snapshots_gs"])
+        self.n_snapshots_qmground = int(data["n_snapshots_qmground"])
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
         self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
                                                           self.time_step,
                                                           self.n_ground_runs,
                                                           self.n_steps_print_gmcrd,
-                                                          self.n_snapshots_gs)
+                                                          self.n_snapshots_qmground)
 
         #################################
         # QM Ground State
         #################################
         # Do you want to run the trajectories used for the abjorption specta
-        self.run_absorption_trajectories = pynasqm.utils.str2bool(
-            data["run_absorption_trajectories"])
-        # Change here the number of restarts of length abs_run_time you wish to run
+        self.run_qmground_trajectories = pynasqm.utils.str2bool(
+            data["run_qmground_trajectories"])
+        # Change here the number of restarts of length qmground_run_time you wish to run
         try:
-            self.n_abs_runs = int(data["n_abs_runs"])
+            self.n_qmground_runs = int(data["n_qmground_runs"])
         except KeyError:
-            self.n_abs_runs = 1
+            self.n_qmground_runs = 1
         # Change here the number of states you wish to
-        # calculate in the absorption singlpoint calculations
-        self.n_abs_exc = int(data["n_abs_exc"])
-        # Change here how often you want to print the absorption trajectories
-        self.n_steps_to_print_abs = int(data["n_steps_to_print_abs"])
+        # calculate in the qmgroundorption singlpoint calculations
+        self.n_qmground_exc = int(data["n_qmground_exc"])
+        # Change here how often you want to print the qmgroundorption trajectories
+        self.n_steps_to_print_qmground = int(data["n_steps_to_print_qmground"])
         try:
-            self.n_steps_print_amcrd = int(data["n_steps_to_print_amcrd"])
+            self.n_steps_print_qmgmcrd = int(data["n_steps_to_print_qmgmcrd"])
         except KeyError:
-            self.n_steps_print_amcrd = 0
-        # Do you want to collect the data from the absorption calculations?
+            self.n_steps_print_qmgmcrd = 0
+        # Do you want to collect the data from the qmgroundorption calculations?
         self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
         # Some time will be needed for the molecule to equilibrate
         # from jumping from MM to QM.
         # We don't want to include this data in the calculation
         # of the fluorescence. We therefore set a time delay.
         try:
-            self.abs_time_delay = float(data["absorption_time_delay"]) # fs
+            self.absorption_time_delay = float(data["absorption_time_delay"]) # fs
         except KeyError:
-            print("Absorption time delay wasn't given defaulting to 1ps")
-            self.abs_time_delay = 1000
+            print("Absorption time delay wasn't given defaulting to 0 ps")
+            self.qmground_time_delay = 0
         # Change here the runtime for the the trajectories
-        # used to create calculated the absorption
+        # used to create calculated the qmgroundorption
         # Number of snapshots is negligible for adjustment because exc will use final snapshot
-        # and is set to 1, if abs runtime is not equal 0 we want to make it reasonable to work with the other inputs
-        self.abs_run_time = float(data["abs_run_time"]) # ps
-        if self.abs_run_time != 0 and self.n_steps_print_amcrd != 0:
-            self.abs_run_time = self.adjust_run_time(self.abs_run_time,
+        # and is set to 1, if qmground runtime is not equal 0 we want to make it reasonable to work with the other inputs
+        self.qmground_run_time = float(data["qmground_run_time"]) # ps
+        if self.qmground_run_time != 0 and self.n_steps_print_qmgmcrd != 0:
+            self.qmground_run_time = self.adjust_run_time(self.qmground_run_time,
                                                      self.time_step,
-                                                     self.n_abs_runs,
-                                                     self.n_steps_print_amcrd,
+                                                     self.n_qmground_runs,
+                                                     self.n_steps_print_qmgmcrd,
                                                      1)
 
         #################################
@@ -155,9 +155,9 @@ class UserInput:
         # from the initial ground state trajectory to run the
         # new excited state dynamics
         self.n_snapshots_ex = int(data["n_snapshots_ex"])
-        if self.n_snapshots_ex > self.n_snapshots_gs:
+        if self.n_snapshots_ex > self.n_snapshots_qmground:
             raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
-                             "therefore n_snapshots_ex must less than or equal to n_snapshots_gs")
+                             "therefore n_snapshots_ex must less than or equal to n_snapshots_qmground")
         # Do you want to collect the data from the exctied state trajectory
         # calculations?
         self.run_fluorescence_collection = pynasqm.utils.str2bool(
@@ -214,7 +214,7 @@ class UserInput:
         # Solvent Settings
         #################################
         # This nasqm script will use cpptraj to include the nearest
-        # solvent molecule in the fluorescene and absorption calculations
+        # solvent molecule in the fluorescene and qmgroundorption calculations
         # but not the initial ground state run.
         # We will default to include all solvent residues within self.nearest_radius
         # angstroms from the molecule of interest, if this is None, then
@@ -235,8 +235,8 @@ class UserInput:
         self.n_steps_gs = self.n_steps(self.ground_state_run_time, self.time_step,
                                        self.n_ground_runs)
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
-        self.n_steps_abs = self.n_steps(self.abs_run_time, self.time_step, self.n_abs_runs)
-        self.n_frames_abs = int(self.n_steps_abs / self.n_steps_to_print_abs)
+        self.n_steps_qmground = self.n_steps(self.qmground_run_time, self.time_step, self.n_qmground_runs)
+        self.n_frames_qmground = int(self.n_steps_qmground / self.n_steps_to_print_qmground)
         self.n_steps_exc = self.n_steps(self.exc_run_time, self.time_step, self.n_exc_runs)
 
 

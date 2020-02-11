@@ -49,7 +49,7 @@ def main():
 
     if user_input.run_ground_state_dynamics:
         run_mm_ground_state_dynamics(input_ceon, user_input)
-    if user_input.run_absorption_trajectories:
+    if user_input.run_qmground_trajectories:
         run_qm_ground_state_trajectories(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
@@ -98,7 +98,7 @@ def restart_for_pc(job_id, restart_attempt):
                      "--restart", "{}".format(restart_attempt)])
 
 def manage_restart(job_id, user_input, restart_attempt):
-    runs = [user_input.n_ground_runs, user_input.n_abs_runs, user_input.n_exc_runs]
+    runs = [user_input.n_ground_runs, user_input.n_qmground_runs, user_input.n_exc_runs]
     n_runs = runs[job_id]
     if should_restart(n_runs, restart_attempt):
         print("restarting")
