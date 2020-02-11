@@ -44,7 +44,7 @@ def load_data_from_files(files, muab_files):
     DataFiles = namedtuple('DataFiles', 'coeff, muab')
     if muab_files:
         return filter_completed(DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files))
-    return filter_completed([(np.loadtxt(fin), None) for fin in files])
+    return filter_completed([DataFiles(read_coeff(fin), None) for fin in files])
 
 def get_nstates(data):
     ncols_not_coefficients=3
@@ -144,9 +144,10 @@ def main():
     coeff_data = [d.coeff for d in data]
     muab_data = [d.muab for d in data]
     state_data = get_states(coeff_data)
-    Restraints = namedtuple('Restraints', 'min_energy, max_energy, min_strength')
-    restraints = Restraints(args.min_energy, args.max_energy, args.min_strength)
-    filtered_state_data = filter_pump_pulse(state_data, muab_data, restraints)
+    if args.pulsepump:
+      Restraints = namedtuple('Restraints', 'min_energy, max_energy, min_strength')
+      restraints = Restraints(args.min_energy, args.max_energy, args.min_strength)
+      state_data = filter_pump_pulse(state_data, muab_data, restraints)
     nstates = get_nstates(coeff_data)
     times = get_times(coeff_data)
     if args.pulsepump:
