@@ -3,6 +3,16 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Failed Tests
+failed*.txt
+test_file
+test.out
+convert_to_crd.out
+
+#Unwanted Tests
+tests/nasqmWrite/abs_spectra
+tests/nasqmWrite/spectra.sh
+
 # C extensions
 *.so
 
