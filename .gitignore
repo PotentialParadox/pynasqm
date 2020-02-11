@@ -12,6 +12,7 @@ convert_to_crd.out
 #Unwanted Tests
 tests/nasqmWrite/abs_spectra
 tests/nasqmWrite/spectra.sh
+tests/absorptionTrajectories/cpptraj.out
 #Emacs Temp files
 .#*
 
