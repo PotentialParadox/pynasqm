@@ -1,0 +1,11 @@
+source ~/myapps/load_exports
+module load intel/2017
+source ~/myapps/load_boost
+source /ufrc/roitberg/dtracy/amber/amber.sh
+
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
+
+ID=${SLURM_ARRAY_TASK_ID}
+cd ${ID}
+$AMBERHOME/bin/sander -O -i nasqm_abs_${ID}.in -o nasqm_abs_${ID}.out -c ground_snap.${ID} -p m1.prmtop -r nasqm_abs_${ID}.rst -x nasqm_abs_${ID}.nc
+cd ../../..

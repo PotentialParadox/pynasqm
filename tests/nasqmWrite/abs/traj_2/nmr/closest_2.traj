@@ -1,0 +1,6 @@
+parm m1.prmtop
+solvent !:1
+trajin abs/traj_2/restart_1/snap_for_abs_t2_r1.rst
+closest 1 @9-14 closestout abs/traj_2/nmr/closest_2.txt
+run
+quit

@@ -23,8 +23,16 @@ class InputCeon:
         self.inputceonmanager.set_excited_state(state, states_to_prop)
         self.inputceonmanager.write()
 
-    def set_bo(self, isTully, qsteps=0):
-        self.inputceonmanager.set_is_tully(isTully, qsteps)
+    def set_nexmd_seed(self, seed):
+        self.inputceonmanager.set_nexmd_seed(seed)
+        self.inputceonmanager.write()
+
+    def set_istully(self, isTully, qsteps=0):
+        self.inputceonmanager.set_istully(isTully, qsteps)
+        self.inputceonmanager.write()
+
+    def calc_transition_dipoles(self, should_calc):
+        self.inputceonmanager.set_calcxdens(should_calc)
         self.inputceonmanager.write()
 
     def find_path(self):
@@ -69,6 +77,8 @@ class InputCeon:
         Set the number of steps between print outs
         '''
         sed_inplace(self.amber_input, r'ntwx=\s*\d*', 'ntwx=' + str(n_steps_to_print))
+        if n_steps_to_print == 0:
+            sed_inplace(self.amber_input, r'ntwv=\s*\d*', 'ntwv=0')
 
     def write_log(self):
         '''
@@ -81,14 +91,14 @@ class InputCeon:
         '''
         Set the number of exciteds states to propagate
         '''
-        sed_inplace('input.ceon', 'n_exc_states_propagate=\d*', 'n_exc_states_propagate='
+        sed_inplace('input.ceon', r'n_exc_states_propagate=\d*', 'n_exc_states_propagate='
                     + str(n_exc_states_propagate))
 
     def set_coordinates(self, coordinates):
         '''
         Set the coordinates for input.ceon
         '''
-        sed_global('input.ceon', '&coord(.|\s|\n)*?&endcoord', '&coord\n' + coordinates + '&endcoord')
+        sed_global('input.ceon', r'&coord(.|\s|\n)*?&endcoord', '&coord\n' + coordinates + '&endcoord')
 
     def set_exc_state_init(self, exc_state_init):
         """
@@ -123,8 +133,8 @@ class InputCeon:
             if constant_value == 2:
                 sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=2')
                 sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=1')
-            sed_inplace(self.amber_input, r'qm_ewald\s*=\s*\d+', 'qm_ewald=1')
-            sed_inplace(self.amber_input, r'qm_pme\s*=\s*\d+', 'qm_pme=1')
+            sed_inplace(self.amber_input, r'qm_ewald\s*=\s*\d+', 'qm_ewald=0')
+            sed_inplace(self.amber_input, r'qm_pme\s*=\s*\d+', 'qm_pme=0')
             sed_inplace(self.amber_input, r'iwrap\s*=\s*\d+', 'iwrap=1')
         if periodic is False:
             sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=0')
@@ -167,7 +177,7 @@ class InputCeon:
         result = re.findall(p_mask, file_string)
         return result[0]
 
-    def copy(self, directory, file_name):
+    def copy(self, directory, file_name, override=False):
         '''
         Returns a copy into the new file_name
         '''
@@ -177,16 +187,18 @@ class InputCeon:
         try:
             copyfile('input.ceon', input_ceon)
         except SameFileError:
-            print("Copying inpuceon to itself, make sure to use different directories"\
-                  " for different trajectories")
+            if not override:
+                print("Copying input.ceon to itself, make sure to use different directories"\
+                      " for different trajectories")
         else:
             pass
         parmtop = "{}/{}".format(directory, 'm1.prmtop')
         try:
             copyfile('m1.prmtop', parmtop)
         except SameFileError:
-            print("Copying m1.prmtop to itself, make sure to use different directories"\
-                  " for different trajectories")
+            if not override:
+                print("Copying m1.prmtop to itself, make sure to use different directories"\
+                      " for different trajectories")
         else:
             pass
         return InputCeon(file_name, directory)
@@ -207,7 +219,7 @@ class InputCeon:
         is_disang = None
         is_dumpave = None
         file_string = None
-        file_path = "{}{}".format(self.directory, self.amber_input)
+        file_path = "{}/{}".format(self.directory, self.amber_input)
         with open(file_path, 'r') as file_in:
             file_string = file_in.read()
             is_nmropt = re.search(p_nmropt, file_string)

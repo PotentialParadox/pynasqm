@@ -4,6 +4,7 @@ Things were tested on Hypergator 2 at the University of Florida
 '''
 import os
 import pytest
+import types
 from pynasqm.userinput import UserInput
 import pynasqm.nasqmslurm as nasqm_slurm
 
@@ -11,20 +12,21 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/nasqmSlurmTests")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 @pytest.fixture
 def userinput():
     '''
     Create a test user input
     '''
-    user_input = UserInput()
+    user_input = types.SimpleNamespace()
+    user_input.job_name = "test"
     user_input.email = "dtracy.uf@gmail.com"
     user_input.qos = "roitberg"
     user_input.email_options = 2
@@ -67,11 +69,12 @@ def test_build_command(amber):
     '''
     Tests the build command
     '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
-    amber.output_roots = ["nasqm_abs_"]
-    n_trajectories = 16
-    result = nasqm_slurm.build_trajectory_command(amber, n_trajectories)
+    amber.input_roots = ["nasqm_abs_${ID}"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
+    amber.output_roots = ["nasqm_abs_${ID}"]
+    amber.restart_files = ["nasqm_abs_${ID}.rst"]
+    directory = "${ID}"
+    result = nasqm_slurm.build_trajectory_command(directory, amber)
     test = open("nasqm_slurm_build_command.txt", 'r').read()
     assert result == test
 
@@ -81,14 +84,16 @@ def test_slurm_trajectory_file_1(userinput, amber):
     Tests to see if slurm trajectory_file is capable of running
     one abs trajectory
     '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
-    amber.output_roots = ["nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_${ID}"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
+    amber.output_roots = ["nasqm_abs_${ID}"]
+    amber.restart_files = ["nasqm_abs_${ID}.rst"]
     title = "MyJob"
     n_trajectories = 1
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
+    directory = "${ID}"
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories, directory)
     test = open("nasqm_slurm_1.txt", 'r').read()
-    assert result == (None, test)
+    assert result == test
 
 
 def test_slurm_trajectory_file_16(userinput, amber):
@@ -96,28 +101,20 @@ def test_slurm_trajectory_file_16(userinput, amber):
     Tests to see if slurm trajectory_file is capable of running
     one whole trajectory
     '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
-    amber.output_roots = ["nasqm_abs_"]
+    amber.input_roots = ["nasqm_abs_${ID}"]
+    amber.coordinate_files = ["ground_snap.${ID}"]
+    amber.output_roots = ["nasqm_abs_${ID}"]
+    amber.restart_files = ["nasqm_abs_${ID}.rst"]
     title = "MyJob"
     n_trajectories = 16
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
+    directory = "${ID}"
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories, directory)
     test = open("nasqm_slurm_16.txt", 'r').read()
-    assert result == (test, None)
+    assert result == test
 
-
-def test_slurm_trajectory_file_33(userinput):
-    '''
-    Tests to see if slurm trajectory_file is capable of running
-    multiple whole trajectories with remainder
-    '''
-    amber.input_roots = ["nasqm_abs_"]
-    amber.coordinate_files = ["ground_snap"]
-    amber.output_roots = ["nasqm_abs_"]
-    amber.from_restart = False
-    title = "MyJob"
-    n_trajectories = 33
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories)
-    test_0 = open("nasqm_slurm_32.txt", 'r').read()
-    test_1 = open("nasqm_slurm_1.txt", 'r').read()
-    assert result == (test_0, test_1)
+def test_nasqm_restart(userinput):
+    restart_attempt = 1
+    job_id = 1
+    result = nasqm_slurm.nasqm_restart_script(userinput, job_id, restart_attempt)
+    test = open("nasqm_restart.sbatch").read()
+    assert result == test

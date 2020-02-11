@@ -9,13 +9,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/slurm")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 SLURM_HEADER = {'email': "dtracy.uf@gmail.com", 'email_options': 3,
                 'n_nodes': 1, 'ppn': 2, 'memory': "3000mb", 'walltime': "00:01:00",
@@ -36,6 +36,5 @@ def test_create_slurm_script():
               ' result_${SLURM_ARRAY_TASK_ID}.out\n'
     slurm_object = Slurm(SLURM_HEADER)
     job_script = slurm_object.create_slurm_script(command, "MyJob", 3)
-    # open('slurm_test.txt', 'w').write(job_script)
-    test_script = str(open('slurm_test.txt', 'r').read())
-    assert job_script == test_script
+    answer = str(open('slurm_test.txt', 'r').read())
+    assert job_script == answer

@@ -11,13 +11,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/amberOut")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 
 def test_find_excited_energies():
@@ -33,11 +33,14 @@ def test_find_excited_energies():
                 "1  -4009.85112234037       -147.359256866811\n"\
                 "QMMM:"
 
-    input_stream = io.StringIO(test_string)
     output_stream = io.StringIO()
-    amber_out.find_excited_energies(input_stream, output_stream, [1])
+    test_file = "test_file"
+    open(test_file, 'w').write(test_string)
+    print("getting excited states")
+    amber_out.find_excited_energies(test_file, output_stream, [1])
     output_string = output_stream.getvalue()
     output_stream.close()
+    print(output_string)
     assert output_string == '   -4.00985112234037E+03\n'
 
 
@@ -64,16 +67,33 @@ def test_find_ground_energies():
 
 def test_find_nasqm_excited_state_1():
     '''
-    Tests to see if we can find the omega and total oscillator strength of multiple states
+    Tests to see if we can find the omega and total oscillator strength of 1st Excited states
     '''
-    input_stream = open("nasqm_flu_1.out")
-    result = amber_out.find_nasqm_excited_state(input_stream)
-    assert result == "    2.90923255131416E+00    9.08120295476811E-01\n" \
+    test_file = "nasqm_flu_1.out"
+    result = amber_out.find_nasqm_excited_state(test_file)
+    print(result)
+    assert result == ""\
+        "    2.90923223491635E+00    9.08434161983220E-01\n" \
+        "    2.90923255131416E+00    9.08120295476811E-01\n" \
         "    2.90923255131440E+00    9.08120295476795E-01\n" \
         "    2.90576054156170E+00    9.12245042622513E-01\n" \
         "    2.89718863282344E+00    9.17508693665317E-01\n" \
         "    2.88542766911918E+00    9.23660450221756E-01\n"
 
+def test_find_nasqm_excited_state_2():
+    '''
+    Tests to see if we can find the omega and total oscillator strength of 2 states states
+    '''
+    test_file = "nasqm_flu_1.out"
+    result = amber_out.find_nasqm_excited_state(test_file)
+    print(result)
+    assert result == ""\
+        "    2.90923223491635E+00    9.08434161983220E-01\n" \
+        "    2.90923255131416E+00    9.08120295476811E-01\n" \
+        "    2.90923255131440E+00    9.08120295476795E-01\n" \
+        "    2.90576054156170E+00    9.12245042622513E-01\n" \
+        "    2.89718863282344E+00    9.17508693665317E-01\n" \
+        "    2.88542766911918E+00    9.23660450221756E-01\n"
 
 def test_find_dipole():
     '''

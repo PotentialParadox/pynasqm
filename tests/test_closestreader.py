@@ -12,13 +12,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/closestReader")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 @pytest.fixture
 def closest_output():

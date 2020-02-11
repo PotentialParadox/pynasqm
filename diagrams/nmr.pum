@@ -1,0 +1,13 @@
+@startuml
+start
+:get trajins list;
+:build closest_outputs;
+:append solvent residues to amber input;
+:convert all solvent and solute residues into atom-groups;
+:get current cog distance of closest solvent with 0.2 buffer;
+:set far solvents distances to negative distance max;
+:choose dist file format based on number of atoms;
+:write dist file using r3=distance, r4=distance+5;
+:update amber input files for dist files;
+stop
+@enduml

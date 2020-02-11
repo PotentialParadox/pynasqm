@@ -39,13 +39,13 @@ class Slurm:
         job_script = '#!/bin/bash\n' \
                 '#SBATCH --job-name='+title_used+' # A name for your job\n' \
                 '#SBATCH --qos='+self.header['qos']+' # The queue for your job\n' \
-                '#SBATCH --output='+title_used+'-%j.output # Output File\n' \
-                '#SBATCH --error='+title_used+'-%j.err #Error File\n' \
+                '#SBATCH --output=./Reports/'+title_used+'-%j.output # Output File\n' \
+                '#SBATCH --error=./Reports/'+title_used+'-%j.err #Error File\n' \
+                '#SBATCH --partition=hpg2-compute\n' \
+                '#SBATCH --constraint=haswell\n' \
                 '#SBATCH --mail-user='+self.header['email']+' # Email address\n' \
                 '#SBATCH --mail-type='+self.email_preferences+' # What emails you want\n' \
-                '#SBATCH --nodes='+str(self.header['n_nodes'])+' #No. computers requested\n' \
-                '#SBATCH --tasks-per-node='+str(self.header['ppn'])+\
-                ' # No. processors per node\n' \
+                '#SBATCH --ntasks=1\n' \
                 '#SBATCH --mem-per-cpu='+self.header['memory']+\
                 ' #Per processor memory requested\n' \
                 '#SBATCH --array=1-'+str(n_arrays)+'%'+str(self.header['max_jobs'])+'\n' \
@@ -70,37 +70,33 @@ def wait_for_job_finish(slurm_id):
         if not re.search(p_id, stdout_value):
             condition = False
 
-def run_slurm(slurm_script1, slurm_script2=None):
+def run_slurm(slurm_script):
     '''
     Run the slurm script
     '''
-    slurm_id1 = None
-    slurm_id2 = None
-    if slurm_script1:
-        open('nasqm1.sbatch', 'w').write(slurm_script1)
-        p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm1.sbatch'], shell=True, stdout=subprocess.PIPE,
+    slurm_id = None
+    if slurm_script:
+        file_name = 'nasqm.sbatch'
+        slurm_id = submit_job(file_name, slurm_script)
+    wait_for_job(slurm_id)
+
+def wait_for_job(slurm_id):
+    print("Waiting for {}".format(slurm_id))
+    wait_for_job_finish(slurm_id)
+    print("Job: ", slurm_id, "completed")
+
+def submit_job(file_name, slurm_script):
+    subprocess.call(['mkdir', '-p', 'Reports'])
+    open(file_name, 'w').write(slurm_script)
+    p_id = re.compile(r'\d+')
+    try:
+        proc = subprocess.Popen(['sbatch {}'.format(file_name)], shell=True, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, universal_newlines=True)
         stdout_value, stderr_value = proc.communicate()
-        slurm_id1 = str(re.findall(p_id, stdout_value)[0])
-        if stderr_value == "Error":
-            return None
-        print("Submitted nasqm1.sbatch Job: ", slurm_id1)
-    if slurm_script2:
-        open('nasqm2.sbatch', 'w').write(slurm_script2)
-        p_id = re.compile(r'\d+')
-        proc = subprocess.Popen(['sbatch nasqm2.sbatch'], shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, universal_newlines=True)
-        stdout_value, stderr_value = proc.communicate()
-        slurm_id2 = str(re.findall(p_id, stdout_value)[0])
-        if stderr_value == "Error":
-            return None
-        print("Submitted nasqm2.sbatch Job: ", slurm_id2)
-    if slurm_script1:
-        print("Waiting for nasqm1.sbatch")
-        wait_for_job_finish(slurm_id1)
-        print("Job: ", slurm_id1, "completed")
-    if slurm_script2:
-        print("Waiting for nasqm2.sbatch")
-        wait_for_job_finish(slurm_id2)
-        print("Job: ", slurm_id2, "completed")
+        slurm_id = str(re.findall(p_id, stdout_value)[0])
+    except IndexError:
+        raise ValueError("File {} could not be submitted to slurm. Make sure slurm is installed.")
+    if stderr_value == "Error":
+        raise RuntimeError("Was unable to submit {} to slurm".format(file_name))
+    print("Submitted {} Job: {}".format(file_name, slurm_id))
+    return slurm_id

@@ -58,6 +58,9 @@ def create_spectra_string(output_stream, energies, strengths, states):
     if not output_stream:
         output_stream = io.StringIO()
     n_steps = int(len(energies) / len(states))
+    # NAESMD will run twice on the first iteration of a md simulation
+    # we only want to count the second one. During singlepoint calculations
+    # we don't need to worry about this.
     begin_step = 0
     for step in range(begin_step, n_steps):
         for state in range(len(states)):
@@ -68,11 +71,12 @@ def create_spectra_string(output_stream, energies, strengths, states):
     return output_stream.getvalue()
 
 
-def find_nasqm_excited_state(input_stream, output_stream=None, states=[1]):
+def find_nasqm_excited_state(input_file, output_stream=None, states=[1]):
     '''
     Write the firt n_states excited states energies and strengths to the output stream
     in eV
     '''
+    input_stream = open(input_file,'r')
     energies, strengths = read_nasqm_excited_states(input_stream, states)
     return create_spectra_string(output_stream, energies, strengths, states)
 
@@ -87,7 +91,7 @@ def find_number_excited_states(input_stream):
             return int(n_states[0])
 
 
-def find_excited_energies(input_stream, output_stream=None, states=[1]):
+def find_excited_energies(input_file, output_stream=None, states=[1]):
     '''
     Write the total energies of the excited state in eV
     '''
@@ -97,6 +101,7 @@ def find_excited_energies(input_stream, output_stream=None, states=[1]):
         is_io = True
     p_energy = re.compile('Total energies of excited states')
     p_float = re.compile(r'-?\d+\.\d+E?\-?\+?\d*')
+    input_stream = open(input_file, 'r')
     for line in input_stream:
         if re.search(p_energy, line):
             for state_value in range(max(states)):

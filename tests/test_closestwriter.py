@@ -12,20 +12,20 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/closestWriter")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 def test_write_closest_traj():
     trajin = "ground_snap.1"
     number_nearest = 3
     closests = ClosestWriter(trajin, number_nearest)
     closests.write()
-    result = open("closest_1.traj", 'r').read()
+    result = open("1/closest_1.traj", 'r').read()
     answer = open("closest_1_test.traj", 'r').read()
     assert result == answer
 
@@ -34,6 +34,6 @@ def test_write_closest_traj2():
     number_nearest = 3
     closests = ClosestWriter(trajin, number_nearest)
     closests.write()
-    result = open("closest_2.traj", 'r').read()
+    result = open("2/closest_2.traj", 'r').read()
     answer = open("closest_2_test.traj", 'r').read()
     assert result == answer

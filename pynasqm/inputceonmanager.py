@@ -18,7 +18,16 @@ class InputceonManager:
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
         self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
-    def set_is_tully(self, isTully, qsteps):
+    def set_calcxdens(self, set_val):
+        if set_val:
+            self.qmmm.set_value('calcxdens', '.true.')
+        else:
+            self.qmmm.set_value('calcxdens', '.false.')
+
+    def set_nexmd_seed(self, seed):
+        self.moldyn.set_value('rnd_seed', seed)
+
+    def set_istully(self, isTully, qsteps):
         if isTully:
             self.moldyn.set_value('bo_dynamics_flag', 0)
             self.moldyn.set_value('n_quant_steps', qsteps)
@@ -32,7 +41,9 @@ class InputceonManager:
     @staticmethod
     def generate_initial_coeffs(state, states_to_prop):
         A =  np.zeros((states_to_prop, 2), dtype=float)
-        if state != 0:
+        if state != 0 and state > states_to_prop:
+            raise ValueError("Initial excited state {} greater than states_to_prop {}".format(state, states_to_prop))
+        if state > 0:
             A[state-1,0] = 1
         return A
 

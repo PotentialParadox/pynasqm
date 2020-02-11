@@ -10,13 +10,13 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests")
+    os.chdir("tests/inputceonWriter")
 
 def teardown_module(module):
     '''
     Return to main directory
     '''
-    os.chdir("..")
+    os.chdir("../..")
 
 def test_writerestart():
     result_file = "inputceonwriter_result.txt"

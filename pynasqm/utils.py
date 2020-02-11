@@ -3,6 +3,10 @@ Commonly used utilities
 '''
 import re
 import numpy as np
+import subprocess
+import os
+import operator
+from functools import reduce
 
 def numpy_element(numpy_array, i, j=0):
     try:
@@ -43,3 +47,39 @@ def str2bool(v):
         return False
     else:
         raise TypeError('Boolean value expected.')
+
+def mkdir(directory):
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+
+def touch(output_path):
+    subprocess.call(['touch', output_path])
+
+def copy_file(source_path, output_path, force=False):
+    if not os.path.isfile(source_path):
+        if force:
+            touch(source_path)
+        else:
+            raise AssertionError("{} is missing".format(source_path))
+    subprocess.call(['cp', source_path, output_path])
+
+def copy_files(sources, outputs, force=False, strict=False):
+    for source, output in zip(sources, outputs):
+        if strict or os.path.isfile(source):
+            copy_file(source, output, force)
+
+def is_empty_file(source):
+    return os.stat(source).st_size == 0
+
+def gcd(a,b):
+    """Compute the greatest common divisor of a and b"""
+    while b > 0:
+        a, b = b, a % b
+    return a
+
+def lcm(a, b):
+    """Compute the lowest common multiple of a and b"""
+    return a * b / gcd(a, b)
+
+def lcmoflist(a):
+    return reduce(lcm, a, 1)

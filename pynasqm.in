@@ -44,6 +44,8 @@
     "run_ground_state_dynamics": "False",
 # Change here the runtime, in ps, of the initial ground state MD
     "ground_state_run_time": "0.01",
+# Change here the number of restarts of length ground_state_run_time you wish to run
+    "n_ground_runs": "2",
 # Change here how often you want to print the ground state trajectory files
     "n_steps_to_print_gmcrd": "5",
 # Change here how often you want to print the ground state trajectory
@@ -60,7 +62,11 @@
 # Change here the runtime in PS for the the trajectories
 # used to create calculated the absorption
     "abs_run_time": "0.004",
+# Number of restarts = this number - 1. Controls how you want to segmentate
+# the runs for shorter run times, and to allow restarting if failure arises
+    "n_abs_runs": "1",
 # Change here how often you want to print the absorption trajectory files
+# Use -1 to skip
     "n_steps_to_print_amcrd": "5",
 # Change here how often you want to print the absorption trajectories
     "n_steps_to_print_abs": "4",
@@ -75,6 +81,17 @@
 # We therefore set a time delay in fs.
     "absorption_time_delay": "000",
 ############################################################
+#                  Pump Pulse Simulation
+############################################################
+# Do you want to run the pulse pump singlepoins?
+    "run_pulse_point_singlepoints": "False",
+# Whats the minimum energy of the pump pulse state Sm?
+    "pump_pulse_min_energy": "0",
+# Whats the maximum energy of the pump pulse state Sm?
+    "pump_pulse_max_energy": "0",
+# Whats the minimum oscillator strength from S1 of the pump pulse state Sm?
+    "pump_pulse_min_strength": "0",
+############################################################
 #                  Excited State Calculation
 ############################################################
 # Do you want to run the exctied state trajectories?
@@ -86,7 +103,11 @@
 # Change here the runtime, in ps, for the the trajectories
 # used to create calculated the fluorescence
     "exc_run_time": "0.002",
+# Number of restarts = this number - 1. Controls how you want to segmentate
+# the runs for shorter run times, and to allow restarting if failure arises
+    "n_exc_runs": "2",
 # Change here how often you want to print the excited state trajectory files
+# Use -1 to skip
     "n_steps_to_print_emcrd": "5",
 # Change here how often you want to print the excited state trajectories
     "n_steps_to_print_exc": "10",
@@ -94,11 +115,13 @@
 # with to have in the CIS calculation
     "n_exc_states_propagate": "5",
 # Change here the initial state, set to '-1' if you want to simulate laser exitation.
+# Change to -2 for pump pulse simulation
     "exc_state_init": "1",
 # Change here the energy of the laser used for excitation?
     "laser_energy": "4.2",
-# Change here the full width half max of the absorption spectra
-    "fwhm": "0.3",
+# Change here the full width half max of the laser in fs
+# Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening
+    "fwhm": "100",
 # Do you want to collect the data from the exctied state trajectory
 # calculations?
     "run_fluorescence_collection": "False",

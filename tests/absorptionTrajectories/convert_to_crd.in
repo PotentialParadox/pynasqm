@@ -1,0 +1,7 @@
+parm m1.prmtop
+trajin mmground/nasqm_ground.nc 1 last 5
+center :1
+trajout ground_snap restart
+image
+run
+quit

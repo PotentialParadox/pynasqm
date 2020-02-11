@@ -1,0 +1,2 @@
+#CLOSEST_00001[Frame] CLOSEST_00001[Mol] CLOSEST_00001[Dist] CLOSEST_00001[FirstAtm]
+                    1                896              2.7475                    4521
