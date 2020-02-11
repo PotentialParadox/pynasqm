@@ -7,14 +7,14 @@ import os
 
 import subprocess
 
-class AbsTrajectories(Trajectories):
+class QmGroundTrajectories(Trajectories):
 
     def __init__(self, user_input, input_ceon):
         self._user_input = user_input
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_gs
-        self._child_root = 'nasqm_abs_'
-        self._job_suffix = 'abs'
+        self._child_root = 'nasqm_qmground_'
+        self._job_suffix = 'qmground'
         self._parent_restart_root = 'ground_snap'
         self._number_frames_in_parent = user_input.n_mcrd_frames_gs * user_input.n_ground_runs
         self._amber_restart = False
@@ -56,8 +56,8 @@ class AbsTrajectories(Trajectories):
 
     def _move_restarts(self):
         for i, filename in enumerate(self._initial_snaps(), start=1):
-            new_resart_name = "snap_for_abs_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
-            directory = "abs/traj_{}/restart_{}/{}".format(i, self._user_input.restart_attempt, new_resart_name)
+            new_resart_name = "snap_for_qmground_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
+            directory = "qmground/traj_{}/restart_{}/{}".format(i, self._user_input.restart_attempt, new_resart_name)
             subprocess.call(['mv', filename, directory])
 
     def _initial_snaps(self):
@@ -73,13 +73,13 @@ class AbsTrajectories(Trajectories):
 
 
     def hpc_coordinate_files(self):
-        return ["snap_for_abs_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
+        return ["snap_for_qmground_t${{ID}}_r{}.rst".format(self._user_input.restart_attempt)]
 
     def pc_coordinate_files(self):
-        return ["snap_for_abs_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
+        return ["snap_for_qmground_t{}_r{}.rst".format(i, self._user_input.restart_attempt)
                 for i in range(1, self._number_trajectories+1)]
 
     def _nmrdirs(self):
-        return ["abs/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
+        return ["qmground/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
 
 

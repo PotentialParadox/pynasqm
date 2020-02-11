@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.absorptiontrajectories import AbsTrajectories
+from pynasqm.qmgroundstatetrajectories import AbsTrajectories
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 

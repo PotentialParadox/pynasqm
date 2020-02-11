@@ -10,7 +10,7 @@ from pynasqm.inputceon import InputCeon
 from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
                            write_spectra_abs_input, write_average_coeffs)
 from pynasqm.userinput import UserInput
-from pynasqm.absorptiontrajectories import AbsTrajectories
+from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.pulsepump import PulsePump
 from pynasqm.trajectories import combine_trajectories
@@ -37,9 +37,9 @@ def main():
 
     if args.restart != 0:
         if args.job > 0:
-            user_input.run_ground_state_dynamics = False
+            user_input.run_mm_ground_state_dynamics = False
         if args.job > 1:
-            user_input.run_absorption_trajectories = False
+            user_input.run_qm_ground_state_trajectories = False
             user_input.run_absorption_collection = False
 
     original_inputs = copy_inputs()
@@ -48,9 +48,9 @@ def main():
     start_time = time.time()
 
     if user_input.run_ground_state_dynamics:
-        run_ground_state_dynamics(input_ceon, user_input)
+        run_mm_ground_state_dynamics(input_ceon, user_input)
     if user_input.run_absorption_trajectories:
-        run_absorption_trajectories(input_ceon, user_input)
+        run_qm_ground_state_trajectories(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
     if user_input.is_pulse_pump and user_input.run_pulse_pump_singlepoints:
@@ -105,23 +105,23 @@ def manage_restart(job_id, user_input, restart_attempt):
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
 
-def run_ground_state_dynamics(md_qmmm_amb, user_input):
+def run_mm_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
     for future calculations
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Running Ground State Trajectory !!!!!!!!!!!!!!!!!!!!")
+    print("!!!!!!!!!!!!!!!!!!!! Running MM Ground-State Trajectory !!!!!!!!!!!!!!!!!!!!")
     groundStateDynamics(md_qmmm_amb, user_input)
     manage_restart(0, user_input, user_input.restart_attempt)
 
 
-def run_absorption_trajectories(input_ceon, user_input):
+def run_qm_ground_state_trajectories(input_ceon, user_input):
     '''
     Now we want to take the original trajectory snapshots and run more trajectories
     using random velocities to make them different from each other
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Running Absorbance Trajectories !!!!!!!!!!!!!!!!!!!!")
-    AbsTrajectories(user_input, input_ceon).run()
+    print("!!!!!!!!!!!!!!!!!!!! Running QM Ground-State Trajectories !!!!!!!!!!!!!!!!!!!!")
+    QmGroundTrajectories(user_input, input_ceon).run()
     manage_restart(1, user_input, user_input.restart_attempt)
 
 def run_absorption_collection(user_input):
