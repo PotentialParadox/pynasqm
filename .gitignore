@@ -12,6 +12,8 @@ convert_to_crd.out
 #Unwanted Tests
 tests/nasqmWrite/abs_spectra
 tests/nasqmWrite/spectra.sh
+#Emacs Temp files
+.#*
 
 # C extensions
 *.so
