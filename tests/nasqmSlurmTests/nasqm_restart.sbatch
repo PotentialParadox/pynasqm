@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=Test_r1 # A name for your job
 #SBATCH --qos=roitberg # The queue for your job
-#SBATCH --output=Test_r1-%j.output # Output File
-#SBATCH --error=Test_r1-%j.err #Error File
+#SBATCH --output=./Reports/Test_r1-%j.output # Output File
+#SBATCH --error=./Reports/Test_r1-%j.err #Error File
 #SBATCH --partition=hpg2-compute
 #SBATCH --constraint=haswell
 #SBATCH --mail-user=dtracy.uf@gmail.com # Email address

@@ -59,7 +59,6 @@ def test_prepareDynamcs1of1(userInput):
     _, slurm_file = prepareDynamics(userInput)
     result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of1_slurm_attempt_test.sbatch").read()
-    open("failed.txt", 'w').write(result)
     assert result == answer
     subprocess.call(['rm', 'nasqm_ground.in', 'failed_test.txt'])
 

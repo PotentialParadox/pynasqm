@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=MyJob # A name for your job
 #SBATCH --qos=roitberg # The queue for your job
-#SBATCH --output=MyJob-%j.output # Output File
-#SBATCH --error=MyJob-%j.err #Error File
+#SBATCH --output=./Reports/MyJob-%j.output # Output File
+#SBATCH --error=./Reports/MyJob-%j.err #Error File
 #SBATCH --partition=hpg2-compute
 #SBATCH --constraint=haswell
 #SBATCH --mail-user=dtracy.uf@gmail.com # Email address
@@ -21,5 +21,11 @@ export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
 ID=${SLURM_ARRAY_TASK_ID}
 cd ${ID}
+if test -f input.ceon; then
+    init_state=`grep "exc_state_init.-" input.ceon`
+    if [ "$init_state" != "" ];then
+        exit
+    fi
+fi
 $AMBERHOME/bin/sander -O -i nasqm_abs_${ID}.in -o nasqm_abs_${ID}.out -c ground_snap.${ID} -p m1.prmtop -r nasqm_abs_${ID}.rst -x nasqm_abs_${ID}.nc
 cd ../../..
