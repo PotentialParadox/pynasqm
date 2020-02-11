@@ -78,7 +78,7 @@ class Trajectories(ABC):
 
     def should_update_nmr(self):
         return (self._user_input.restart_attempt == 0
-                and self._job_suffix == "abs"
+                and self._job_suffix == "qmground"
                 and self._user_input.restrain_solvents is True
                 and self._user_input.number_nearest_solvents > 0)
 

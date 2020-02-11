@@ -1,6 +1,0 @@
-parm m1.prmtop
-solvent !:1
-trajin abs/traj_2/restart_0/snap_for_abs_t2_r0.rst
-closest 1 :1 closestout abs/traj_2/nmr/closest_2.txt
-run
-quit
