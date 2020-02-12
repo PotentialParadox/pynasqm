@@ -24,7 +24,7 @@ def teardown_module(module):
 @pytest.fixture
 def userInput():
     user_input = types.SimpleNamespace()
-    user_input.is_qmmm = False
+    user_input.is_qmmm = True
     user_input.is_hpc = True
     user_input.number_nodes = 1
     user_input.processors_per_node = 16
@@ -41,7 +41,7 @@ def userInput():
     user_input.time_step = 0.05
     user_input.ground_state_run_time = 0.01
     user_input.n_snapshots_qmground = 2
-    user_input.n_mcrd_frames_gs = 5
+    user_input.n_mcrd_frames_per_run_gs = 5
     user_input.n_ground_runs = 2
     user_input.restart_attempt = 0
     user_input.number_nearest_solvents = 1

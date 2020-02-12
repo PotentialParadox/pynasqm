@@ -45,7 +45,7 @@ def userInput():
     user_input.qos = "roitberg"
     user_input.email = "dtracy.uf@gmail.com"
     user_input.email_options = 2
-    user_input.n_steps_gs = 1
+    user_input.n_steps_per_run_gs = 1
     user_input.n_steps_print_gmcrd = 10
     user_input.n_steps_to_print_gs = 15
     user_input.time_step = 0.05
