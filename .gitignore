@@ -13,6 +13,8 @@ convert_to_crd.out
 tests/nasqmWrite/abs_spectra
 tests/nasqmWrite/spectra.sh
 tests/absorptionTrajectories/cpptraj.out
+tests/qmGroundTrajectories/cpptraj.out
+tests/qmGroundTrajectories/qmground
 #Emacs Temp files
 .#*
 
