@@ -237,7 +237,7 @@ class UserInput:
         self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
         self.n_steps_qmground = self.n_steps(self.qmground_run_time, self.time_step, self.n_qmground_runs)
         self.n_frames_qmground = int(self.n_steps_qmground / self.n_steps_to_print_qmground)
-        self.n_mcrd_frames_qmground = int(self.n_steps_qmground / self.n_steps_to_print_qmgmcrd)
+        self.n_mcrd_frames_qmground = int(self.n_steps_qmground / self.n_steps_print_qmgmcrd)
         self.n_steps_exc = self.n_steps(self.exc_run_time, self.time_step, self.n_exc_runs)
 
 
