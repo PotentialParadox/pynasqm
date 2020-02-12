@@ -50,7 +50,7 @@ def str2bool(v):
 
 def mkdir(directory):
     if not os.path.exists(directory):
-        os.mkdir(directory)
+        os.makedirs(directory)
 
 def touch(output_path):
     subprocess.call(['touch', output_path])
