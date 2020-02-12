@@ -1,0 +1,103 @@
+&qmmm
+  qm_theory='AM1',
+  scfconv=1.0000E-16,
+  verbosity=1,
+  printcharges=1,
+  printdipole=1,
+  printbondorders=0,
+  density_predict=0,
+  itrmax=300,
+  diag_routine=1,
+  exst_method=2,
+  dav_guess=0,
+  ftol0=1.0000E-05,
+  ftol1=1.0000E-06,
+  dav_maxcyc=200,
+  calcxdens=.false.,
+  maxcyc=0,
+  ntpr=1,
+  grms_tol=1.0000E-02,
+  solvent_model=0,
+  potential_type=1,
+  ceps=10,
+  linmixparam=1,
+  cosmo_scf_ftol=1.0000E-05,
+  EF=0,
+  Ex=0.0000E+00,
+  Ez=0.0000E+00,
+  Ey=0.0000E+00,
+  onsager_radius=2,
+&endqmmm
+
+&moldyn
+  rnd_seed=1,
+  bo_dynamics_flag=1,
+  exc_state_init=0,
+  n_exc_states_propagate=5,
+  time_init=0.0,
+  time_step=0.5,
+  n_class_steps=20000,
+  n_quant_steps=0,
+  moldyn_deriv_flag=1,
+  num_deriv_step=1.d-5,
+  rk_tolerance=1.d-7,
+  quant_step_reduction_factor=2.5d-2,
+  decoher_type=2,
+  decoher_e0=0.d0,
+  decoher_c=0.d0,
+  dotrivial=1,
+  therm_type=0,
+  therm_temperature=10.d0,
+  therm_friction=2.d0,
+  berendsen_relax_const=0.4d0,
+  heating=0,
+  heating_steps_per_degree=100,
+  verbosity=1,
+  out_data_steps=10,
+  out_coords_steps=1,
+  out_data_cube=0,
+  out_count_init=0,
+&endmoldyn
+
+
+&coord
+    6   1.7119141   0.0547752  -0.8975648
+    6   0.5372086   0.7316780  -1.2476969
+    6  -0.6593514   0.6725654  -0.5222330
+    6  -0.6718865  -0.0475960   0.7344599
+    6   0.6125069  -0.6630364   1.0842105
+    6   1.7882346  -0.5885849   0.2911367
+    1   2.6021575   0.2198372  -1.5668058
+    1   0.5982932   1.1871299  -2.3207292
+    1  -1.6196480   1.2315445  -0.8701334
+    1   0.6847114  -1.2315445   2.0064784
+    1   2.6770515  -1.1285706   0.6200667
+    7  -1.7694550  -0.2052346   1.5531321
+    1  -2.6770515  -0.0498810   1.2007914
+    1  -1.6581002  -0.8659973   2.3207292
+&endcoord
+
+&veloc
+  -3.4910166538    1.304471808    2.434675388
+   8.3013278268    0.377632029    2.329719402
+  -6.7749947341   0.1837603013   -10.74065218
+  -2.4008325169    1.083741385    3.373298649
+   5.5714706700   -7.446234234    5.299003969
+  -0.8294592511   -1.245410844    -3.17118848
+  -4.7772349945    23.10264937   0.8432406291
+  10.1489133249   -8.332513922   -3.865211964
+ -22.7231291035    4.303244163     26.0445728
+  -9.4758530998    15.87132692   -1.942459949
+ -15.1389530783    5.952919772   -2.865651881
+   4.9577434820    2.072938018    -1.15465982
+ -26.3876656967   -17.77628295    20.83611936
+  -5.0242504609    16.49373034   -17.34399614
+&endveloc
+
+&coeff
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+&endcoeff
