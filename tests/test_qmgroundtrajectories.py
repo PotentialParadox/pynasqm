@@ -53,7 +53,7 @@ def userInput():
 def inputCeon():
     return InputCeon(amber_input='md_qmmm_amb.in', directory='./')
 
-def test_absCreateRestarts(userInput, inputCeon):
+def test_qmgroundCreateRestarts(userInput, inputCeon):
     '''
     Create the restart files for the initial trajectory part of two trajectories
     '''
