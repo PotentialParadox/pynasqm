@@ -232,17 +232,17 @@ class UserInput:
         # Derived Values
         #################################
         self.restart_attempt = 0
-        self.n_steps_gs = self.n_steps(self.ground_state_run_time, self.time_step,
+        self.n_steps_per_run_gs = self.n_steps_per_run(self.ground_state_run_time, self.time_step,
                                        self.n_ground_runs)
-        self.n_mcrd_frames_gs = int(self.n_steps_gs / self.n_steps_print_gmcrd)
-        self.n_steps_qmground = self.n_steps(self.qmground_run_time, self.time_step, self.n_qmground_runs)
-        self.n_frames_qmground = int(self.n_steps_qmground / self.n_steps_to_print_qmground)
-        self.n_mcrd_frames_qmground = int(self.n_steps_qmground / self.n_steps_print_qmgmcrd)
-        self.n_steps_exc = self.n_steps(self.exc_run_time, self.time_step, self.n_exc_runs)
+        self.n_mcrd_frames_per_run_gs = int(self.n_steps_per_run_gs / self.n_steps_print_gmcrd)
+        self.n_steps_per_run_qmground = self.n_steps_per_run(self.qmground_run_time, self.time_step, self.n_qmground_runs)
+        self.n_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_to_print_qmground)
+        self.n_mcrd_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_print_qmgmcrd)
+        self.n_steps_per_run_exc = self.n_steps_per_run(self.exc_run_time, self.time_step, self.n_exc_runs)
 
 
     @staticmethod
-    def n_steps(run_time, time_step, n_runs):
+    def n_steps_per_run(run_time, time_step, n_runs):
         return int(run_time / (time_step * n_runs) * 1000)
 
     def adjust_run_time(self, run_time, time_step, n_runs, n_print_trajs, n_trajs):

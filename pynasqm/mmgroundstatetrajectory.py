@@ -14,7 +14,7 @@ def setInput(md_qmmm_amb, user_input):
     restart = user_input.restart_attempt
     destination_file = "mmground/restart_{}/nasqm_ground_r{}.in".format(restart, restart)
     input_ceon = md_qmmm_amb.copy("./", destination_file, True)
-    input_ceon.set_n_steps(user_input.n_steps_gs)
+    input_ceon.set_n_steps(user_input.n_steps_per_run_gs)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
     input_ceon.set_exc_state_propagate(0)

@@ -16,13 +16,13 @@ class QmGroundTrajectories(Trajectories):
         self._child_root = 'nasqm_qmground_'
         self._job_suffix = 'qmground'
         self._parent_restart_root = 'ground_snap'
-        self._number_frames_in_parent = user_input.n_mcrd_frames_gs * user_input.n_ground_runs
+        self._number_frames_in_parent = user_input.n_mcrd_frames_per_run_gs * user_input.n_ground_runs
         self._amber_restart = False
 
     def _set_initial_input(self):
         input_ceon = self._input_ceons[0]
         user_input = self._user_input
-        input_ceon.set_n_steps(user_input.n_steps_qmground)
+        input_ceon.set_n_steps(user_input.n_steps_per_run_qmground)
         input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_qmgmcrd)
         input_ceon.set_quantum(True)
         input_ceon.set_excited_state(0, user_input.n_qmground_exc)

@@ -31,7 +31,7 @@ class FluTrajectories(Trajectories):
         input_ceon = self._input_ceons[0]
         user_input = self._user_input
         input_ceon.set_quantum(True)
-        input_ceon.set_n_steps(user_input.n_steps_exc)
+        input_ceon.set_n_steps(user_input.n_steps_per_run_exc)
         input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
         input_ceon.set_excited_state(user_input.exc_state_init_ex_param,
                                      user_input.n_exc_states_propagate_ex_param)
