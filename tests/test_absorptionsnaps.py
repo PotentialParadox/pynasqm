@@ -38,7 +38,7 @@ def userInput():
     user_input.n_steps_qmground = 20
     user_input.n_steps_print_qmgmcrd = 2
     user_input.n_steps_to_print_qmground = 1
-    user_input.time_step = 0.05
+    user_input.time_step = 0.5 #fs
     user_input.n_snapshots_qmground = 4
     user_input.n_mcrd_frames_per_run_qmground = 5
     user_input.n_qmground_runs = 2
@@ -54,14 +54,27 @@ def test_absCreateRestarts(userInput, inputCeon):
     '''
     Create the restart files for the initial trajectory part of two trajectories
     '''
-    userInput.restart_attempt = 0
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
     abs_traj.create_restarts_from_parent()
     if not os.path.isfile("abs/traj_1/1/snap_1_for_absorption_t1.rst"):
         raise AssertionError("AbsorptionSnaps did not create snap_1_for_absorption_t1.rst")
     if not os.path.isfile("abs/traj_2/1/snap_1_for_absorption_t2.rst"):
         raise AssertionError("AbsorptionSnaps did not create snap_2_for_absorption_t2.rst")
-    subprocess.run(['rm', '-rf', 'absorption', './convert_to_crd.out', './convert_to_crd.out'])
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+
+def test_absTimeDelay(userInput, inputCeon):
+    '''
+    Only create snapshots after the time delay
+    '''
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    userInput.absorption_time_delay=5 #fs
+    userInput.restart_attempt = 0
+    abs_traj = AbsorptionSnaps(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
+        raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
 
 # def test_qmgroundInputFileCopying(userInput, inputCeon):
 #     '''
