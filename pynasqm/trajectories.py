@@ -265,6 +265,8 @@ class Trajectories(ABC):
 def combine_trajectories(suffix, n_trajs, n_runs):
     prmtop = "m1.prmtop"
     print ("-------- Combining Trajectories --------")
+    if not os.path.isfile("m1.prmtop"):
+        raise RuntimeError("m1.prmtop file not found while attempting to combine trajectories")
     for traj_id in range(1, n_trajs+1):
         combined = "combined" if iscombined(suffix, traj_id) else "uncombined"
         completed = "completed" if iscompleted(suffix, traj_id, n_runs) else "uncompleted"
