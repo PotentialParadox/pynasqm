@@ -74,9 +74,7 @@ class UserInput:
             self.n_steps_print_gmcrd = 100
         # Change here how often you want to print the ground state trajectory
         self.n_steps_to_print_gs = int(data["n_steps_to_print_gs"])
-        # Change here the number of snapshots you wish to take
-        # from the initial ground state trajectory to run the
-        # further ground state dynamics
+        # Change here the number of further qm ground state trajectories
         self.n_snapshots_qmground = int(data["n_snapshots_qmground"])
         # Change here the runtime of the initial ground state MD
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
@@ -106,21 +104,7 @@ class UserInput:
             self.n_steps_print_qmgmcrd = int(data["n_steps_to_print_qmgmcrd"])
         except KeyError:
             self.n_steps_print_qmgmcrd = 0
-        # Do you want to collect the data from the qmgroundorption calculations?
-        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
-        # Some time will be needed for the molecule to equilibrate
-        # from jumping from MM to QM.
-        # We don't want to include this data in the calculation
-        # of the fluorescence. We therefore set a time delay.
-        try:
-            self.absorption_time_delay = float(data["absorption_time_delay"]) # fs
-        except KeyError:
-            print("Absorption time delay wasn't given defaulting to 0 ps")
-            self.qmground_time_delay = 0
-        # Change here the runtime for the the trajectories
-        # used to create calculated the qmgroundorption
-        # Number of snapshots is negligible for adjustment because exc will use final snapshot
-        # and is set to 1, if qmground runtime is not equal 0 we want to make it reasonable to work with the other inputs
+        # Change here the runtime for the qmground trajectories
         self.qmground_run_time = float(data["qmground_run_time"]) # ps
         if self.qmground_run_time != 0 and self.n_steps_print_qmgmcrd != 0:
             self.qmground_run_time = self.adjust_run_time(self.qmground_run_time,
@@ -128,6 +112,23 @@ class UserInput:
                                                      self.n_qmground_runs,
                                                      self.n_steps_print_qmgmcrd,
                                                      1)
+
+        #################################
+        # Absorption Snapshots
+        #################################
+        # Do you want to run the absorption snapshots
+        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_snapshots"])
+        # Some time will be needed for the molecule to equilibrate
+        # from jumping from MM to QM.
+        # We don't want to include this data in the calculation
+        # of the absorption. We therefore set a time delay.
+        try:
+            self.absorption_time_delay = float(data["absorption_time_delay"]) # fs
+        except KeyError:
+            print("Absorption time delay wasn't given defaulting to 0 ps")
+            self.absorption_time_delay = 0
+        # Do you want to collect the data from the qmgroundorption calculations?
+        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
 
         #################################
         # Pulse Pump Snapshots
