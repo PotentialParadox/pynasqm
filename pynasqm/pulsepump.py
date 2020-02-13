@@ -54,3 +54,6 @@ class PulsePump(FluTrajectories):
             inputceons.append(self._input_ceons[0].copy(directory, file_name))
         inputceons = self.set_nexmd_seed(inputceons)
         self._input_ceons = inputceons
+
+    def _update_nmr_info(self):
+        pass

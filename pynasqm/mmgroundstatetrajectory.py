@@ -17,7 +17,7 @@ def setInput(md_qmmm_amb, user_input):
     input_ceon.set_n_steps(user_input.n_steps_per_run_gs)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_gmcrd)
     input_ceon.set_quantum(False)
-    input_ceon.set_exc_state_propagate(0)
+    input_ceon.set_excited_state(0, 0)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_gs)
     input_ceon.set_exc_state_init(0)
     input_ceon.set_verbosity(0)
