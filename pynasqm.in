@@ -34,7 +34,7 @@
     "constant_value": "1",
 # Are you performing tully surface hopping?
     "is_tully": "False",
-# Change here the time step, in ps, that will be shared by
+# Change here the time step, in fs, that will be shared by
 # each trajectory
     "time_step": "0.5",
 ############################################################

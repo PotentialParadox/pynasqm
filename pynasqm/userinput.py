@@ -125,7 +125,7 @@ class UserInput:
         try:
             self.absorption_time_delay = float(data["absorption_time_delay"]) # fs
         except KeyError:
-            print("Absorption time delay wasn't given defaulting to 0 ps")
+            print("Absorption time delay wasn't given defaulting to 0 fs")
             self.absorption_time_delay = 0
         # Do you want to collect the data from the qmgroundorption calculations?
         self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_collection"])
