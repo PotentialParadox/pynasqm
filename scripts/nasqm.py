@@ -13,7 +13,6 @@ from pynasqm.userinput import UserInput
 from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.pulsepump import PulsePump
-from pynasqm.trajectories import combine_trajectories
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
 from pynasqm.sed import sed_inplace, sed_global
@@ -129,8 +128,6 @@ def run_absorption_collection(user_input):
     Parse the output data from amber for absorption energies and create a spectra_abs.input
     file
     '''
-    print("!!!!!!!!!!!!!!!!!!! Combining Absorbance !!!!!!!!!!!!!!!!!!!")
-    combine_trajectories("abs", user_input.n_snapshots_gs, user_input.n_abs_runs)
     print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
     write_spectra_abs_input(user_input)
     energies, strengths = get_energies_and_strenghts('spectra_abs.input')
