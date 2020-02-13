@@ -168,14 +168,14 @@ class Trajectories(ABC):
             return ["m1.prmtop"]
         return ["m1.prmtop"] * self._number_trajectories
 
-    def traj_indexes(self):
+    def traj_indices(self):
         return range(1, self._number_trajectories+1)
 
     def _output_directories(self):
         restart = self._user_input.restart_attempt
         job = self._job_suffix
         return ["{}/traj_{}/restart_{}".format(job, traj, restart)
-                for traj in self.traj_indexes()]
+                for traj in self.traj_indices()]
 
     def create_amber(self):
         amber = Amber()

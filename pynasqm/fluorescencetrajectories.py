@@ -60,20 +60,20 @@ class FluTrajectories(Trajectories):
             self.copy_nmr_from_qmground()
 
     def copy_nmr_from_qmground(self):
-        source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
-        output_files = ["flu/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indexes()]
+        source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
+        output_files = ["flu/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
         copy_files(source_files, output_files)
-        source_files = ["qmground/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indexes()]
-        output_files = ["flu/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indexes()]
+        source_files = ["qmground/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
+        output_files = ["flu/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
         copy_files(source_files, output_files)
 
     def copy_restarts_from_qmground(self, override):
         self.test_for_qmground()
         r = self._user_input.n_qmground_runs - 1
         source_files = ["qmground/traj_{}/restart_{}/snap_for_qmground_t{}_r{}.rst".format(t, r, t, r+1)
-                        for t in self.traj_indexes()]
+                        for t in self.traj_indices()]
         output_files = ["{1}/traj_{0}/restart_0/snap_for_{1}_t{0}_r0.rst".format(t, self._job_suffix)
-                        for t in self.traj_indexes()]
+                        for t in self.traj_indices()]
         copy_files(source_files, output_files, force=override)
 
 
@@ -103,7 +103,7 @@ class FluTrajectories(Trajectories):
 
     def get_sm_states(self):
         pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/muab.out".format(traj)
-                              for traj in self.traj_indexes()]
+                              for traj in self.traj_indices()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         print("PulsePump Sm States:")
