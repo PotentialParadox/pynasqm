@@ -124,8 +124,9 @@ class Trajectories(ABC):
     def _check_trajins(trajins):
         for trajin in trajins:
             if not os.path.isfile(trajin):
-                raise RuntimeError("{} was not found, make sure you ran the previous step: \n"\
-                                   "ground_state->absorption->fluorescence".format(trajin))
+                raise RuntimeError(f"{trajin} was not found, make sure you ran the previous step: \n"\
+                                   f"mm_ground_state ->  qm_ground_state ->  absorption -> excited_state -> fluorescence\n"\
+                                   f"                                    -> pulse_pump \n")
 
     def _get_list_restricted_atoms(self, parmtop, trajins, closest_outputs):
         center_mask = self._user_input.mask_for_center
