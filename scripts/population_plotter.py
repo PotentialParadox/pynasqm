@@ -7,6 +7,7 @@ import sys
 from os import path
 import argparse
 import functools
+import itertools
 from collections import namedtuple
 
 def parser():
@@ -21,9 +22,9 @@ def parser():
     return parser.parse_args()
 
 def filter_completed(data):
-    # return data
-    # max_length = max([len(d[0]) for d in data])
-    return [d for d in data if len(d[0]) == 1000]
+    (data1, data2) = itertools.tee(data)
+    max_length = max([len(d[0]) for d in data1])
+    return [d for d in data2 if len(d[0]) == max_length]
 
 def muab_line(line):
     MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
@@ -141,6 +142,8 @@ def filter_pump_pulse(state_data, muab_data, restraints):
 def main():
     args = parser()
     data = load_data_from_files(args.files, args.muab_files)
+    print(data)
+    exit()
     coeff_data = [d.coeff for d in data]
     muab_data = [d.muab for d in data]
     state_data = get_states(coeff_data)
