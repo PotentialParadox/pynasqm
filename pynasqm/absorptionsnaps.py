@@ -19,13 +19,13 @@ class AbsorptionSnaps(Trajectories):
         self._job_suffix = 'abs'
         self._parent_restart_root = 'nasqm_qmground'
         self._number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmground * user_input.n_qmground_runs
-        self._n_snapshots_per_trajectory = self._number_frames_in_parent
+        self._n_snapshots_per_trajectory = self.snaps_per_trajectory()
         self._amber_restart = False
 
     def snaps_per_trajectory(self):
         n_frames = self._number_frames_in_parent
         run_time = self._user_input.qmground_run_time
-        time_delay = self._user_input.absorption_time_delay
+        time_delay = self._user_input.absorption_time_delay/1000
         return int(n_frames * ( 1 - time_delay/run_time))
 
     def _set_initial_input(self):
