@@ -31,8 +31,8 @@ class AbsorptionSnaps(Trajectories):
     def _set_initial_input(self):
         input_ceon = self._input_ceons[0]
         user_input = self._user_input
-        input_ceon.set_n_steps(user_input.n_steps_abs)
-        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_qmgmcrd)
+        input_ceon.set_n_steps(0)
+        input_ceon.set_n_steps_to_mcrd(0)
         input_ceon.set_quantum(True)
         input_ceon.set_excited_state(0, user_input.n_abs_exc)
         input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)

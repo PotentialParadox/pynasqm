@@ -36,13 +36,13 @@ def userInput():
     user_input.email = "dtracy.uf@gmail.com"
     user_input.email_options = 2
     user_input.n_steps_qmground = 20
-    user_input.qmground_run_time = 0.01
+    user_input.qmground_run_time = 0.01 #ps
     user_input.n_steps_print_qmgmcrd = 2
     user_input.n_steps_to_print_qmground = 1
     user_input.time_step = 0.5 #fs
     user_input.n_snapshots_qmground = 4
     user_input.n_mcrd_frames_per_run_qmground = 5
-    userInput.absorption_time_delay=5 #fs
+    user_input.absorption_time_delay=5 #fs
     user_input.n_qmground_runs = 2
     user_input.restart_attempt = 0
     return user_input
@@ -52,32 +52,32 @@ def inputCeon():
     return InputCeon(amber_input='md_qmmm_amb.in', directory='./')
 
 
-def test_absCreateRestarts(userInput, inputCeon):
-    '''
-    Create the restart files for the initial trajectory part of two trajectories
-    '''
-    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
-    userInput.absorption_time_delay=0 #fs
-    abs_traj = AbsorptionSnaps(userInput, inputCeon)
-    abs_traj.create_restarts_from_parent()
-    if not os.path.isfile("abs/traj_1/1/snap_1_for_absorption_t1.rst"):
-        raise AssertionError("AbsorptionSnaps did not create snap_1_for_absorption_t1.rst")
-    if not os.path.isfile("abs/traj_2/1/snap_1_for_absorption_t2.rst"):
-        raise AssertionError("AbsorptionSnaps did not create snap_2_for_absorption_t2.rst")
-    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
-
-# def test_absTimeDelay(userInput, inputCeon):
+# def test_absCreateRestarts(userInput, inputCeon):
 #     '''
-#     Only create snapshots after the time delay
+#     Create the restart files for the initial trajectory part of two trajectories
 #     '''
 #     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
-#     userInput.absorption_time_delay=5 #fs
-#     userInput.restart_attempt = 0
+#     userInput.absorption_time_delay=0 #fs
 #     abs_traj = AbsorptionSnaps(userInput, inputCeon)
 #     abs_traj.create_restarts_from_parent()
-#     if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
-#         raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
+#     if not os.path.isfile("abs/traj_1/1/snap_1_for_absorption_t1.rst"):
+#         raise AssertionError("AbsorptionSnaps did not create snap_1_for_absorption_t1.rst")
+#     if not os.path.isfile("abs/traj_2/1/snap_1_for_absorption_t2.rst"):
+#         raise AssertionError("AbsorptionSnaps did not create snap_2_for_absorption_t2.rst")
 #     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+
+def test_absTimeDelay(userInput, inputCeon):
+    '''
+    Only create snapshots after the time delay
+    '''
+    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    userInput.absorption_time_delay=5 #fs
+    userInput.restart_attempt = 0
+    abs_traj = AbsorptionSnaps(userInput, inputCeon)
+    abs_traj.create_restarts_from_parent()
+    if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
+        raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
+    # subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absInputFileCopying(userInput, inputCeon):
     '''
@@ -88,6 +88,7 @@ def test_absInputFileCopying(userInput, inputCeon):
     abs_traj.create_inputceon_copies()
     if not os.path.isfile("abs/traj_1/1/nasqm_abs_t1_1.in"):
         raise AssertionError("AbsorptionSnaps did not create nasqm_abs_t1_1.in")
+    # subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absPrepareDynamics(userInput, inputCeon):
     '''
@@ -95,6 +96,7 @@ def test_absPrepareDynamics(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     userInput.is_hpc = True
+    userInput.absorption_time_delay=5 #fs
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
     _, slurm_file = abs_traj.prepareScript()
     answer = open("abs_slurm_attempt_test.sbatch").read()
