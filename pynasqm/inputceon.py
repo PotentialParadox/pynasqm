@@ -61,24 +61,24 @@ class InputCeon:
         Set the number of steps between print outs
         '''
         if is_quantum:
-            sed_inplace(self.amber_input, r'ifqnt=\s*\d*', 'ifqnt=1')
+            sed_inplace(self.amber_input, r'ifqnt=.*', 'ifqnt=1,')
         else:
-            sed_inplace(self.amber_input, r'ifqnt=\s*\d*', 'ifqnt=0')
+            sed_inplace(self.amber_input, r'ifqnt=.*', 'ifqnt=0,')
 
     def set_n_steps_to_print(self, n_steps_to_print):
         '''
         Set the number of steps between print outs
         '''
         sed_inplace('input.ceon', r'out_data_steps=\d*', 'out_data_steps=' + str(n_steps_to_print))
-        sed_inplace(self.amber_input, r'ntpr=\s*\d*', 'ntpr=' + str(n_steps_to_print))
+        sed_inplace(self.amber_input, r'ntpr=.*', f"ntpr={n_steps_to_print},")
 
     def set_n_steps_to_mcrd(self, n_steps_to_print):
         '''
         Set the number of steps between print outs
         '''
-        sed_inplace(self.amber_input, r'ntwx=\s*\d*', 'ntwx=' + str(n_steps_to_print))
+        sed_inplace(self.amber_input, r'ntwx=.*', f"ntwx={n_steps_to_print},")
         if n_steps_to_print == 0:
-            sed_inplace(self.amber_input, r'ntwv=\s*\d*', 'ntwv=0')
+            sed_inplace(self.amber_input, r'ntwv=.*', 'ntwv=0,')
 
     def write_log(self):
         '''
