@@ -117,7 +117,8 @@ class UserInput:
         # Absorption Snapshots
         #################################
         # Do you want to run the absorption snapshots
-        self.run_absorption_collection = pynasqm.utils.str2bool(data["run_absorption_snapshots"])
+        self.run_absorption_snapshots = pynasqm.utils.str2bool(data["run_absorption_snapshots"])
+        self.n_abs_exc = int(data["n_abs_exc"])
         # Some time will be needed for the molecule to equilibrate
         # from jumping from MM to QM.
         # We don't want to include this data in the calculation
