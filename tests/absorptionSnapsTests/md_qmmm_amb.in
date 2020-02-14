@@ -32,4 +32,5 @@
   printdipole=1,
   qm_ewald=0,
   qm_pme=0,
+  nae=1,
  /
