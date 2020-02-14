@@ -22,6 +22,13 @@ skip_flag_check = "if test -f input.ceon; then\n"\
     "    fi\n"\
     "fi\n"
 
+exports = "source ~/myapps/load_exports\n" \
+    "module load intel/2017\n" \
+    "source ~/myapps/load_boost\n" \
+    "source /ufrc/roitberg/dtracy/amber/amber.sh\n\n" \
+    "export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}\n\n" \
+    "ID=${SLURM_ARRAY_TASK_ID}\n"
+
 def build_trajectory_command(directory, amber):
     '''
     Returns the command for the slurm script
@@ -30,17 +37,13 @@ def build_trajectory_command(directory, amber):
     outputfile = amber.output_roots[0]
     startfile = amber.coordinate_files[0]
     restartfile = amber.restart_files[0]
-    command = "source ~/myapps/load_exports\n" \
-              "module load intel/2017\n" \
-              "source ~/myapps/load_boost\n" \
-              "source /ufrc/roitberg/dtracy/amber/amber.sh\n\n" \
-              "export OMP_NUM_THREADS=${{SLURM_CPUS_PER_TASK}}\n\n" \
-              "ID=${{SLURM_ARRAY_TASK_ID}}\n"\
-              "cd {0}\n"\
-              "{5}"\
-              "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc\n"\
-              "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile, skip_flag_check)
+    command = exports
+    command += "cd {0}\n"\
+        "{5}"\
+        "$AMBERHOME/bin/sander -O -i {1}.in -o {2}.out -c {3} -p m1.prmtop -r {4} -x {2}.nc\n"\
+        "cd ../../..\n".format(directory, inputfile, outputfile, startfile, restartfile, skip_flag_check)
     return command
+
 
 def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
     '''
@@ -49,6 +52,44 @@ def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
     slurm_header = create_slurm_header(user_input)
     slurm_script = slurm.Slurm(slurm_header)
     command = build_trajectory_command(directory, amber)
+    return slurm_script.create_slurm_script(command, title, n_trajectories)
+
+def build_snap_command(directory, amber, n_snaps):
+    '''
+    Returns the command for the slurm script
+    '''
+    inputfile = amber.input_roots[0]
+    outputfile = amber.output_roots[0]
+    startfile = amber.coordinate_files[0]
+    restartfile = amber.restart_files[0]
+    command = exports
+    command += f""\
+        f"for i in {{1..{n_snaps}}};do\n"\
+        f"    cd abs/traj_${{ID}}/${{i}}\n"\
+        f"    if test -f input.ceon; then\n"\
+        f"        init_state=`grep \"exc_state_init.-\" input.ceon`\n"\
+        f"        if [ \"$init_state\" != \"\" ];then\n"\
+        f"            exit\n"\
+        f"        fi\n"\
+        f"    fi\n"
+    command += f"\n"\
+        f"    $AMBERHOME/bin/sander -O\\\n"\
+        f"    -i {inputfile}\\\n"\
+        f"    -o {outputfile}\\\n"\
+        f"    -c {startfile}\\\n"\
+        f"    -p m1.prmtop\n"
+    command += f"\n"\
+        f"    cd ../../..\n"\
+        f"done\n"
+    return command
+
+def slurm_snap_files(user_input, amber, title, n_trajectories, n_snaps_trajectory, directory):
+    '''
+    Run multiple sander trajectories over hpc
+    '''
+    slurm_header = create_slurm_header(user_input)
+    slurm_script = slurm.Slurm(slurm_header)
+    command = build_snap_command(directory, amber, n_snaps_trajectory)
     return slurm_script.create_slurm_script(command, title, n_trajectories)
 
 def run_nasqm_slurm_file(slurm_file):

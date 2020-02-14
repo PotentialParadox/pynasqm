@@ -56,7 +56,7 @@ class Trajectories(ABC):
         attempt = self._user_input.restart_attempt
         job = self._job_suffix
         mkdir("{}".format(job))
-        for index in range(1, self._number_trajectories+1):
+        for index in self.traj_indices():
             file_name = "{}t{}_r{}.in".format(self._child_root, index, attempt)
             mkdir("{}/traj_{}".format(job, index))
             mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))

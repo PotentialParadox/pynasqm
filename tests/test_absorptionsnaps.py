@@ -36,11 +36,13 @@ def userInput():
     user_input.email = "dtracy.uf@gmail.com"
     user_input.email_options = 2
     user_input.n_steps_qmground = 20
+    user_input.qmground_run_time = 0.01
     user_input.n_steps_print_qmgmcrd = 2
     user_input.n_steps_to_print_qmground = 1
     user_input.time_step = 0.5 #fs
     user_input.n_snapshots_qmground = 4
     user_input.n_mcrd_frames_per_run_qmground = 5
+    userInput.absorption_time_delay=5 #fs
     user_input.n_qmground_runs = 2
     user_input.restart_attempt = 0
     return user_input
@@ -55,6 +57,7 @@ def test_absCreateRestarts(userInput, inputCeon):
     Create the restart files for the initial trajectory part of two trajectories
     '''
     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    userInput.absorption_time_delay=0 #fs
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
     abs_traj.create_restarts_from_parent()
     if not os.path.isfile("abs/traj_1/1/snap_1_for_absorption_t1.rst"):
@@ -63,92 +66,41 @@ def test_absCreateRestarts(userInput, inputCeon):
         raise AssertionError("AbsorptionSnaps did not create snap_2_for_absorption_t2.rst")
     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
 
-def test_absTimeDelay(userInput, inputCeon):
+# def test_absTimeDelay(userInput, inputCeon):
+#     '''
+#     Only create snapshots after the time delay
+#     '''
+#     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+#     userInput.absorption_time_delay=5 #fs
+#     userInput.restart_attempt = 0
+#     abs_traj = AbsorptionSnaps(userInput, inputCeon)
+#     abs_traj.create_restarts_from_parent()
+#     if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
+#         raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
+#     subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+
+def test_absInputFileCopying(userInput, inputCeon):
     '''
-    Only create snapshots after the time delay
+    Create the input files for the intial part of 2 trajectories
     '''
-    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
-    userInput.absorption_time_delay=5 #fs
     userInput.restart_attempt = 0
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
-    abs_traj.create_restarts_from_parent()
-    if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
-        raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
-    subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    abs_traj.create_inputceon_copies()
+    if not os.path.isfile("abs/traj_1/1/nasqm_abs_t1_1.in"):
+        raise AssertionError("AbsorptionSnaps did not create nasqm_abs_t1_1.in")
 
-# def test_qmgroundInputFileCopying(userInput, inputCeon):
-#     '''
-#     Create the input files for the intial part of 2 trajectories
-#     '''
-#     userInput.restart_attempt = 0
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     qmground_traj.create_inputceon_copies()
-#     if not os.path.isfile("qmground/traj_1/restart_0/nasqm_qmground_t1_r0.in"):
-#         raise AssertionError("QmGroundTrajectories did not create nasqm_qmground_t1_r0.in")
-
-
-# def test_qmgroundCreateRestarts1(userInput, inputCeon):
-#     '''
-#     Create the input files for the first restart of one trajectories
-#     '''
-#     userInput.n_snapshots_gs = 1
-#     userInput.n_qmground_runs = 2
-#     userInput.restart_attempt = 1
-#     if not os.path.exists("qmground"):
-#         os.mkdir("qmground")
-#         os.mkdir("qmground/traj_1")
-#         os.mkdir("qmground/traj_1/restart_0")
-#     open("qmground/traj_1/restart_0/snap_for_qmground_t1_r1.rst", 'w').close()
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     qmground_traj.create_restarts_from_parent()
-#     if not os.path.isfile("qmground/traj_1/restart_1/snap_for_qmground_t1_r1.rst"):
-#         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t1_r1")
-#     if os.path.isfile("qmground/traj_2/restart_2/snap_for_qmground_t2_r2.rst"):
-#         raise AssertionError("QmGroundTrajectories created too many snaps")
-#     subprocess.run(['rm', '-rf', 'traj_1', './convert_to_crd.out', './convert_to_crd.out'])
-
-
-# def test_qmgroundCreateRestarts2(userInput, inputCeon):
-#     '''
-#     Create the input files for the first restart of one trajectories
-#     '''
-#     userInput.n_snapshots_gs = 2
-#     userInput.n_abs_runs = 2
-#     userInput.restart_attempt = 1
-#     if not os.path.exists("qmground"):
-#         os.mkdir("qmground")
-#         os.mkdir("qmground/traj_1")
-#         os.mkdir("qmground/traj_1/restart_0")
-#         os.mkdir("qmground/traj_2")
-#         os.mkdir("qmground/traj_2/restart_0")
-#     open("qmground/traj_1/restart_0/snap_for_qmground_t1_r1.rst", 'w').close()
-#     open("qmground/traj_2/restart_0/snap_for_qmground_t2_r1.rst", 'w').close()
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     qmground_traj.create_restarts_from_parent()
-#     if not os.path.isfile("qmground/traj_1/restart_1/snap_for_qmground_t1_r1.rst"):
-#         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t1_r1")
-#     if not os.path.isfile("qmground/traj_2/restart_1/snap_for_qmground_t2_r1.rst"):
-#         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t2_r1")
-#     if os.path.isdir("qmground/traj_3"):
-#         raise AssertionError("QmGroundTrajectories created too many trajectories")
-#     if os.path.isdir("qmground/traj_1/restart_2"):
-#         raise AssertionError("QmGroundTrajectories created too many restarts")
-#     subprocess.run(['rm', '-rf', 'abs'])
-
-
-# def test_qmGroundPrepareDynamics0(userInput, inputCeon):
-#     '''
-#     Prepare dynamics for the zeroth restart of two trajectories
-#     '''
-#     userInput.restart_attempt = 0
-#     userInput.is_hpc = True
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     _, slurm_file = qmground_traj.prepareScript()
-#     answer = open("1of2_slurm_attempt_test.sbatch").read()
-#     result = "\n".join((slurm_file.splitlines())[-10:])+"\n"
-#     open("failed0.txt", 'w').write(result)
-#     assert result == answer
-#     subprocess.run(['rm', 'failed_attempt.txt'])
+def test_absPrepareDynamics(userInput, inputCeon):
+    '''
+    Prepare dynamics for the snapshots for 1 trajectory
+    '''
+    userInput.restart_attempt = 0
+    userInput.is_hpc = True
+    abs_traj = AbsorptionSnaps(userInput, inputCeon)
+    _, slurm_file = abs_traj.prepareScript()
+    answer = open("abs_slurm_attempt_test.sbatch").read()
+    open("failed_attempt.txt", 'w').write(slurm_file)
+    assert slurm_file == answer
+    subprocess.run(['rm', 'failed_attempt.txt'])
 
 # def test_qmGroundPrepareDynamics1(userInput, inputCeon):
 #     '''
@@ -190,25 +142,4 @@ def test_absTimeDelay(userInput, inputCeon):
 #     if os.path.isdir("qmground/traj_1/restart_2"):
 #         raise AssertionError("QmGroundTrajectories created too many restarts")
 #     subprocess.run(['rm', '-rf', 'qmground'])
-
-
-# def test_nmr_update(userInput, inputCeon):
-#     '''Assure that the input files of each restart refer to the same nmr data as
-#     the original trajectory
-#     '''
-#     userInput.restart_attempt = 0
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     qmground_traj.gen_inputfiles()
-#     amb_input = open("qmground/traj_2/restart_0/nasqm_qmground_t2_r0.in").read()
-#     if "DUMPFREQ" not in amb_input:
-#         raise AssertionError("nasqm_qmground_t2_r0.in was not updated for nmr")
-#     subprocess.call(['rm', 'qmground/traj_2/nmr/rst_2.dist'])
-#     userInput.restart_attempt = 1
-#     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-#     qmground_traj.gen_inputfiles()
-#     amb_input = open("qmground/traj_2/restart_1/nasqm_qmground_t2_r1.in").read()
-#     if "DUMPFREQ" not in amb_input:
-#         raise AssertionError("nasqm_qmground_t2_r1.in was not updated for nmr")
-#     if os.path.isfile("qmground/traj_2/nmr/rst_2.dist"):
-#         raise AssertionError("qmground created new nmr data on restart")
 
