@@ -104,12 +104,20 @@ def manage_restart(job_id, user_input, restart_attempt):
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
 
+def title_print(label):
+    break_width = 80
+    offset = int(break_width/2) - int(len(label)/2)
+    break_line = "!"*break_width + "\n"
+    info_line = "!" + " "*offset + label + "\n"
+    print(break_line + info_line + break_line)
+
+
 def run_mm_ground_state_dynamics(md_qmmm_amb, user_input):
     '''
     Run the ground state trajectory that will be used to generate initial geometries
     for future calculations
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Running MM Ground-State Trajectory !!!!!!!!!!!!!!!!!!!!")
+    title_print("MM Ground-State Trajectory")
     groundStateDynamics(md_qmmm_amb, user_input)
     manage_restart(0, user_input, user_input.restart_attempt)
 
@@ -119,16 +127,24 @@ def run_qm_ground_state_trajectories(input_ceon, user_input):
     Now we want to take the original trajectory snapshots and run more trajectories
     using random velocities to make them different from each other
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Running QM Ground-State Trajectories !!!!!!!!!!!!!!!!!!!!")
+    title_print("QM Ground-State Trajectories")
     QmGroundTrajectories(user_input, input_ceon).run()
     manage_restart(1, user_input, user_input.restart_attempt)
+
+def run_absorption_snaps(input_ceon, user_input):
+    '''
+    Take snapshots from the qmground trajectories ignoring a time delay.
+    Run singlepoints on these snaphsots
+    '''
+    title_print("Absorption Snaps")
+    QmGroundTrajectories(user_input, input_ceon).run()
 
 def run_absorption_collection(user_input):
     '''
     Parse the output data from amber for absorption energies and create a spectra_abs.input
     file
     '''
-    print("!!!!!!!!!!!!!!!!!!!! Parsing Absorbance !!!!!!!!!!!!!!!!!!!!")
+    title_print("Absorption Parsing")
     write_spectra_abs_input(user_input)
     energies, strengths = get_energies_and_strenghts('spectra_abs.input')
     print_energies_and_strengths(energies, strengths)
