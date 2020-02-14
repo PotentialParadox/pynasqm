@@ -80,7 +80,6 @@ class AbsorptionSnaps(Trajectories):
         return n_frames - self._n_snapshots_per_trajectory
 
     def create_restarts_from_parent(self, override=True):
-        print(self._number_frames_in_parent)
         self._create_directories()
         self.start_from_qmground()
         job = self._job_suffix
