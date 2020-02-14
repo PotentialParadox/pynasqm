@@ -74,8 +74,8 @@ def build_snap_command(directory, amber, n_snaps):
         f"    fi\n"
     command += f"\n"\
         f"    $AMBERHOME/bin/sander -O\\\n"\
-        f"    -i {inputfile}\\\n"\
-        f"    -o {outputfile}\\\n"\
+        f"    -i {inputfile}.in\\\n"\
+        f"    -o {outputfile}.out\\\n"\
         f"    -c {startfile}\\\n"\
         f"    -p m1.prmtop\n"
     command += f"\n"\
