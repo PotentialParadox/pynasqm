@@ -35,7 +35,7 @@ class AbsorptionSnaps(Trajectories):
         input_ceon.set_n_steps_to_mcrd(0)
         input_ceon.set_quantum(True)
         input_ceon.set_excited_state(0, user_input.n_abs_exc)
-        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_abs)
+        input_ceon.set_n_steps_to_print(1)
         input_ceon.set_verbosity(1)
         input_ceon.set_time_step(user_input.time_step)
         input_ceon.set_random_velocities(False)
@@ -86,6 +86,11 @@ class AbsorptionSnaps(Trajectories):
         job = self._job_suffix
         mkdir("{}".format(job))
 
+    def prepareScript(self):
+        amber = self.create_amber()
+        slurm_files = self.create_slurm(amber)
+        return amber, slurm_files
+
     def create_amber(self):
         amber = Amber()
         roots = None
@@ -95,11 +100,13 @@ class AbsorptionSnaps(Trajectories):
             restart_files = [f"snap_${{i}}_for_absorption_t${{ID}}_back.rst"]
             amber.prmtop_files = ["m1.prmtop"]
         else:
-            roots = ["{}t{}_r{}".format(self._child_root, i, restart_attempt)
-                     for i in range(1, self._number_trajectories+1)]
-            restart_files = ["snap_for_{}_t{}_r{}.rst".format(self._job_suffix, i, restart_attempt+1)
-                             for i in range(1, self._number_trajectories+1)]
-            amber.prmtop_files = ["m1.prmtop"] * self._number_trajectories
+            roots = [f"nasqm_abs_t{traj}_{snap_id}"
+                     for traj in self.traj_indices()
+                     for snap_id in self.snap_indices()]
+            restart_files = [f"snap_{snap_id}_for_absorption_t{traj}_back.rst"
+                             for traj in self.traj_indices()
+                             for snap_id in self.snap_indices()]
+            amber.prmtop_files = ["m1.prmtop"] * len(roots)
         amber.input_roots = roots
         amber.output_roots = roots
         amber.restart_files = restart_files

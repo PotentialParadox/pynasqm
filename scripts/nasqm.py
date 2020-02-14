@@ -15,6 +15,7 @@ from pynasqm.fluorescencetrajectories import FluTrajectories
 from pynasqm.pulsepump import PulsePump
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
+from pynasqm.absorptionsnaps import AbsorptionSnaps
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.nasqmslurm import restart_nasqm
 import subprocess
@@ -27,7 +28,7 @@ def main():
     '''
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--job", help="0-ground, 1-abs, 2-flu", default=0, type=int)
+    parser.add_argument("--job", help="0-ground, 1-qmground, 2-qmexcited", default=0, type=int)
     parser.add_argument("--restart", help="restart attempt, 0 for first run", default=0, type=int)
     args = parser.parse_args()
 
@@ -36,7 +37,7 @@ def main():
 
     if args.restart != 0:
         if args.job > 0:
-            user_input.run_mm_ground_state_dynamics = False
+            user_input.run_ground_state_dynamics = False
         if args.job > 1:
             user_input.run_qm_ground_state_trajectories = False
             user_input.run_absorption_collection = False
@@ -50,6 +51,8 @@ def main():
         run_mm_ground_state_dynamics(input_ceon, user_input)
     if user_input.run_qmground_trajectories:
         run_qm_ground_state_trajectories(input_ceon, user_input)
+    if user_input.run_absorption_snapshots:
+        run_absorption_snaps(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
     if user_input.is_pulse_pump and user_input.run_pulse_pump_singlepoints:
@@ -100,7 +103,7 @@ def manage_restart(job_id, user_input, restart_attempt):
     runs = [user_input.n_ground_runs, user_input.n_qmground_runs, user_input.n_exc_runs]
     n_runs = runs[job_id]
     if should_restart(n_runs, restart_attempt):
-        print("restarting")
+        print("restarting with", job_id)
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
 
@@ -137,7 +140,7 @@ def run_absorption_snaps(input_ceon, user_input):
     Run singlepoints on these snaphsots
     '''
     title_print("Absorption Snaps")
-    QmGroundTrajectories(user_input, input_ceon).run()
+    AbsorptionSnaps(user_input, input_ceon).run()
 
 def run_absorption_collection(user_input):
     '''

@@ -73,6 +73,15 @@
 # Change here the number of states you wish to
 # calculate in the absorption singlpoint calculations
     "n_qmground_exc": "5",
+############################################################
+#                  Absorption
+############################################################
+# Do you want to run the single point snapshots from these
+# absorption
+    "run_absorption_snapshots": "False",
+# How many excited states do you want to include in the absorption
+# calculation
+    "n_abs_exc": "10",
 # Do you want to collect the data from the absorption calculations?
     "run_absorption_collection": "False",
 # Some time will be needed for the molecule to equilibrate
@@ -140,11 +149,5 @@
 # The amber mask to determine the center of your system
     "mask_for_center": ":1",
 # Number of solvents closest to mask to include in qm
-    "number_nearest_solvents": "0",
-############################################################
-#                  Deprecated
-############################################################
-# Do you want to run the single point snapshots from these
-# absorption
-    "run_absorption_snapshots": "False"
+    "number_nearest_solvents": "0"
 
