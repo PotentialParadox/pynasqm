@@ -12,7 +12,7 @@ from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
 from pynasqm.spectracollection import write_spectra_input
 from pynasqm.userinput import UserInput
 from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
-from pynasqm.fluorescencetrajectories import FluTrajectories
+from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 from pynasqm.pulsepump import PulsePump
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
@@ -168,7 +168,7 @@ def run_excited_state_trajectories(input_ceon, user_input):
     from those at the excited state
     '''
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
-    FluTrajectories(user_input, input_ceon).run()
+    QmExcitedStateTrajectories(user_input, input_ceon).run()
     manage_restart(2, user_input, user_input.restart_attempt)
 
 def run_fluorescence_collection(user_input):

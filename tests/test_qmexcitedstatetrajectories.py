@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.fluorescencetrajectories import FluTrajectories
+from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir, touch
 
@@ -13,7 +13,7 @@ def setup_module(module):
     '''
     Switch to test directory
     '''
-    os.chdir("tests/fluorescenceTrajectories")
+    os.chdir("tests/qmExcitedTrajectories")
 
 def teardown_module(module):
     '''
@@ -70,22 +70,22 @@ def test_fluCreateFromQmground(userInput, inputCeon):
     open("qmground/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
     open("qmground/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
     open("qmground/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
-    flu_traj = FluTrajectories(userInput, inputCeon)
+    flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
     override = False
     flu_traj.create_restarts_from_parent(override)
-    if not os.path.isfile("flu/traj_1/restart_0/snap_for_flu_t1_r0.rst"):
-        raise AssertionError("FluTrajectory did not create snap_for_flu_t1_r0.rst")
-    if not os.path.isfile("flu/traj_2/restart_0/snap_for_flu_t2_r0.rst"):
-        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r0.rst")
+    if not os.path.isfile("qmexcited/traj_1/restart_0/snap_for_qmexcited_t1_r0.rst"):
+        raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t1_r0.rst")
+    if not os.path.isfile("qmexcited/traj_2/restart_0/snap_for_qmexcited_t2_r0.rst"):
+        raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t2_r0.rst")
     if os.path.isdir("ground_snap.3"):
-        raise AssertionError("FluTrajectory created too many ground_snaps")
-    if os.path.isdir('"flu/traj_3'):
-        raise AssertionError("FluTrajectory created too many directories")
-    if open("flu/traj_1/nmr/rst_1.dist").read() != "rst_1":
-        raise AssertionError("FluTrajectory did not copy nmr data from qmground for traj 1")
-    if open("flu/traj_2/nmr/rst_2.dist").read() != "rst_2":
-        raise AssertionError("FluTrajectory did not copy nmr data from qmground for traj 2")
-    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
+        raise AssertionError("QmExcitedStateTrajectory created too many ground_snaps")
+    if os.path.isdir('"qmexcited/traj_3'):
+        raise AssertionError("QmExcitedStateTrajectory created too many directories")
+    if open("qmexcited/traj_1/nmr/rst_1.dist").read() != "rst_1":
+        raise AssertionError("QmExcitedStateTrajectory did not copy nmr data from qmground for traj 1")
+    if open("qmexcited/traj_2/nmr/rst_2.dist").read() != "rst_2":
+        raise AssertionError("QmExcitedStateTrajectory did not copy nmr data from qmground for traj 2")
+    subprocess.run(['rm', '-rf', 'qmexcited', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
 
 
 def test_fluCreateFromQmGroundFail(userInput, inputCeon):
@@ -106,48 +106,48 @@ def test_fluCreateFromQmGroundFail(userInput, inputCeon):
     open("qmground/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
     # Failed touch("qmground/traj_2/restart_1/snap_for_qmground_t1_r2.rst")
     touch("qmground/traj_2/restart_1/snap_for_qmground_t2_r2.rst")
-    flu_traj = FluTrajectories(userInput, inputCeon)
+    flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
     flu_traj.create_restarts_from_parent()
-    # if not os.path.isfile("flu/traj_1/restart_0/snap_for_flu_t1_r0.rst"):
-    #     raise AssertionError("FluTrajectory did not create a snap_for_flu_t1_r0.rst Dummy")
-    if not os.path.isfile("flu/traj_2/restart_0/snap_for_flu_t2_r0.rst"):
-        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r0.rst")
-    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
+    # if not os.path.isfile("qmexcited/traj_1/restart_0/snap_for_qmexcited_t1_r0.rst"):
+    #     raise AssertionError("QmExcitedStateTrajectory did not create a snap_for_qmexcited_t1_r0.rst Dummy")
+    if not os.path.isfile("qmexcited/traj_2/restart_0/snap_for_qmexcited_t2_r0.rst"):
+        raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t2_r0.rst")
+    subprocess.run(['rm', '-rf', 'qmexcited', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
 
 def test_fluCreateFromRestarts(userInput, inputCeon):
     '''
     Create the restart files for the second set of flu trajectories
     '''
     mkdir("flu")
-    mkdir("flu/traj_1")
-    mkdir("flu/traj_2")
-    mkdir("flu/traj_1/restart_0")
-    mkdir("flu/traj_2/restart_0")
-    mkdir("flu/traj_1/nmr")
-    mkdir("flu/traj_2/nmr")
-    touch("flu/traj_1/restart_0/snap_for_flu_t1_r1.rst")
-    touch("flu/traj_2/restart_0/snap_for_flu_t2_r1.rst")
-    open("flu/traj_1/nmr/rst_1.dist", 'w').write("rst_1")
-    open("flu/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
-    open("flu/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
-    open("flu/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
+    mkdir("qmexcited/traj_1")
+    mkdir("qmexcited/traj_2")
+    mkdir("qmexcited/traj_1/restart_0")
+    mkdir("qmexcited/traj_2/restart_0")
+    mkdir("qmexcited/traj_1/nmr")
+    mkdir("qmexcited/traj_2/nmr")
+    touch("qmexcited/traj_1/restart_0/snap_for_qmexcited_t1_r1.rst")
+    touch("qmexcited/traj_2/restart_0/snap_for_qmexcited_t2_r1.rst")
+    open("qmexcited/traj_1/nmr/rst_1.dist", 'w').write("rst_1")
+    open("qmexcited/traj_2/nmr/rst_2.dist", 'w').write("rst_2")
+    open("qmexcited/traj_1/nmr/closest_1.txt", 'w').write("rst_1")
+    open("qmexcited/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
     userInput.restart_attempt = 1
-    flu_traj = FluTrajectories(userInput, inputCeon)
+    flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
     override = False
     flu_traj.create_restarts_from_parent(override)
-    if not os.path.isfile("flu/traj_1/restart_1/snap_for_flu_t1_r1.rst"):
-        raise AssertionError("FluTrajectory did not create snap_for_flu_t1_r1.rst")
-    if not os.path.isfile("flu/traj_2/restart_1/snap_for_flu_t2_r1.rst"):
-        raise AssertionError("FluTrajectory did not create snap_for_flu_t2_r1.rst")
-    if "rst_1" not in open("flu/traj_1/nmr/rst_1.dist").read():
-        raise AssertionError("FluTrajectory updated nmr of traj_1 during the first restart")
-    if "rst_2" not in open("flu/traj_2/nmr/rst_2.dist").read():
-        raise AssertionError("FluTrajectory updated nmr of traj_2 during the first restart")
-    if "rst_1" not in open("flu/traj_1/nmr/closest_1.txt").read():
-        raise AssertionError("FluTrajectory updated nmr of traj_1 during the first restart")
-    if "rst_2" not in open("flu/traj_2/nmr/closest_2.txt").read():
-        raise AssertionError("FluTrajectory updated nmr of traj_2 during the first restart")
-    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
+    if not os.path.isfile("qmexcited/traj_1/restart_1/snap_for_qmexcited_t1_r1.rst"):
+        raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t1_r1.rst")
+    if not os.path.isfile("qmexcited/traj_2/restart_1/snap_for_qmexcited_t2_r1.rst"):
+        raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t2_r1.rst")
+    if "rst_1" not in open("qmexcited/traj_1/nmr/rst_1.dist").read():
+        raise AssertionError("QmExcitedStateTrajectory updated nmr of traj_1 during the first restart")
+    if "rst_2" not in open("qmexcited/traj_2/nmr/rst_2.dist").read():
+        raise AssertionError("QmExcitedStateTrajectory updated nmr of traj_2 during the first restart")
+    if "rst_1" not in open("qmexcited/traj_1/nmr/closest_1.txt").read():
+        raise AssertionError("QmExcitedStateTrajectory updated nmr of traj_1 during the first restart")
+    if "rst_2" not in open("qmexcited/traj_2/nmr/closest_2.txt").read():
+        raise AssertionError("QmExcitedStateTrajectory updated nmr of traj_2 during the first restart")
+    subprocess.run(['rm', '-rf', 'qmexcited', './convert_to_crd.out', './convert_to_crd.out', 'qmground'])
 
 
 def test_fluPrepareDynamics0(userInput, inputCeon):
@@ -155,7 +155,7 @@ def test_fluPrepareDynamics0(userInput, inputCeon):
     Prepare dynamics for the zeroth restart of two trajectories
     '''
     userInput.restart_attempt = 0
-    fluTraj = FluTrajectories(userInput, inputCeon)
+    fluTraj = QmExcitedStateTrajectories(userInput, inputCeon)
     _, slurm_file = fluTraj.prepareScript()
     result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("1of2_slurm_attempt_test.sbatch").read()
@@ -167,7 +167,7 @@ def test_fluPrepareDynamics1(userInput, inputCeon):
     Prepare dynamics for the first restart of two trajectories
     '''
     userInput.restart_attempt = 1
-    fluTraj = FluTrajectories(userInput, inputCeon)
+    fluTraj = QmExcitedStateTrajectories(userInput, inputCeon)
     _, slurm_file = fluTraj.prepareScript()
     result = "\n".join((slurm_file.splitlines())[-10:])
     answer = open("2of2_slurm_attempt_test.sbatch").read()

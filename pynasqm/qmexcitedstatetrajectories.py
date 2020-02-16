@@ -8,14 +8,14 @@ import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
 
-class FluTrajectories(Trajectories):
+class QmExcitedStateTrajectories(Trajectories):
 
     def __init__(self, user_input, input_ceon):
         self._user_input = user_input
         self._input_ceons = [input_ceon]
         self._number_trajectories = user_input.n_snapshots_ex
-        self._child_root = 'nasqm_flu_'
-        self._job_suffix = 'flu'
+        self._child_root = 'nasqm_qmexcited_'
+        self._job_suffix = 'qmexcited'
         self._parent_restart_root = 'nasqm_qmground_'
         self._amber_restart = True
 
@@ -61,10 +61,10 @@ class FluTrajectories(Trajectories):
 
     def copy_nmr_from_qmground(self):
         source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
-        output_files = ["flu/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
+        output_files = ["qmexcited/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
         copy_files(source_files, output_files)
         source_files = ["qmground/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
-        output_files = ["flu/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
+        output_files = ["qmexcited/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
         copy_files(source_files, output_files)
 
     def copy_restarts_from_qmground(self, override):
@@ -150,7 +150,7 @@ class FluTrajectories(Trajectories):
         return inputceons
 
     def _nmrdirs(self):
-        return ["flu/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
+        return ["qmexcited/traj_{}/nmr".format(i) for i in range(1, self._number_trajectories+1)]
 
     @staticmethod
     def is_atleast(min_value, test):
