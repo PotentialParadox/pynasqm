@@ -8,7 +8,8 @@ import argparse
 import time
 from pynasqm.inputceon import InputCeon
 from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
-                           write_spectra_abs_input, write_average_coeffs)
+                           write_average_coeffs)
+from pynasqm.spectracollection import write_spectra_input
 from pynasqm.userinput import UserInput
 from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
 from pynasqm.fluorescencetrajectories import FluTrajectories
@@ -148,7 +149,7 @@ def run_absorption_collection(user_input):
     file
     '''
     title_print("Absorption Parsing")
-    write_spectra_abs_input(user_input)
+    write_spectra_input(user_input, 'abs')
     energies, strengths = get_energies_and_strenghts('spectra_abs.input')
     print_energies_and_strengths(energies, strengths)
 
