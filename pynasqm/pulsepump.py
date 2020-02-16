@@ -14,7 +14,7 @@ class PulsePump(FluTrajectories):
         self._number_trajectories = user_input.n_snapshots_ex
         self._child_root = 'nasqm_pulse_pump_'
         self._job_suffix = 'pulse_pump'
-        self._parent_restart_root = 'nasqm_abs_'
+        self._parent_restart_root = 'nasqm_qmground_'
         self._amber_restart = True
 
     def _restart_name(self, index):
@@ -39,7 +39,7 @@ class PulsePump(FluTrajectories):
 
     def create_restarts_from_parent(self, override=False):
         self._create_directories()
-        self.start_from_abs(override)
+        self.start_from_qmground(override)
 
     def create_inputceon_copies(self):
         inputceons = []
