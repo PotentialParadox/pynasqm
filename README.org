@@ -470,6 +470,14 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
   sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
   #+END_EXAMPLE
 * Using Pynasqm for Multiple Trajectories
+** Installation
+Clone this repository to the directory of your choosing.
+#+BEGIN_EXAMPLE 
+git clone https://github.com/PotentialParadox/pynasqm.git
+cd pynasqm
+python setup install
+#+END_EXAMPLE
+** Usage
 Pynasqm is currently capable of automating the following actions
 - Single MM-Ground State Trajectory
 - QM-Ground State Trajectories originating from MM-Ground-State
