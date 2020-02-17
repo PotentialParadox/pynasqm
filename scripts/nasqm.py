@@ -6,6 +6,7 @@ You'll find the parameters to change in the file nasqm_user_input.py
 '''
 import argparse
 import time
+from pynasqm.initialize import initialize
 from pynasqm.inputceon import InputCeon
 from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
                            write_average_coeffs)
@@ -29,9 +30,20 @@ def main():
     '''
 
     parser = argparse.ArgumentParser()
+    parser.add_argument("--init", help="initialize the directory for nasqm", action="store_true")
     parser.add_argument("--job", help="0-ground, 1-qmground, 2-qmexcited", default=0, type=int)
     parser.add_argument("--restart", help="restart attempt, 0 for first run", default=0, type=int)
     args = parser.parse_args()
+
+    if args.init:
+        title_print('Initializing Directory')
+        print("Amber Input File: md_qmmm_amb.in")
+        print("NEXMD Input File: input.ceon")
+        print("PYNASQM Input File: pynasqm.in")
+        print("Please rename your coordinate file to m1_md2.rst")
+        print("Please rename your parmtop file to m1.prmtop")
+        initialize()
+        exit()
 
     user_input = UserInput()
     user_input.restart_attempt = args.restart
