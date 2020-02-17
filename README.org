@@ -198,7 +198,7 @@ section.
 AMBER prmtop files can be generated using tleap. Refer to the AMBER manual for
 this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
 
-* Create QM/MM System for SANDER-NEXMD                               :METHOD:
+* Creating a QM/MM System for SANDER-NEXMD                           :METHOD:
 1) Build your solute using either Avogadro or Gaussview
 2) Create pepi files for each using antechamber that came with AMBER for each of
    the following commands =$molecule=molecule name= 
@@ -469,3 +469,38 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
   #+BEGIN_EXAMPLE
   sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
   #+END_EXAMPLE
+* Using Pynasqm for Multiple Trajectories
+Pynasqm is currently capable of automating the following actions
+- Single MM-Ground State Trajectory
+- QM-Ground State Trajectories originating from MM-Ground-State
+- Absorption calculations using snapshots from the QM-Ground State Trajectories
+- PulsePump SinglePoint Calculations
+- QM-Excited State Trajectory
+  - Franck-Condon Excitations
+  - Pule Pump Simulations
+  - Capable of performing Non-Adiabatic using the isTully option
+
+Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
+AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
+Create a new directory with any name you'd like.
+Copy your prmtop and inpcrd file to that directory, renaming the files to 
+- m1.prmtop (prmtop file)
+- m1_md2.rst (restart file)
+You can initialize the other input files with
+#+BEGIN_EXAMPLE 
+nasqm.py --init
+#+END_EXAMPLE
+which will generate
+- pynasqm.in (pynasqm input file)
+- input.ceon (The NEXMD input file)
+- md_qmmm_amb.in (The AMBER input file)
+
+For the documentation for NEXMD, please refer to [[https://github.com/roitberg/nexmd][NEXMD-Git]]. For the AMBER input
+file, refer to [[https://ambermd.org/doc12/Amber19.pdf][AMBER-Manual]]. The pynasqm input file is written as a commented
+J-SON file. On lines other than the ones commented out, the file is white space
+sensitive. Any edits should be performed within the second quoted value on the
+line. Refer to the comments within the file for guidance on the inputs. Any
+further question can be referred to [[dtracy@ufl.edu][Dustin Tracy]]. The high performance computer
+section is designed to work with Slurm systems employing the slurm array
+feature.
+
