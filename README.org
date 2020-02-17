@@ -1,3 +1,203 @@
+* SANDER-NEXMD Installation 
+Installation of the SANDER-NEXMD installation will require the following as well
+as their dependencies:
+
+- NEXMD (Git Access) 
+- Amber (Git Access) 
+
+We also strongly encourage the use of the intel/2017 compiler w/ mkl. GNU is
+supported but users will have better performance with the intel compiler.
+
+First install NEXMD. Access to the NEXMD git is restricted. Please contact
+either Adrian Roitberg (roitberg@ufl.edu) or Sergei Tretiak (serg@lanl.gov) for
+permission.
+
+CD to your application director, then pull the NEXMD git using. 
+
+#+BEGIN_EXAMPLE 
+git clone https://github.com/roitberg/nexmd.git
+#+END_EXAMPLE
+
+
+And check-in to the amber-nexmd-na branch.
+
+#+BEGIN_EXAMPLE 
+cd nexmd 
+git checkout amber-nexmd-na 
+#+END_EXAMPLE
+
+Try to install the standalone NEXMD program. Activate your chosen compiler, then use either: 
+
+#+BEGIN_EXAMPLE 
+make ic_mkl # For intel w/ mkl 
+make gnu_mkl # For gnu w/ mkl 
+make gnu # For gnu wo/ mkl (not recommended) 
+#+END_EXAMPLE
+
+If this fails, refer to the documentation included in the NEXMD git. Please contact either Dustin Tracy (dtracy@ufl.edu) or Benjamin Nebgen (bnebgen@lanl.gov) for further questions regarding compilation of NEXMD. Once we’ve successfully installed NEXMD, we need to flush the standalone temp files so AMBER can build the Library files. 
+
+#+BEGIN_EXAMPLE 
+make clean 
+#+END_EXAMPLE
+
+Now we need to set a variable so AMBER knows where to find NEXMD. 
+
+#+BEGIN_EXAMPLE 
+export NAESMDHOME=`pwd` 
+#+END_EXAMPLE
+
+Note that currently NAESMDHOME is used here, not NEXMDHOME. The new name will be
+updated soon. We are now done with prepping NEXMD.
+
+We now need to install AMBERTOOLS. We are currently using a restricted git for
+development. Please contact Dustin Tracy (dtracy@ufl.edu) for access to a tar
+file.
+
+CD into your application directory and extract the tar file. 
+
+#+BEGIN_EXAMPLE 
+tar -xvf amber_na.tar.gz 
+#+END_EXAMPLE
+
+Try to build the standalone AMBER program.  
+
+#+BEGIN_EXAMPLE 
+cd amber 
+export AMBERHOME=`pwd` 
+
+./configure –noX11 --skip-python -norism  intel mkl # for intel  w/ mkl 
+
+./configure –noX11 --skip-python -norism  gnu mkl # for gnu  w/ mkl 
+
+./configure –noX11 --skip-python -norism  gnu # for gnu 
+#+END_EXAMPLE
+
+Use the same configuration you used for your NEXMD build. 
+
+Then install 
+
+#+BEGIN_EXAMPLE 
+source ./amber.sh 
+
+make install 
+#+END_EXAMPLE
+
+If this fails please refer to the amber manual (https://ambermd.org/Manuals.php)
+for troubleshooting and contact information. Once successful installation and
+testing of the standalone AmberTools packages is completed cd back into
+AMBERHOME and configure AMBER to link to the NEXMD package.
+
+#+BEGIN_EXAMPLE 
+cd $AMBERHOME 
+
+./configure –noX11 --skip-python -norism -naesmd intel mkl # for intel  w/ mkl 
+
+./configure –noX11 --skip-python -norism -naesmd gnu mkl # for gnu  w/ mkl 
+
+./configure –noX11 --skip-python -norism -naesmd gnu # for gnu 
+#+END_EXAMPLE
+
+We don’t need to rebuild all AMBER now, only SANDER, so we CD into SANDER and build from there. 
+
+#+BEGIN_EXAMPLE 
+cd AmberTools/src/sander 
+
+make install 
+#+END_EXAMPLE
+
+To test successful installation (python3 required) 
+
+#+BEGIN_EXAMPLE 
+cd $NAESMDHOME/testscripts/amber_nexmd_testscripts 
+
+python run_tests.py 
+#+END_EXAMPLE
+
+* SANDER-NEXMD Single Trajectory Run 
+
+Though our implementation of the simulation of non-adiabatic dynamics requires a
+large number of independent trajectories, the SANDER-NEXMD interface can only
+manage a single trajectory. Another script (to be introduced later) controls the
+characteristics of the swarm. Each single SANDER-NEXMD trajectory will require a
+number of inputs.
+
+- Amber Input (mdin) 
+
+- NEXMD Input (input.ceon) 
+
+- Amber Coordinate File (mdcrd)  
+
+- Amber Parameter File (prmtop) 
+
+Full examples can be found in $NAESMDHOME/tests/amber_nexmd/. Refer to the the
+included README in that directory to determine the type of trajectory for each
+test.
+
+Amber Input 
+
+#+BEGIN_EXAMPLE 
+300K constant temp QMMMMD 
+ &cntrl 
+  ** Normal Amber Input (Check manual) ** 
+  ifqnt=1 
+ / 
+
+ &qmmm 
+  verbosity=5, 
+  qmmask=':1', 
+  nae=1 
+ / 
+#+END_EXAMPLE
+
+No special behavior is needed from cntrl besides the activation of qm/mm (setting ifqnt=1). Most QM/MM behavior is controlled by the input.ceon file for the exception of the verbosity, the atoms the include in the qm calculations (qmmask) and the referral to nexmd (nae). Please refer the AMBER manual for information regarding the parameters found in &cntrl. 
+
+NEXMD Input 
+
+#+BEGIN_EXAMPLE 
+&qmmm 
+  maxcyc=0, ! Optimization must be turned off
+ ** Normal NEXMD Input **  
+ ** Include all of AMBER’s qm/mm flags besides verbosity, qmmask ** 
+&endqmmm 
+
+&moldyn 
+  ** Normal NEXMD Input ** 
+&endmoldyn 
+&coord 
+  ** Block must be included but is ignored ** 
+&endcoord 
+&veloc 
+  ** Block must be included but is ignored ** 
+&endveloc 
+&coeff 
+  ** Normal NEXMD Input ** 
+&endcoeff 
+#+END_EXAMPLE
+
+The NEXMD-SANDER interface is designed to be able to read an unmodified nexmd
+file. For most users, little to no modification will be required beyond setting
+the qmewald parameters. Note that the initial coordinates and velocities are
+read from the amber intput files and any values included in the input.ceon file
+will be ignored.
+
+** AMBER Coordinate File 
+
+Amber coordinate files are needed to run the SANDER-NEXMD interface. These can
+be created using tleap, or through a converter built into PyNASQM. To use the
+pynasqm converter
+
+#+BEGIN_EXAMPLE 
+amber-nexmd-converter.py input.ceon mdcrd
+#+END_EXAMPLE
+
+Further instruction for prepping a job can be found in the Creating a System
+section.
+
+** AMBER prmtop
+
+AMBER prmtop files can be generated using tleap. Refer to the AMBER manual for
+this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
+
 * Create QM/MM System for SANDER-NEXMD                               :METHOD:
 1) Build your solute using either Avogadro or Gaussview
 2) Create pepi files for each using antechamber that came with AMBER for each of
@@ -67,7 +267,7 @@
   #+END_EXAMPLE
 
   : m1_md1.in
-  #+BEGIN_EXAMPLE m1_md1.in
+  #+BEGIN_EXAMPLE
   MD Equilibration STEP
   &cntrl
     imin   = 0,
