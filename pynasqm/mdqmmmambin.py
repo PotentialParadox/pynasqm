@@ -18,7 +18,7 @@ mdqmmmambin = ""\
 "  dt=0.0005,\n"\
 "  ntpr=1,\n"\
 "  ntwx=0,\n"\
-"  ntwv=0,\n"\
+"  ntwv=-1,\n"\
 "  ifqnt=1,\n"\
 " /\n"\
 " &qmmm\n"\
