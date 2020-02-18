@@ -510,7 +510,7 @@ permission). For the AMBER input file, refer to [[https://ambermd.org/doc12/Ambe
 The pynasqm input file is written as a commented J-SON file. On lines other than the ones
 commented out, the file is white space sensitive. Any edits should be performed
 within the second quoted value on the line. Refer to the comments within the
-file for guidance on the inputs. Any further question can be referred to [[dtracy@ufl.edu][Dustin
-Tracy]]. The high performance computer section is designed to work with Slurm
+file for guidance on the inputs. Any further question can be referred to Dustin
+Tracy (dtracy@ufl.edu).
 systems employing the slurm array feature.
 

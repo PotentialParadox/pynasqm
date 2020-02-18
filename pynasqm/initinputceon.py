@@ -44,7 +44,6 @@ initinputceon = ""\
 "! vertical excitation or state-specific COSMO or Onsager [.false.]\n"\
 "index_of_refraction=100, ! Dielectric constant for linear response\n"\
 "! solvent in excited-state, unitless [100] *** UNDER DEVELOPMENT, DO NOT USE ***\n"\
-"qm_shake=0, ! Not Supported Yet\n"\
 "qm_ewald=0, ! Not Supported Yet\n"\
 "qm_pme=0, ! Not Supported Yet\n"\
 "EF=0, ! (0) None or (1) Electric field in ground- and excited-state [0]\n"\
