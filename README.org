@@ -338,7 +338,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
       $solute=loadmol2 $solute.mol2
       $solvent=loadmol2 $solvent.mol2
       solvatebox $solute $solvent $boxsize
-      saveamberparm $solute $solute.prmtop $solute.inpcrd
+      saveamberparm $solute m1.prmtop m1.inpcrd
       quit
       EOF
       tleap -f leap.in
@@ -353,18 +353,18 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
       loadamberparams frcmod.$solvent
       $solute=loadmol2 $solute.mol2
       solvatebox $solute ${solvent}BOX $boxsize
-      saveamberparm $solute $solute.prmtop $solute.inpcrd
+      saveamberparm $solute m1.prmtop m1.inpcrd
       quit
       EOF
       #+END_EXAMPLE
     Note that the line =$boxsize= is the size of the
     box, you can change this to anything but the system will crash if the box
     isn't twice the length of the QM box.
- 5) You should now have the following 2 files. A parameter files =$solute.prmtop=
-    and =$solute.inpcrd=. We now want to equilibrate this system. Create the
+ 5) You should now have the following 2 files. A parameter files =m1.prmtop=
+    and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
     following files
-   : m1_min1.in
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC shell-script
+   # m1_min1.in
    initial minimization solvent + ions
    &cntrl
      imin   = 1,
@@ -379,11 +379,11 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    ATM 1 <number of solute atoms>
    END
    END
-   #+END_EXAMPLE
+   #+END_SRC
    Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-   : m1_min2.in
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC shell-script
+   # m1_min2.in
    initial minimization solvent + ions
    &cntrl
      imin   = 1,
@@ -393,10 +393,10 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
      ntr    = 0,
      cut    = 10.0
    /
-   #+END_EXAMPLE
+   #+END_SRC
 
-   : m1_md1.in
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC shell-script
+   # m1_md1.in
    MD Equilibration STEP
    &cntrl
      imin   = 0,
@@ -423,11 +423,11 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    ATM 1 <number of solute atoms>
    END
    END
-   #+END_EXAMPLE
+   #+END_SRC
    Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-   : m_md2.in
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC shell-script
+   # m1_md2.in
    Constant Pressure Relaxation
    &cntrl
      imin = 0, 
@@ -453,8 +453,8 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
      ntwv = -1,
      ntwr = 1000
    /
-   #+END_EXAMPLE
- 6) Now we want to create our equilibrated system create a file
+   #+END_SRC
+ 7) Now we want to create our equilibrated system create a file
    : box_eq.sh
    #+BEGIN_EXAMPLE
    echo 'm1_min'
@@ -467,12 +467,12 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    sander -O -i m1_md2.in -o m1_md2.out -r m1_md2.rst -c m1_md1.rst -p m1.prmtop
    echo 'finished'
    #+END_EXAMPLE
- 7) Run this with
+ 8) Run this with
      #+BEGIN_EXAMPLE
      ./box_eq.sh
      #+END_EXAMPLE
      This will leave you with an equilibrated geometry file =m1_md2.rst=.
- 8) We now only need the NEXMD input and SANDER input file to begin. 
+ 9) We now only need the NEXMD input and SANDER input file to begin. 
      : md_qmmm_amb.in
      #+BEGIN_EXAMPLE
      300K constant temp QMMMMD
@@ -594,10 +594,10 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
 
    Note that the coord and veloc must be there, but there values will be
    overridden by amber during dynamics.
- 9) Run the md with the command
-  #+BEGIN_EXAMPLE
-  sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
-  #+END_EXAMPLE
+ 10) Run the md with the command
+   #+BEGIN_EXAMPLE
+   sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
+   #+END_EXAMPLE
 * Pytraj
 [[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
 analyzer and editor. 
