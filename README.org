@@ -40,7 +40,6 @@ end
 @enduml
 #+END_SRC
 
-#+RESULTS:
 [[file:images/trajectories.png]]
 
 
