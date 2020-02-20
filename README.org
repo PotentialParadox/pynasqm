@@ -363,6 +363,8 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
  5) You should now have the following 2 files. A parameter files =m1.prmtop=
     and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
     following files
+    =touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in=
+    For all of these files make sure there's an extra line at the end.
    #+BEGIN_SRC shell-script
    # m1_min1.in
    initial minimization solvent + ions
@@ -455,7 +457,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    /
    #+END_SRC
 
- 7) Now we want to create our equilibrated system create a file
+ 6) Now we want to create our equilibrated system create a file
    #+BEGIN_SRC shell-script
      # box_eq.sh
      echo 'm1_min1'
@@ -490,14 +492,28 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
             -p m1.prmtop
      echo 'finished'
    #+END_SRC
-   Note, if you have the pmemd installed, replaced sander with pmemd to
+   Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
     dramatically improve performance.
- 8) Run this with
-     #+BEGIN_EXAMPLE
-     ./box_eq.sh
-     #+END_EXAMPLE
-     This will leave you with an equilibrated geometry file =m1_md2.rst=.
- 9) We now only need the NEXMD input and SANDER input file to begin. 
+ 7) Run this with
+    #+BEGIN_EXAMPLE
+    ./box_eq.sh
+    #+END_EXAMPLE
+    This will leave you with an equilibrated geometry file =m1_md2.rst=.
+
+    Running with pmemd, there's a change you receive
+    =ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.=
+    If you receive this error, change box_eq.sh to the following.
+    #+BEGIN_SRC shell-script
+    pmemd.cuda -O \
+                -i m1_md2.in \
+                -o m1_md2.out \
+                -r m1_md2.rst \
+                -c m1_md2.rst \
+                -p m1.prmtop
+     echo 'finished'
+    #+END_SRC
+    Keep running box_eq.sh until completion.
+ 8) We now only need the NEXMD input and SANDER input file to begin. 
      : md_qmmm_amb.in
      #+BEGIN_EXAMPLE
      300K constant temp QMMMMD
@@ -619,10 +635,10 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
 
    Note that the coord and veloc must be there, but there values will be
    overridden by amber during dynamics.
- 10) Run the md with the command
-   #+BEGIN_EXAMPLE
-   sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
-   #+END_EXAMPLE
+ 9) Run the md with the command
+  #+BEGIN_EXAMPLE
+  sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
+  #+END_EXAMPLE
 * Pytraj
 [[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
 analyzer and editor. 
