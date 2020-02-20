@@ -40,6 +40,9 @@ end
 @enduml
 #+END_SRC
 
+#+RESULTS:
+[[file:images/trajectories.png]]
+
 
 Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
 AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
