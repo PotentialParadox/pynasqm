@@ -458,7 +458,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
  7) Now we want to create our equilibrated system create a file
    #+BEGIN_SRC shell-script
      # box_eq.sh
-     echo 'm1_min'
+     echo 'm1_min1'
      sander -O \
             -i m1_min1.in \
             -o m1_min1.out \
@@ -466,7 +466,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
             -c m1.inpcrd \
             -p m1.prmtop \
             -ref m1.inpcrd
-     echo 'm1_min1'
+     echo 'm1_min2'
      sander -O \
             -i m1_min2.in \
             -o m1_min2.out \
