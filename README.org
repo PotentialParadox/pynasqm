@@ -285,21 +285,37 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
     1) If you have fully parameterized pdb file or don't need accurate charges.
        (Most likely your main solute)
       #+BEGIN_EXAMPLE
-      antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi # Generates a prepfile
-      parmchk2 -f prepi -i $molecule.prepi -o $molecule.frcmod # # frcmod file
-      antechamber -fi pdb -fo mol2 -i $molecule.pdb -o $molecule.mol2 -rn $molecule -c bcc -pf y # Mol2 file
+      # Generates a prepfile
+      antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi
+      # Generate frcmod file
+      parmchk2 -f prepi -i $molecule.prepi -o $molecule.frcmod 
+      # Generate mol2 file
+      antechamber -fi pdb -fo mol2 -i $molecule.pdb -o $molecule.mol2 -rn $molecule -c bcc -pf y 
       #+END_EXAMPLE
     2) If you need accurate charges (Most likely a self generated solvent)
-      #+BEGIN_EXAMPLE
-      # Create a gaussian file to calculate resp charges
-      antechamber -i $molecule.pdb -fi pdb -o ${molecule}_char.com -fo gcrt -gv 1 -ge $molecule.gesp
-      # Run the gaussian file
-      g09 ${molecule}_char.com > ${molecule}_char.log
-      # Use the generated esp file to create mol2
-      antechamber -i $molecule.esp -fi gesp -o $molecule.mol2 -fo mol2 -c resp -eq 0 -a gaff -rn $molecule
-      # Use mol2 file to generate frcmod
-      parmchk -i $molecule.mol2 -f mol2 -o m1.frcmod
-      #+END_EXAMPLE
+       #+BEGIN_SRC shell-script
+         # Create a gaussian file to calculate resp charges
+         antechamber -i $molecule.pdb \
+                     -fi pdb \
+                     -o ${molecule}_char.com \
+                     -fo gcrt \
+                     -gv 1 \
+                     -ge $molecule.gesp
+         # Run the gaussian file
+         g09 ${molecule}_char.com > ${molecule}_char.log
+         # Use the generated esp file to create mol2
+         antechamber -i $molecule.esp \
+                     -fi gesp \
+                     -o $molecule.mol2 \
+                     -fo mol2 \
+                     -c resp \
+                     -eq 0 \
+                     -a gaff \
+                     -rn $molecule
+         # Use mol2 file to generate frcmod
+         parmchk -i $molecule.mol2 -f mol2 -o m1.frcmod
+       #+END_SRC
+
  4) run tleap with
    #+BEGIN_EXAMPLE
    cat << EOF > leap.in
