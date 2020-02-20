@@ -21,7 +21,7 @@ Pynasqm is currently capable of automating the following actions
   - Pule Pump Simulations
   - Capable of performing Non-Adiabatic using the isTully option
 
-#+BEGIN_SRC plantuml :file images/trajectories.png :export result
+#+BEGIN_SRC plantuml :file images/trajectories.png :exports results
 @startuml
 start
 
@@ -39,8 +39,6 @@ end
 
 @enduml
 #+END_SRC
-
-[[file:images/trajectories.png]]
 
 
 Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
