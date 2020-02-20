@@ -500,9 +500,9 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
     #+END_EXAMPLE
     This will leave you with an equilibrated geometry file =m1_md2.rst=.
 
-    Running with pmemd, there's a change you receive
+    Running with pmemd, there's a chance you'll receive
     =ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.=
-    If you receive this error, change box_eq.sh to the following.
+    If you receive this error, change =box_eq.sh= to the following.
     #+BEGIN_SRC shell-script
     pmemd.cuda -O \
                 -i m1_md2.in \

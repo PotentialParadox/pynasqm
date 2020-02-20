@@ -2,6 +2,7 @@ mdqmmmambin = ""\
 "300K constant temp QMMMMD\n"\
 " &cntrl\n"\
 "  imin=0,\n"\
+"  iwrap=1,\n"\
 "  irest=0,\n"\
 "  ntx=5,\n"\
 "  ntb=1,\n"\

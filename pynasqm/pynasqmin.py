@@ -29,7 +29,7 @@ pynasqmin = ''\
 '#                  General Job Type\n'\
 '############################################################\n'\
 '# Change here whether your simulation is qmmm\n'\
-'    "is_qmmm": "False",\n'\
+'    "is_qmmm": "True",\n'\
 '# If periodic what type of constant value are you using?\n'\
 '# 1-constant volume, 2-constant pressure\n'\
 '    "constant_value": "1",\n'\
@@ -55,7 +55,7 @@ pynasqmin = ''\
 '#                  QM Ground State Calculation\n'\
 '############################################################\n'\
 '# Do you want to run the trajectories used for the abjorption specta\n'\
-'    "run_qmground_trajectories": "True",\n'\
+'    "run_qmground_trajectories": "False",\n'\
 '# Change here the number of snapshots you wish to take\n'\
 '# from the initial ground state trajectory to run the\n'\
 '# further ground state dynamics\n'\
