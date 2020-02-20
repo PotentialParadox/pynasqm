@@ -284,14 +284,25 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
  3) Generate your mol and frcmod files. There are two methods.
     1) If you have fully parameterized pdb file or don't need accurate charges.
        (Most likely your main solute)
-      #+BEGIN_EXAMPLE
-      # Generates a prepfile
-      antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi
-      # Generate frcmod file
-      parmchk2 -f prepi -i $molecule.prepi -o $molecule.frcmod 
-      # Generate mol2 file
-      antechamber -fi pdb -fo mol2 -i $molecule.pdb -o $molecule.mol2 -rn $molecule -c bcc -pf y 
-      #+END_EXAMPLE
+       #+BEGIN_SRC shell-script
+               # Generates a prepfile
+               antechamber -fi pdb \
+                           -fo prepi \
+                           -i $molecule.pdb \
+                           -o $molecule.prepi
+               # Generate frcmod file
+               parmchk2 -f prepi \
+                        -i $molecule.prepi \
+                        -o $molecule.frcmod
+               # Generate mol2 file
+               antechamber -fi pdb \
+                           -fo mol2 \
+                           -i $molecule.pdb \
+                           -o $molecule.mol2 \
+                           -rn $molecule \
+                           -c bcc \
+                           -pf y
+       #+END_SRC
     2) If you need accurate charges (Most likely a self generated solvent)
        #+BEGIN_SRC shell-script
          # Create a gaussian file to calculate resp charges
