@@ -1,4 +1,4 @@
-#+TITLE: Pynasqm README
+#+TITLE: Pynasqm
 * Installation
 PYNASQM requires the following prerequisites
 - [[SANDER-NEXMD]]
@@ -280,19 +280,27 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
 ** Creating a QM/MM System for SANDER-NEXMD                          :METHOD:
  1) Build your solute using either Avogadro or Gaussview
  2) Create pepi files for each using antechamber that came with AMBER for each of
-    the following commands =$molecule=molecule name= 
-   #+BEGIN_EXAMPLE
-   antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi
-   #+END_EXAMPLE
- 3) create frcmod files for each
-   #+BEGIN_EXAMPLE
-   parmchk2 -f prepi -i $molecule.prepi -o o2.frcmod
-   #+END_EXAMPLE
- 4) create mol2 file with
-   #+BEGIN_EXAMPLE
-   antechamber -fi pdb -fo mol2 -i $molecule.pdb -o o2.mol2 -rn o2 -c bcc -pf y
-   #+END_EXAMPLE
- 6) run tleap with
+    the following commands =$molecule=molecule name=
+ 3) Generate your mol and frcmod files. There are two methods.
+    1) If you have fully parameterized pdb file or don't need accurate charges.
+       (Most likely your main solute)
+      #+BEGIN_EXAMPLE
+      antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi # Generates a prepfile
+      parmchk2 -f prepi -i $molecule.prepi -o $molecule.frcmod # # frcmod file
+      antechamber -fi pdb -fo mol2 -i $molecule.pdb -o $molecule.mol2 -rn $molecule -c bcc -pf y # Mol2 file
+      #+END_EXAMPLE
+    2) If you need accurate charges (Most likely a self generated solvent)
+      #+BEGIN_EXAMPLE
+      # Create a gaussian file to calculate resp charges
+      antechamber -i $molecule.pdb -fi pdb -o ${molecule}_char.com -fo gcrt -gv 1 -ge $molecule.gesp
+      # Run the gaussian file
+      g09 ${molecule}_char.com > ${molecule}_char.log
+      # Use the generated esp file to create mol2
+      antechamber -i $molecule.esp -fi gesp -o $molecule.mol2 -fo mol2 -c resp -eq 0 -a gaff -rn $molecule
+      # Use mol2 file to generate frcmod
+      parmchk -i $molecule.mol2 -f mol2 -o m1.frcmod
+      #+END_EXAMPLE
+ 4) run tleap with
    #+BEGIN_EXAMPLE
    cat << EOF > leap.in
    source leaprc.gaff
@@ -310,7 +318,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    Note that the line =solvatebox $solute $solution 30= is the size of the
     box, you can change this to anything but the system will crash if the box
     isn't twice the length of the QM box.
- 7) You should now have the following 2 files. A parameter files =$solute.prmtop=
+ 5) You should now have the following 2 files. A parameter files =$solute.prmtop=
     and =$solute.inpcrd=. We now want to equilibrate this system. Create the
     following files
    : m1_min1.in
@@ -404,7 +412,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
      ntwr = 1000
    /
    #+END_EXAMPLE
- 8) Now we want to create our equilibrated system create a file
+ 6) Now we want to create our equilibrated system create a file
    : box_eq.sh
    #+BEGIN_EXAMPLE
    echo 'm1_min'
@@ -417,137 +425,137 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
    sander -O -i m1_md2.in -o m1_md2.out -r m1_md2.rst -c m1_md1.rst -p m1.prmtop
    echo 'finished'
    #+END_EXAMPLE
- 9) Run this with
+ 7) Run this with
      #+BEGIN_EXAMPLE
      ./box_eq.sh
      #+END_EXAMPLE
      This will leave you with an equilibrated geometry file =m1_md2.rst=.
- 10) We now only need the NEXMD input and SANDER input file to begin. 
-      : md_qmmm_amb.in
-      #+BEGIN_EXAMPLE
-      300K constant temp QMMMMD
-      &cntrl
-        imin=0,
-        iwrap=1,
-        irest=0,
-        ntx=5,
-        ntb=1,
-        ntp=0,
-        ig=-1,
-        taup=2.0,
-        cut=16.0,
-        ntr=0,
-        tempi=300.0,
-        temp0=300.0,
-        ntt=3, ! Use Langevin
-        gamma_ln=2.0, ! Lavenvin constant
-        nstlim=20000, ! Number of Step
-        dt=0.0005,
-        ntpr=10, ! print every 10 steps
-        ntwx=10, ! print coords every 10 steps
-        ntwv=-1, ! save velocities every time coords are saved
-        ifqnt=1 ! Do QM calculations
-      /
-      &qmmm
-        verbosity=1,
-        qmmask=':1', ! Only use QM on the solute
-        nae=1 ! Activate NEXMD Looks for input.ceon file
-      /
-      #+END_EXAMPLE
-       : input.ceon
-    #+BEGIN_EXAMPLE
-    &qmmm
-      qm_theory='AM1',
-      diag_routine=1,
-      qmcharge=0,
-      qmshake=0,
-      qm_ewald=0,
-      qm_pme=0,
-      scfconv=1.0000E-10,
-      printcharges=1,
-      printdipole=0,
-      printbondorders=0,
-      density_predict=0,
-      itrmax=300,
-      diag_routine=1,
-      exst_method=2,
-      dav_guess=0,
-      ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
-      ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
-      dav_maxcyc=200,
-      calcxdens=.false.,
-      maxcyc=0,
-      ntpr=1,
-      grms_tol=1.0000E-02,
-      solvent_model=0,
-      potential_type=1,
-      ceps=10,
-      linmixparam=1,
-      cosmo_scf_ftol=1.0000E-05,
-      EF=0,
-      Ex=0.0000E+00,
-      Ez=0.0000E+00, 
-      Ey=0.0000E+00,  !1.000E-02
-      onsager_radius=2,
-    &endqmmm
-    &moldyn
-      !***** General parameters
-      rnd_seed=1, ! seed for the random number generator
-      bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
-      exc_state_init=0, ! initial excited state (0 - ground state) [0]
-      n_exc_states_propagate=0, ! number of excited states [0]
-
-      !***** Dynamics parameters
-      time_init=0.d0, ! initial time, fs [0.0]
-      time_step=0.5, !time step, fs [0.1]
-      n_class_steps=0, !number of classical steps [1]
-      n_quant_steps=0, ! number of quantum steps for each classical step [4]
-      moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
-      num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
-      rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
-
-      !***** Non-adiabatic parameters
-      quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
-      decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
-      decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
-      decoher_c=0.d0, ! decoherence parameter C [0.1]
-      dotrivial=1
-
-      !***** Thermostat parameters
-      therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
-      therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
-      therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
-      berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
-      heating=0, ! heating (1) or equilibrated(0) [0]
-      heating_steps_per_degree=100, ! number of steps per degree during heating [100]
-
-      !***** Output & Log parameters
-      verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
-      out_data_steps=100, ! number of steps to write data [1]
-      out_coords_steps=100, ! number of steps to write the restart file [10]
-      out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
-      out_count_init=0, ! the initial count for output files [0]
-    &endmoldyn
-
-    &coord
-    &endcoord
-
-    &veloc
-    &endveloc
-
-    &coeff
-          0.0000000000000000       0.0000000000000000
-          0.0000000000000000       0.0000000000000000
-    &endcoeff
-
-    #+END_EXAMPLE
-
-    Note that the coord and veloc must be there, but there values will be
-    overridden by amber during dynamics.
- 11) Run the md with the command
+ 8) We now only need the NEXMD input and SANDER input file to begin. 
+     : md_qmmm_amb.in
+     #+BEGIN_EXAMPLE
+     300K constant temp QMMMMD
+     &cntrl
+       imin=0,
+       iwrap=1,
+       irest=0,
+       ntx=5,
+       ntb=1,
+       ntp=0,
+       ig=-1,
+       taup=2.0,
+       cut=16.0,
+       ntr=0,
+       tempi=300.0,
+       temp0=300.0,
+       ntt=3, ! Use Langevin
+       gamma_ln=2.0, ! Lavenvin constant
+       nstlim=20000, ! Number of Step
+       dt=0.0005,
+       ntpr=10, ! print every 10 steps
+       ntwx=10, ! print coords every 10 steps
+       ntwv=-1, ! save velocities every time coords are saved
+       ifqnt=1 ! Do QM calculations
+     /
+     &qmmm
+       verbosity=1,
+       qmmask=':1', ! Only use QM on the solute
+       nae=1 ! Activate NEXMD Looks for input.ceon file
+     /
+     #+END_EXAMPLE
+      : input.ceon
    #+BEGIN_EXAMPLE
-   sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
+   &qmmm
+     qm_theory='AM1',
+     diag_routine=1,
+     qmcharge=0,
+     qmshake=0,
+     qm_ewald=0,
+     qm_pme=0,
+     scfconv=1.0000E-10,
+     printcharges=1,
+     printdipole=0,
+     printbondorders=0,
+     density_predict=0,
+     itrmax=300,
+     diag_routine=1,
+     exst_method=2,
+     dav_guess=0,
+     ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
+     ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
+     dav_maxcyc=200,
+     calcxdens=.false.,
+     maxcyc=0,
+     ntpr=1,
+     grms_tol=1.0000E-02,
+     solvent_model=0,
+     potential_type=1,
+     ceps=10,
+     linmixparam=1,
+     cosmo_scf_ftol=1.0000E-05,
+     EF=0,
+     Ex=0.0000E+00,
+     Ez=0.0000E+00, 
+     Ey=0.0000E+00,  !1.000E-02
+     onsager_radius=2,
+   &endqmmm
+   &moldyn
+     !***** General parameters
+     rnd_seed=1, ! seed for the random number generator
+     bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
+     exc_state_init=0, ! initial excited state (0 - ground state) [0]
+     n_exc_states_propagate=0, ! number of excited states [0]
+
+     !***** Dynamics parameters
+     time_init=0.d0, ! initial time, fs [0.0]
+     time_step=0.5, !time step, fs [0.1]
+     n_class_steps=0, !number of classical steps [1]
+     n_quant_steps=0, ! number of quantum steps for each classical step [4]
+     moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
+     num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
+     rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
+
+     !***** Non-adiabatic parameters
+     quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
+     decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
+     decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
+     decoher_c=0.d0, ! decoherence parameter C [0.1]
+     dotrivial=1
+
+     !***** Thermostat parameters
+     therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
+     therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
+     therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
+     berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
+     heating=0, ! heating (1) or equilibrated(0) [0]
+     heating_steps_per_degree=100, ! number of steps per degree during heating [100]
+
+     !***** Output & Log parameters
+     verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
+     out_data_steps=100, ! number of steps to write data [1]
+     out_coords_steps=100, ! number of steps to write the restart file [10]
+     out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
+     out_count_init=0, ! the initial count for output files [0]
+   &endmoldyn
+
+   &coord
+   &endcoord
+
+   &veloc
+   &endveloc
+
+   &coeff
+         0.0000000000000000       0.0000000000000000
+         0.0000000000000000       0.0000000000000000
+   &endcoeff
+
    #+END_EXAMPLE
+
+   Note that the coord and veloc must be there, but there values will be
+   overridden by amber during dynamics.
+ 9) Run the md with the command
+  #+BEGIN_EXAMPLE
+  sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
+  #+END_EXAMPLE
 * Pytraj
 [[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
 analyzer and editor. 
