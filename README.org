@@ -21,7 +21,7 @@ Pynasqm is currently capable of automating the following actions
   - Pule Pump Simulations
   - Capable of performing Non-Adiabatic using the isTully option
 
-#+BEGIN_SRC plantuml :file images/trajectories.png
+#+BEGIN_SRC plantuml :file images/trajectories.png :export result
 @startuml
 start
 
