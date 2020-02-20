@@ -1,6 +1,7 @@
+#+TITLE: Pynasqm README
 * Installation
 PYNASQM requires the following prerequisites
-- [[SANDER-NEXMD Installation]]
+- [[SANDER-NEXMD]]
 - [[Pytraj]]
 
 Clone this repository to the directory of your choosing.
@@ -19,6 +20,29 @@ Pynasqm is currently capable of automating the following actions
   - Franck-Condon Excitations
   - Pule Pump Simulations
   - Capable of performing Non-Adiabatic using the isTully option
+
+#+BEGIN_SRC plantuml :file images/trajectories.png
+@startuml
+start
+
+:Single MM-Ground State Trajectory;
+:Many QM Ground-State Trajectories;
+if (Simulation Type) then (PulsePump)
+:Pulse Pump Single Points;
+else (Franck-Condon Excitation)
+:QM Ground-State SinglePoint Calculations;
+:Absorption Spectra Calculations;
+:Save spectra to "spectra_abs.in";
+endif
+:QM-Excited State Trajectories;
+end
+
+@enduml
+#+END_SRC
+
+#+RESULTS:
+[[file:images/trajectories.png]]
+
 
 Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
 AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
