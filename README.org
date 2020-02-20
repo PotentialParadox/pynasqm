@@ -328,21 +328,36 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
        #+END_SRC
 
  4) run tleap with
-   #+BEGIN_EXAMPLE
-   cat << EOF > leap.in
-   source leaprc.gaff
-   source leaprc.water.tip3p
-   loadamberparams $solute.frcmod
-   loadamberparams $solution.frcmod
-   $solute=loadmol2 $solute.mol2
-   $solution=loadmol2 $solution.mol2
-   solvatebox $solute $solution 30
-   saveamberparm $solute $solute.prmtop $solute.inpcrd
-   quit
-   EOF
-   tleap -f leap.in
-   #+END_EXAMPLE
-   Note that the line =solvatebox $solute $solution 30= is the size of the
+    1) Using your own solvent
+      #+BEGIN_EXAMPLE
+      cat << EOF > leap.in
+      source leaprc.gaff
+      source leaprc.water.tip3p
+      loadamberparams $solute.frcmod
+      loadamberparams $solvent.frcmod
+      $solute=loadmol2 $solute.mol2
+      $solvent=loadmol2 $solvent.mol2
+      solvatebox $solute $solvent $boxsize
+      saveamberparm $solute $solute.prmtop $solute.inpcrd
+      quit
+      EOF
+      tleap -f leap.in
+      #+END_EXAMPLE
+
+    2) Using one of Amber's build in solvents
+      #+BEGIN_EXAMPLE
+      cat << EOF > leap.in
+      source leaprc.gaff
+      loadoff solvents.lib
+      loadamberparams $solute.frcmod
+      loadamberparams frcmod.$solvent
+      $solute=loadmol2 $solute.mol2
+      solvatebox $solute ${solvent}BOX $boxsize
+      saveamberparm $solute $solute.prmtop $solute.inpcrd
+      quit
+      EOF
+      #+END_EXAMPLE
+    Note that the line =$boxsize= is the size of the
     box, you can change this to anything but the system will crash if the box
     isn't twice the length of the QM box.
  5) You should now have the following 2 files. A parameter files =$solute.prmtop=
