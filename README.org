@@ -471,7 +471,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
             -i m1_min2.in \
             -o m1_min2.out \
             -r m1_min2.rst \
-            -c m1_min.rst \
+            -c m1_min1.rst \
             -p m1.prmtop
      echo 'm1_md1'
      sander -O \
