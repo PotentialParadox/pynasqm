@@ -363,6 +363,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
  5) You should now have the following 2 files. A parameter files =m1.prmtop=
     and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
     following files
+    #+CAPTION: =test_caption.txt=
    #+BEGIN_SRC shell-script
    # m1_min1.in
    initial minimization solvent + ions
