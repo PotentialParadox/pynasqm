@@ -3,7 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pynasqm.utils
-from scipy.interpolate import spline
 from scipy.optimize.minpack import curve_fit
 
 def gaus(x,a,x0,sigma):
