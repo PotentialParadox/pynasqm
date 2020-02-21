@@ -115,6 +115,21 @@ make gnu # For gnu wo/ mkl (not recommended)
 
 If this fails, refer to the documentation included in the NEXMD git. Please contact either Dustin Tracy (dtracy@ufl.edu) or Benjamin Nebgen (bnebgen@lanl.gov) for further questions regarding compilation of NEXMD. Once we’ve successfully installed NEXMD, we need to flush the standalone temp files so AMBER can build the Library files. 
 
+A common problem with the mkl is that the environment variable MKLROOT is not
+set. Use the command
+#+BEGIN_EXAMPLE
+which icc
+#+END_EXAMPLE
+which should return something along the lines of
+#+BEGIN_EXAMPLE
+/opt/intel/compilers_and_libraries/linux/bin/intel64/icc
+#+END_EXAMPLE
+Set the MKLROOT directory to the intel directory, or in this case
+#+BEGIN_EXAMPLE
+export MKLROOT=/opt/intel
+#+END_EXAMPLE
+
+Clean the build directory now, so that AMBER can build its library without conflict.
 #+BEGIN_EXAMPLE 
 make clean 
 #+END_EXAMPLE
