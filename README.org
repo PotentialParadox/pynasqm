@@ -11,17 +11,18 @@ cd pynasqm
 python setup install
 #+END_EXAMPLE
 * Usage
-Pynasqm is currently capable of automating the following actions
-- Single MM-Ground State Trajectory
-- QM-Ground State Trajectories originating from MM-Ground-State
-- Absorption calculations using snapshots from the QM-Ground State Trajectories
-- PulsePump SinglePoint Calculations
-- QM-Excited State Trajectory
-  - Franck-Condon Excitations
-  - Pule Pump Simulations
-  - Capable of performing Non-Adiabatic using the isTully option
+** Capabilities
+   Pynasqm is currently capable of automating the following actions
+   - Single MM-Ground State Trajectory
+   - QM-Ground State Trajectories originating from MM-Ground-State
+   - Absorption calculations using snapshots from the QM-Ground State Trajectories
+   - PulsePump SinglePoint Calculations
+   - QM-Excited State Trajectory
+     - Franck-Condon Excitations
+     - Pule Pump Simulations
+     - Capable of performing Non-Adiabatic using the isTully option
 
-#+BEGIN_SRC plantuml :file images/trajectories.png :exports results
+   #+BEGIN_SRC plantuml :file images/trajectories.png :exports results
 @startuml
 start
 
@@ -38,43 +39,140 @@ endif
 end
 
 @enduml
+   #+END_SRC
+
+   #+RESULTS:
+   [[file:images/trajectories.png]]
+
+** Initializing a System
+   Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
+   AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
+   Create a new directory with any name you'd like.
+   Copy your prmtop and inpcrd file to that directory, renaming the files to 
+   - m1.prmtop (prmtop file)
+   - m1_md2.rst (restart file)
+   You can initialize the other input files with
+   #+BEGIN_EXAMPLE 
+   nasqm.py --init
+   #+END_EXAMPLE
+   which will generate
+   - pynasqm.in (pynasqm input file)
+   - input.ceon (The NEXMD input file)
+   - md_qmmm_amb.in (The AMBER input file)
+
+   For the documentation for NEXMD, please refer to [[https://github.com/roitberg/nexmd][NEXMD-Git]] (Contact either
+   Adrian Roitberg (roitberg@ufl.edu) or Sergei Tretiak (serg@lanl.gov) for
+   permission). For the AMBER input file, refer to [[https://ambermd.org/doc12/Amber19.pdf][AMBER-Manual]]. 
+
+   The pynasqm input file is written as a commented J-SON file. On lines other than the ones
+   commented out, the file is white space sensitive. Any edits should be performed
+   within the second quoted value on the line. Refer to the comments within the
+   file for guidance on the inputs. Any further question can be referred to Dustin
+   Tracy (dtracy@ufl.edu).
+   systems employing the slurm array feature.
+
+   Once your input files are setup, run the program by executing the following in
+   your working directory containing the input files.
+   #+BEGIN_EXAMPLE
+   nasqm.py
+   #+END_EXAMPLE
+
+** Plotting an Absorption Spectra
+If the setting =run_absorption_collection= is set to true, then after the
+absorption snapshots are finished, pynasqm will output the average excited state
+energies and their corresponding oscillator strengths to a file
+=spectra_abs.in=. The format of =spectra_abs.in= is
+
+| S_1-S_0 energy | S_1-S_0 Oscillator Strength | ... | S_n-S_0 energy | S_n-S_0 Oscillator Strength |
+
+ This can be converted into a gaussian broadened spectra using
+the function =hist_spectra_lifetime.py= which is installed with the installation
+of pynasqm. Most included scripts use the python library argparse and will
+output a helper with called with the flag =--help=. The helper for
+=hist_spectra_lifetime= is as follows:
+
+#+BEGIN_SRC shell-script
+hist_spectra_lifetime --help
+
+
+usage: hist_spectra_lifetime.py [-h] [--input INPUT] [--output OUTPUT] [--number_states NUMBER_STATES]
+                                [--number_gauss NUMBER_GAUSS] [--fwhm FWHM] [--number_bins NUMBER_BINS]
+                                [--xmin XMIN] [--xmax XMAX]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input INPUT, -i INPUT
+                        The input file
+  --output OUTPUT, -o OUTPUT
+                        The output file
+  --number_states NUMBER_STATES
+                        The number of excited states you want to extract
+  --number_gauss NUMBER_GAUSS
+                        The number of gaussians
+  --fwhm FWHM           Full witdh half max of the broadening (eV)
+  --number_bins NUMBER_BINS
+                        The number of bins you wish to distribute over
+  --xmin XMIN           The minimum energy in eV
+  --xmax XMAX           The maximum energy in eV
 #+END_SRC
 
-#+RESULTS:
-[[file:images/trajectories.png]]
+Our example
+#+BEGIN_SRC shell-script
+  hist_spectra_lifetime.py --number_states 9 \
+                           -i spectra_abs.input \
+                           -o spectra_abs.out \
+                           --xmin 1.5 \
+                           --xmax 5 \
+                           --number_bins 1000 \
+                           --number_gauss 100
+#+END_SRC
+would produce an output =spectra_abs.out= containing the spectra information in
+a format
 
+| Energy (eV) | Energy (nm) | Absorption S_0-S_1 | ... | Absorption S_0-S_n |
 
-Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
-AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
-Create a new directory with any name you'd like.
-Copy your prmtop and inpcrd file to that directory, renaming the files to 
-- m1.prmtop (prmtop file)
-- m1_md2.rst (restart file)
-You can initialize the other input files with
-#+BEGIN_EXAMPLE 
-nasqm.py --init
-#+END_EXAMPLE
-which will generate
-- pynasqm.in (pynasqm input file)
-- input.ceon (The NEXMD input file)
-- md_qmmm_amb.in (The AMBER input file)
+We can plot this file using =naesmd_spectra_plotter.py=
+#+BEGIN_SRC shell-script
+usage: naesmd_spectra_plotter.py [-h] [--title TITLE] [--number_states NUMBER_STATES] [--labels LABELS [LABELS ...]]
+                                 [--ylabel YLABEL] [--inputfile INPUTFILE] [--outputfile OUTPUTFILE]
+                                 [--letter LETTER] [--comparison COMPARISON] [--x_units X_UNITS]
+                                 [--range RANGE [RANGE ...]]
 
-For the documentation for NEXMD, please refer to [[https://github.com/roitberg/nexmd][NEXMD-Git]] (Contact either
-Adrian Roitberg (roitberg@ufl.edu) or Sergei Tretiak (serg@lanl.gov) for
-permission). For the AMBER input file, refer to [[https://ambermd.org/doc12/Amber19.pdf][AMBER-Manual]]. 
+optional arguments:
+  -h, --help            show this help message and exit
+  --title TITLE         The title of the graph
+  --number_states NUMBER_STATES
+                        The number of states you want to include.
+  --labels LABELS [LABELS ...], -l LABELS [LABELS ...]
+                        labels of the data
+  --ylabel YLABEL       labels for you y axis
+  --inputfile INPUTFILE, -i INPUTFILE
+                        The input file
+  --outputfile OUTPUTFILE, -o OUTPUTFILE
+                        The output file
+  --letter LETTER       The letter in the paper
+  --comparison COMPARISON, -c COMPARISON
+                        Are you comparing spectra?
+  --x_units X_UNITS, -x X_UNITS
+                        0-Ev or 1-nm
+  --range RANGE [RANGE ...], -r RANGE [RANGE ...]
+                        Provide two numbers,the minimum and maximum values in the units you prefer
+#+END_SRC
 
-The pynasqm input file is written as a commented J-SON file. On lines other than the ones
-commented out, the file is white space sensitive. Any edits should be performed
-within the second quoted value on the line. Refer to the comments within the
-file for guidance on the inputs. Any further question can be referred to Dustin
-Tracy (dtracy@ufl.edu).
-systems employing the slurm array feature.
+And example could be
+#+BEGIN_SRC shell-script
+naesmd_spectra_plotter.py \
+    -i 0.out \
+    -o test.png \
+    --title "Test Absorption" \
+    --labels S1 S2 S3 S4 S5 S6 \
+    --number_states 6 \
+    --x_units 0 \
+    --range 2.5 4
+#+END_SRC
 
-Once your input files are setup, run the program by executing the following in
-your working directory containing the input files.
-#+BEGIN_EXAMPLE
-nasqm.py
-#+END_EXAMPLE
+[[./images/abs_test.png]]
+
 
 * SANDER-NEXMD
 ** Installation
