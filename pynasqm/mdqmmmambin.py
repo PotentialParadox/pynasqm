@@ -25,5 +25,6 @@ mdqmmmambin = ""\
 " &qmmm\n"\
 "  verbosity=1,\n"\
 "  qmmask=':1',\n"\
+"  qmcut=9,\n"\
 "  nae=1\n"\
 " /\n"\
