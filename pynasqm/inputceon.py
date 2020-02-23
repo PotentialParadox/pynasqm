@@ -134,11 +134,13 @@ class InputCeon:
                 sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=2')
                 sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=1')
             sed_inplace(self.amber_input, r'qm_ewald\s*=\s*\d+', 'qm_ewald=0')
+            sed_inplace(self.amber_input, r'qmcut\s*=\s*\d+', 'qmcut=9')
             sed_inplace(self.amber_input, r'qm_pme\s*=\s*\d+', 'qm_pme=0')
             sed_inplace(self.amber_input, r'iwrap\s*=\s*\d+', 'iwrap=1')
         if periodic is False:
             sed_inplace(self.amber_input, r'ntb\s*=\s*\d+', 'ntb=0')
             sed_inplace(self.amber_input, r'ntp\s*=\s*\d+', 'ntp=0')
+            sed_inplace(self.amber_input, r'qmcut\s*=\s*\d+', 'qmcut=16')
             sed_inplace(self.amber_input, r'qm_ewald\s*=\s*\d+', 'qm_ewald=0')
             sed_inplace(self.amber_input, r'qm_pme\s*=\s*\d+', 'qm_pme=0')
             sed_inplace(self.amber_input, r'iwrap\s*=\s*\d+', 'iwrap=0')
