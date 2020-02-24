@@ -30,7 +30,8 @@ class PulsePump(FluTrajectories):
         input_ceon.set_quantum(True)
         input_ceon.set_n_steps(0)
         input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
-        input_ceon.set_excited_state(1, user_input.n_exc_states_propagate_ex_param)
+        n_states_to_prop = user_input.n_exc_states_propagate_ex_param-1
+        input_ceon.set_excited_state(1, n_states_to_prop)
         input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
         input_ceon.set_verbosity(1)
         input_ceon.set_time_step(user_input.time_step)
