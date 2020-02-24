@@ -84,7 +84,6 @@ def main():
 
 def should_perform_pulse_pump(args, user_input):
     return (
-        user_input.is_pulse_pump and
         user_input.run_pulse_pump_singlepoints and
         args.restart == 0
     )
