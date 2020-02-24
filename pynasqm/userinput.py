@@ -90,6 +90,8 @@ class UserInput:
         # Do you want to run the trajectories used for the abjorption specta
         self.run_qmground_trajectories = pynasqm.utils.str2bool(
             data["run_qmground_trajectories"])
+        # A file containing the indices of the trajectories you wish to run
+        self.qmground_traj_index_file = data["qmground_traj_index_file"]
         # Change here the number of restarts of length qmground_run_time you wish to run
         try:
             self.n_qmground_runs = int(data["n_qmground_runs"])
@@ -157,6 +159,8 @@ class UserInput:
         # from the initial ground state trajectory to run the
         # new excited state dynamics
         self.n_snapshots_ex = int(data["n_snapshots_ex"])
+        # A file containing the indices of the trajectories you wish to run
+        self.qmground_traj_index_file = data["qmground_traj_index_file"]
         if self.n_snapshots_ex > self.n_snapshots_qmground:
             raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
                              "therefore n_snapshots_ex must less than or equal to n_snapshots_qmground")
