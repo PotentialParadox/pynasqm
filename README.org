@@ -173,6 +173,63 @@ naesmd_spectra_plotter.py \
 
 [[./images/abs_test.png]]
 
+** Plotting Populations
+After running your excited state trajectories with the Tully setting turned on,
+you may want to plot the populations of the excited state for analysis. For this
+task we can use =population_plotter.py=
+=population_plotter.py --help=
+#+BEGIN_SRC 
+usage: population_plotter.py [-h] [--pulsepump] [--files FILES [FILES ...]]
+                             [--muab_files MUAB_FILES [MUAB_FILES ...]] [--min_energy MIN_ENERGY]
+                             [--max_energy MAX_ENERGY] [--min_strength MIN_STRENGTH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --pulsepump           simulating a pulse pump experiment
+  --files FILES [FILES ...], -l FILES [FILES ...]
+                        coeff-n.out files
+  --muab_files MUAB_FILES [MUAB_FILES ...]
+                        the muab files whose energies and oscillators strengths will be used to filter
+  --min_energy MIN_ENERGY
+                        minimum energy differece (ev) from ground state for state S_m
+  --max_energy MAX_ENERGY
+                        maximum energy differece (ev) from ground state for state S_m
+  --min_strength MIN_STRENGTH
+                        minimum oscillator from S1 for state S_m
+#+END_SRC
+
+One of the easier methods that create a list of files would be to export the ls
+command of the directories containing the coeffs-n.out files.
+
+#+BEGIN_SRC 
+export coeffs=`ls {trajs}/{restarts}/coeff*.out`
+#+END_SRC
+
+Then you can generate a table of the containing the populations using
+
+#+BEGIN_SRC 
+population_plotter --files=$coeffs > pops.out
+#+END_SRC
+
+You could then use any plotting software to looks at the =pops.out= file. The
+=pops.out= file is formatted as
+
+| Time (fs) | Pop S_1 | ... | Pop S_n |
+
+If you wish to filter the included trajectories using the outputs from the
+pulsepump single point trajectories, you can include a list of muab_files as follows.
+
+#+BEGIN_SRC 
+export muab_files=`ls {trajs}/{restarts}/coeff*.out`
+#+END_SRC
+
+#+BEGIN_SRC shell-script
+  population_plotter --files=$coeffs \
+                     --muab_files=$muab_files \
+                     --min_energy=1.2 \
+                     --max_energy=2.4 \
+                     --min_strength=1 > pops.out
+#+END_SRC
 
 * SANDER-NEXMD
 ** Installation
