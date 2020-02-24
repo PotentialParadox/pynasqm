@@ -178,7 +178,9 @@ def print_energies_and_strengths(energies, strengths):
             fout.write('State {}: Energy:{:14.10f}, Strength: {:14.10f}\n'.format(i+1, e, s))
 
 def run_pulse_pump_prep(input_ceon, user_input):
-    PulsePump(user_input, input_ceon).run()
+    pulse_pump_manager = PulsePump(user_input, input_ceon)
+    pulse_pump_manager.run()
+    pulse_pump_manager.write_pulse_pump_states()
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''
