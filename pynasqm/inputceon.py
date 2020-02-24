@@ -79,6 +79,8 @@ class InputCeon:
         sed_inplace(self.amber_input, r'ntwx=.*', f"ntwx={n_steps_to_print},")
         if n_steps_to_print == 0:
             sed_inplace(self.amber_input, r'ntwv=.*', 'ntwv=0,')
+        else:
+            sed_inplace(self.amber_input, r'ntwv=.*', 'ntwv=-1,')
 
     def write_log(self):
         '''
