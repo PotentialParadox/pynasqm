@@ -52,7 +52,7 @@ def main():
         if args.job > 0:
             user_input.run_ground_state_dynamics = False
         if args.job > 1:
-            user_input.run_qm_ground_state_trajectories = False
+            user_input.run_qmground_trajectories = False
             user_input.run_absorption_collection = False
 
     original_inputs = copy_inputs()
