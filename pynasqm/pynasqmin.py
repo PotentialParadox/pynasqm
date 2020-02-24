@@ -60,6 +60,9 @@ pynasqmin = ''\
 '# from the initial ground state trajectory to run the\n'\
 '# further ground state dynamics\n'\
 '    "n_snapshots_qmground": "2",\n'\
+'# File listing the trajectories you wish to run\n'\
+'# Leave black to run all\n'\
+'    "qmground_traj_index_file": "",\n'\
 '# Change here the runtime in PS for the the trajectories\n'\
 '# used to create calculated the absorption\n'\
 '    "qmground_run_time": "0.004",\n'\
@@ -110,6 +113,9 @@ pynasqmin = ''\
 '# from the initial ground state trajectory to run the\n'\
 '# new excited state dynamics. Needs to be <= n_snapshots_gs\n'\
 '    "n_snapshots_ex": "2",\n'\
+'# File listing the trajectories you wish to run\n'\
+'# Leave black to run all\n'\
+'    "qmexcited_traj_index_file": "",\n'\
 '# Change here the runtime, in ps, for the the trajectories\n'\
 '# used to create calculated the fluorescence\n'\
 '    "exc_run_time": "0.002",\n'\
