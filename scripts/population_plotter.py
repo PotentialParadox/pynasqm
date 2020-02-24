@@ -139,11 +139,18 @@ def filter_pump_pulse(state_data, muab_data, restraints):
     return [states for (states, muab) in zip(state_data, muab_data)
             if satisfies_pulse_pump(restraints, muab[sm_index(states)])]
 
+def split_files(infilenames):
+    outfilenames = None
+    if infilenames:
+        if len(infilenames) == 1:
+            return infilenames[0].split()
+    return infilenames
+
 def main():
     args = parser()
-    data = load_data_from_files(args.files, args.muab_files)
-    print(data)
-    exit()
+    coeff_files=split_files(args.files)
+    muab_files=split_files(args.muab_files)
+    data = load_data_from_files(coeff_files, muab_files)
     coeff_data = [d.coeff for d in data]
     muab_data = [d.muab for d in data]
     state_data = get_states(coeff_data)
