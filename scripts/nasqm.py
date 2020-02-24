@@ -68,7 +68,7 @@ def main():
         run_absorption_snaps(input_ceon, user_input)
     if user_input.run_absorption_collection:
         run_absorption_collection(user_input)
-    if should_perform_pulse_pump():
+    if should_perform_pulse_pump(user_input, args.restart):
         run_pulse_pump_prep(input_ceon, user_input)
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)
@@ -82,10 +82,10 @@ def main():
     end_time = time.time()
     print("Job finished in %s seconds" % (end_time - start_time))
 
-def should_perform_pulse_pump(args, user_input):
+def should_perform_pulse_pump(user_input, restart):
     return (
         user_input.run_pulse_pump_singlepoints and
-        args.restart == 0
+        restart == 0
     )
 
 def create_input(user_input):
