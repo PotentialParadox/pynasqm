@@ -43,6 +43,7 @@ def userInput():
     user_input.n_snapshots_qmground = 2
     user_input.n_mcrd_frames_per_run_gs = 5
     user_input.n_ground_runs = 2
+    user_input.qmground_traj_index_file = ""
     user_input.restart_attempt = 0
     user_input.number_nearest_solvents = 1
     user_input.mask_for_center = ":1"

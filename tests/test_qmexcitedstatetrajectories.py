@@ -38,6 +38,7 @@ def userInput():
     user_input.n_steps_gs = 1
     user_input.n_steps_print_gmcrd = 10
     user_input.n_steps_to_print_gs = 15
+    user_input.qmexcited_traj_index_file = ""
     user_input.time_step = 0.05
     user_input.ground_state_run_time = 0.01
     user_input.n_snapshots_ex = 2

@@ -35,6 +35,7 @@ def userinput():
     user_input.memory_per_node = "2000mb"
     user_input.walltime = "00:01:00"
     user_input.max_jobs = 4
+    user_input.qmground_traj_index_file = ""
     user_input.n_snapshots_qmground = 0
     return user_input
 
