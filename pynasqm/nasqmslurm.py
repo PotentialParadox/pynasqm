@@ -5,6 +5,7 @@ the Slurm wrapper
 import math
 import os
 import pynasqm.slurm as slurm
+from pynasqm.slurm_array_generator import generate_slurm_array
 
 def create_slurm_header(user_input):
     '''
@@ -29,7 +30,7 @@ exports = "source ~/myapps/load_exports\n" \
     "export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}\n\n" \
     "ID=${SLURM_ARRAY_TASK_ID}\n"
 
-def build_trajectory_command(directory, amber):
+def build_trajectory_command(directory, amber, nsnaps=0):
     '''
     Returns the command for the slurm script
     '''
@@ -52,14 +53,11 @@ def slurm_trajectory_files(user_input, amber, title, job_suffix, directory, n_sn
     slurm_header = create_slurm_header(user_input)
     slurm_script = slurm.Slurm(slurm_header)
     build_command = build_trajectory_command if n_snaps_trajectory == 0 else build_snap_command
-    command = build_command(directory, amber)
+    command = build_command(directory, amber, n_snaps_trajectory)
     slurm_array = generate_slurm_array(user_input, job_suffix)
     return slurm_script.create_slurm_script(command=command,
                                             title=title,
                                             slurm_array=slurm_array)
-
-def generate_slurm_array(user_input, job_suffix):
-    pass
 
 def build_snap_command(directory, amber, n_snaps):
     '''
@@ -113,11 +111,8 @@ def nasqm_restart_script(user_input, job_id, restart_attempt):
     header = create_restart_header(user_input)
     restart_command = build_restart_command(job_id, restart_attempt)
     title = "{}_r{}".format(user_input.job_name.capitalize(), restart_attempt)
-    max_arrays = 1
     slurm_script = slurm.Slurm(header)
-    return slurm_script.create_slurm_script(restart_command,
-                                            title,
-                                            max_arrays)
+    return slurm_script.create_slurm_script(restart_command, title)
 
 def restart_nasqm(user_input, job_id, restart_attempt):
     script = nasqm_restart_script(user_input, job_id, restart_attempt)

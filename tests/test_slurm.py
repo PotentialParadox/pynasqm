@@ -35,6 +35,6 @@ def test_create_slurm_script():
     command = 'echo "In this case SLURM_ARRAY_TASK_ID is $SLURM_ARRAY_TASK_ID" >>' \
               ' result_${SLURM_ARRAY_TASK_ID}.out\n'
     slurm_object = Slurm(SLURM_HEADER)
-    job_script = slurm_object.create_slurm_script(command, "MyJob", 3)
+    job_script = slurm_object.create_slurm_script(command, "MyJob", "1-3")
     answer = str(open('slurm_test.txt', 'r').read())
     assert job_script == answer

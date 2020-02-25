@@ -35,6 +35,7 @@ def userinput():
     user_input.memory_per_node = "2000mb"
     user_input.walltime = "00:01:00"
     user_input.max_jobs = 4
+    user_input.n_snapshots_qmground = 0
     return user_input
 
 class Amber:
@@ -89,9 +90,9 @@ def test_slurm_trajectory_file_1(userinput, amber):
     amber.output_roots = ["nasqm_abs_${ID}"]
     amber.restart_files = ["nasqm_abs_${ID}.rst"]
     title = "MyJob"
-    n_trajectories = 1
+    userinput.n_snapshots_qmground = 1
     directory = "${ID}"
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories, directory)
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, "qmground", directory)
     test = open("nasqm_slurm_1.txt", 'r').read()
     assert result == test
 
@@ -105,10 +106,10 @@ def test_slurm_trajectory_file_16(userinput, amber):
     amber.coordinate_files = ["ground_snap.${ID}"]
     amber.output_roots = ["nasqm_abs_${ID}"]
     amber.restart_files = ["nasqm_abs_${ID}.rst"]
+    userinput.n_snapshots_qmground = 16
     title = "MyJob"
-    n_trajectories = 16
     directory = "${ID}"
-    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, n_trajectories, directory)
+    result = nasqm_slurm.slurm_trajectory_files(userinput, amber, title, "qmground", directory)
     test = open("nasqm_slurm_16.txt", 'r').read()
     assert result == test
 
