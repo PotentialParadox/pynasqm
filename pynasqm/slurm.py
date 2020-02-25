@@ -29,7 +29,7 @@ class Slurm:
         }
         self.email_preferences = switcher.get(self.header['email_options'])
 
-    def create_slurm_script(self, command, title=None, n_arrays=1):
+    def create_slurm_script(self, command, title=None, slurm_array="1"):
         '''
         Return the slurm job script
         '''
@@ -48,7 +48,7 @@ class Slurm:
                 '#SBATCH --ntasks=1\n' \
                 '#SBATCH --mem-per-cpu='+self.header['memory']+\
                 ' #Per processor memory requested\n' \
-                '#SBATCH --array=1-'+str(n_arrays)+'%'+str(self.header['max_jobs'])+'\n' \
+                '#SBATCH --array='+(slurm_array)+'%'+str(self.header['max_jobs'])+'\n' \
                 '#SBATCH --time='+self.header['walltime']+' #Walltime\n' \
                 '\n' + command
         return job_script

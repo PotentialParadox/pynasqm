@@ -46,10 +46,11 @@ class AbsorptionSnaps(Trajectories):
         if self._user_input.is_hpc:
             job_name = self._user_input.job_name + self._job_suffix
             directory = "{}/traj_${{ID}}/${{i}}".format(self._job_suffix, self._user_input.restart_attempt)
-            slurm_file = nasqm_slurm.slurm_snap_files(self._user_input, amber,
-                                                      job_name, self._number_trajectories,
-                                                      self._n_snapshots_per_trajectory,
-                                                      directory)
+            slurm_file = nasqm_slurm.slurm_trajectory_files(self._user_input, amber,
+                                                            job_name, self._job_suffix,
+                                                            directory,
+                                                            self._n_snapshots_per_trajectory
+                                                            )
         else:
             slurm_file = None
         return slurm_file

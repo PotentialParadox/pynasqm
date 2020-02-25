@@ -45,14 +45,21 @@ def build_trajectory_command(directory, amber):
     return command
 
 
-def slurm_trajectory_files(user_input, amber, title, n_trajectories, directory):
+def slurm_trajectory_files(user_input, amber, title, job_suffix, directory, n_snaps_trajectory=0):
     '''
     Run multiple sander trajectories over hpc
     '''
     slurm_header = create_slurm_header(user_input)
     slurm_script = slurm.Slurm(slurm_header)
-    command = build_trajectory_command(directory, amber)
-    return slurm_script.create_slurm_script(command, title, n_trajectories)
+    build_command = build_trajectory_command if n_snaps_trajectory == 0 else build_snap_command
+    command = build_command(directory, amber)
+    slurm_array = generate_slurm_array(user_input, job_suffix)
+    return slurm_script.create_slurm_script(command=command,
+                                            title=title,
+                                            slurm_array=slurm_array)
+
+def generate_slurm_array(user_input, job_suffix):
+    pass
 
 def build_snap_command(directory, amber, n_snaps):
     '''
@@ -83,15 +90,6 @@ def build_snap_command(directory, amber, n_snaps):
         f"done\n"
     return command
 
-def slurm_snap_files(user_input, amber, title, n_trajectories, n_snaps_trajectory, directory):
-    '''
-    Run multiple sander trajectories over hpc
-    '''
-    slurm_header = create_slurm_header(user_input)
-    slurm_script = slurm.Slurm(slurm_header)
-    command = build_snap_command(directory, amber, n_snaps_trajectory)
-    return slurm_script.create_slurm_script(command, title, n_trajectories)
-
 def run_nasqm_slurm_file(slurm_file):
     '''
     Run the files produced by slurm_trajectory_files
@@ -117,7 +115,9 @@ def nasqm_restart_script(user_input, job_id, restart_attempt):
     title = "{}_r{}".format(user_input.job_name.capitalize(), restart_attempt)
     max_arrays = 1
     slurm_script = slurm.Slurm(header)
-    return slurm_script.create_slurm_script(restart_command, title, max_arrays)
+    return slurm_script.create_slurm_script(restart_command,
+                                            title,
+                                            max_arrays)
 
 def restart_nasqm(user_input, job_id, restart_attempt):
     script = nasqm_restart_script(user_input, job_id, restart_attempt)
