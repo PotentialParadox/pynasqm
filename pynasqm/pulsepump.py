@@ -3,12 +3,12 @@ import numpy as np
 from collections import namedtuple
 from random import randint
 from pynasqm.utils import copy_files, mkdir
-from pynasqm.fluorescencetrajectories import FluTrajectories
+from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
 
-class PulsePump(FluTrajectories):
+class PulsePump(QmExcitedStateTrajectories):
 
     def __init__(self, user_input, input_ceon):
         self._user_input = user_input
