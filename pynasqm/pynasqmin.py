@@ -104,6 +104,8 @@ pynasqmin = ''\
 '    "pump_pulse_max_energy": "0",\n'\
 '# Whats the minimum oscillator strength from S1 of the pump pulse state Sm?\n'\
 '    "pump_pulse_min_strength": "0",\n'\
+'# Do you want to run the pulse pump collection routine?\n'\
+'    "run_pulse_point_collection": "False",\n'\
 '############################################################\n'\
 '#                  Excited State Calculation\n'\
 '############################################################\n'\

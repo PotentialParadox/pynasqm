@@ -70,6 +70,8 @@ def main():
         run_absorption_collection(user_input)
     if should_perform_pulse_pump(user_input, args.restart):
         run_pulse_pump_prep(input_ceon, user_input)
+    if should_perform_pulse_pump_collection(user_input, args.restart):
+        run_pulse_pump_prep_collection(input_ceon, user_input)
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)
     if user_input.run_fluorescence_collection:
@@ -85,6 +87,12 @@ def main():
 def should_perform_pulse_pump(user_input, restart):
     return (
         user_input.run_pulse_pump_singlepoints and
+        restart == 0
+    )
+
+def should_perform_pulse_pump_collection(user_input, restart):
+    return (
+        user_input.run_pulse_pump_collection and
         restart == 0
     )
 
@@ -178,9 +186,12 @@ def print_energies_and_strengths(energies, strengths):
             fout.write('State {}: Energy:{:14.10f}, Strength: {:14.10f}\n'.format(i+1, e, s))
 
 def run_pulse_pump_prep(input_ceon, user_input):
-    pulse_pump_manager = PulsePump(user_input, input_ceon)
-    pulse_pump_manager.run()
-    pulse_pump_manager.write_pulse_pump_states()
+    title_print("Performing  Pulse Pump Single Points")
+    PulsePump(user_input, input_ceon).run()
+
+def run_pulse_pump_prep_collection(input_ceon, user_input):
+    title_print("Performing  Pulse Pump Collection")
+    PulsePump(user_input, input_ceon).write_pulse_pump_states()
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''

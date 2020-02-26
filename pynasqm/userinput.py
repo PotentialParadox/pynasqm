@@ -145,7 +145,12 @@ class UserInput:
         self.pump_pulse_min_energy = float(data["pump_pulse_min_energy"])
         self.pump_pulse_max_energy = float(data["pump_pulse_max_energy"])
         self.pump_pulse_min_strength = float(data["pump_pulse_min_strength"])
-
+        try:
+            self.run_pulse_pump_collection = pynasqm.utils.str2bool(
+                data["run_pulse_point_collection"])
+        except KeyError:
+            if self.run_pulse_pump_singlepoints:
+                self.run_pulse_pump_collection = True
 
         #################################
         # QM Excited State
