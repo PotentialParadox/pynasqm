@@ -457,22 +457,16 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
        #+BEGIN_SRC shell-script
                # Generates a prepfile
                antechamber -fi pdb \
-                           -fo prepi \
+                           -fo mol2 \
                            -i $molecule.pdb \
-                           -o $molecule.prepi
+                           -o $molecule.mol2
+                           -at gaff
                # Generate frcmod file
                parmchk2 -f prepi \
                         -i $molecule.prepi \
                         -o $molecule.frcmod
-               # Generate mol2 file
-               antechamber -fi pdb \
-                           -fo mol2 \
-                           -i $molecule.pdb \
-                           -o $molecule.mol2 \
-                           -rn $molecule \
-                           -c bcc \
-                           -pf y
        #+END_SRC
+
     2) If you need accurate charges (Most likely a self generated solvent)
        #+BEGIN_SRC shell-script
          # Create a gaussian file to calculate resp charges
@@ -530,285 +524,285 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
     Note that the line =$boxsize= is the size of the
     box, you can change this to anything but the system will crash if the box
     isn't twice the length of the QM box.
- 5) You should now have the following 2 files. A parameter files =m1.prmtop=
-    and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
-    following files
-    =touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in=
-    For all of these files make sure there's an extra line at the end.
-   #+BEGIN_SRC shell-script
-   # m1_min1.in
-   initial minimization solvent + ions
-   &cntrl
-     imin   = 1,
-     maxcyc = 1000,
-     ncyc   = 500,
-     ntb    = 1,
-     ntr    = 1,
-     cut    = 10.0
-   /
-   Hold Solute fixed
-   500.0
-   ATM 1 <number of solute atoms>
-   END
-   END
-   #+END_SRC
-   Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
+    1) You should now have the following 2 files. A parameter files =m1.prmtop=
+       and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
+       following files
+       =touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in=
+       For all of these files make sure there's an extra line at the end.
+      #+BEGIN_SRC shell-script
+      # m1_min1.in
+      initial minimization solvent + ions
+      &cntrl
+        imin   = 1,
+        maxcyc = 1000,
+        ncyc   = 500,
+        ntb    = 1,
+        ntr    = 1,
+        cut    = 10.0
+      /
+      Hold Solute fixed
+      500.0
+      ATM 1 <number of solute atoms>
+      END
+      END
+      #+END_SRC
+      Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-   #+BEGIN_SRC shell-script
-   # m1_min2.in
-   initial minimization solvent + ions
-   &cntrl
-     imin   = 1,
-     maxcyc = 2500,
-     ncyc   = 1000,
-     ntb    = 1,
-     ntr    = 0,
-     cut    = 10.0
-   /
-   #+END_SRC
+      #+BEGIN_SRC shell-script
+      # m1_min2.in
+      initial minimization solvent + ions
+      &cntrl
+        imin   = 1,
+        maxcyc = 2500,
+        ncyc   = 1000,
+        ntb    = 1,
+        ntr    = 0,
+        cut    = 10.0
+      /
+      #+END_SRC
 
-   #+BEGIN_SRC shell-script
-   # m1_md1.in
-   MD Equilibration STEP
-   &cntrl
-     imin   = 0,
-     irest  = 0,
-     ntx    = 1,
-     ig     =-1,
-     ntb    = 1,
-     cut    = 10.0,
-     ntr    = 1,
-     ntc    = 2,
-     ntf    = 2,
-     tempi  = 0.0,
-     temp0  = 300.0,
-     ntt    = 3,
-     gamma_ln = 2.0,
-     nstlim = 5000, 
-     dt = 0.002,
-     ntpr = 100,
-     ntwx = 100,
-     ntwr = 1000
-   /
-   Keep fixed with weak restraints
-   10.0
-   ATM 1 <number of solute atoms>
-   END
-   END
-   #+END_SRC
-   Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
+      #+BEGIN_SRC shell-script
+      # m1_md1.in
+      MD Equilibration STEP
+      &cntrl
+        imin   = 0,
+        irest  = 0,
+        ntx    = 1,
+        ig     =-1,
+        ntb    = 1,
+        cut    = 10.0,
+        ntr    = 1,
+        ntc    = 2,
+        ntf    = 2,
+        tempi  = 0.0,
+        temp0  = 300.0,
+        ntt    = 3,
+        gamma_ln = 2.0,
+        nstlim = 5000, 
+        dt = 0.002,
+        ntpr = 100,
+        ntwx = 100,
+        ntwr = 1000
+      /
+      Keep fixed with weak restraints
+      10.0
+      ATM 1 <number of solute atoms>
+      END
+      END
+      #+END_SRC
+      Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-   #+BEGIN_SRC shell-script
-   # m1_md2.in
-   Constant Pressure Relaxation
-   &cntrl
-     imin = 0, 
-     irest = 1,
-     ntx = 5,
-     ntb = 2,
-     pres0 = 1.0,
-     ntp = 1,
-     ig = -1,
-     taup = 2.0,
-     cut = 10.0,
-     ntr = 0,
-     ntc = 2,
-     ntf = 2,
-     tempi = 300.0,
-     temp0 = 300.0,
-     ntt = 3,
-     gamma_ln = 2.0,
-     nstlim = 100000,
-     dt = 0.002,
-     ntpr = 100,
-     ntwx = 100,
-     ntwv = -1,
-     ntwr = 1000
-   /
-   #+END_SRC
+      #+BEGIN_SRC shell-script
+      # m1_md2.in
+      Constant Pressure Relaxation
+      &cntrl
+        imin = 0, 
+        irest = 1,
+        ntx = 5,
+        ntb = 2,
+        pres0 = 1.0,
+        ntp = 1,
+        ig = -1,
+        taup = 2.0,
+        cut = 10.0,
+        ntr = 0,
+        ntc = 2,
+        ntf = 2,
+        tempi = 300.0,
+        temp0 = 300.0,
+        ntt = 3,
+        gamma_ln = 2.0,
+        nstlim = 100000,
+        dt = 0.002,
+        ntpr = 100,
+        ntwx = 100,
+        ntwv = -1,
+        ntwr = 1000
+      /
+      #+END_SRC
 
- 6) Now we want to create our equilibrated system create a file
-   #+BEGIN_SRC shell-script
-     # box_eq.sh
-     echo 'm1_min1'
-     sander -O \
-            -i m1_min1.in \
-            -o m1_min1.out \
-            -r m1_min1.rst \
-            -c m1.inpcrd \
-            -p m1.prmtop \
-            -ref m1.inpcrd
-     echo 'm1_min2'
-     sander -O \
-            -i m1_min2.in \
-            -o m1_min2.out \
-            -r m1_min2.rst \
-            -c m1_min1.rst \
-            -p m1.prmtop
-     echo 'm1_md1'
-     sander -O \
-            -i m1_md1.in \
-            -o m1_md1.out \
-            -r m1_md1.rst \
-            -c m1_min2.rst \
-            -p m1.prmtop \
-            -ref m1_min2.rst
-     echo 'm1_md2'
-     sander -O \
-            -i m1_md2.in \
-            -o m1_md2.out \
-            -r m1_md2.rst \
-            -c m1_md1.rst \
-            -p m1.prmtop
-     echo 'finished'
-   #+END_SRC
-   Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
-    dramatically improve performance.
- 7) Run this with
-    #+BEGIN_EXAMPLE
-    ./box_eq.sh
-    #+END_EXAMPLE
-    This will leave you with an equilibrated geometry file =m1_md2.rst=.
+    2) Now we want to create our equilibrated system create a file
+      #+BEGIN_SRC shell-script
+        # box_eq.sh
+        echo 'm1_min1'
+        sander -O \
+               -i m1_min1.in \
+               -o m1_min1.out \
+               -r m1_min1.rst \
+               -c m1.inpcrd \
+               -p m1.prmtop \
+               -ref m1.inpcrd
+        echo 'm1_min2'
+        sander -O \
+               -i m1_min2.in \
+               -o m1_min2.out \
+               -r m1_min2.rst \
+               -c m1_min1.rst \
+               -p m1.prmtop
+        echo 'm1_md1'
+        sander -O \
+               -i m1_md1.in \
+               -o m1_md1.out \
+               -r m1_md1.rst \
+               -c m1_min2.rst \
+               -p m1.prmtop \
+               -ref m1_min2.rst
+        echo 'm1_md2'
+        sander -O \
+               -i m1_md2.in \
+               -o m1_md2.out \
+               -r m1_md2.rst \
+               -c m1_md1.rst \
+               -p m1.prmtop
+        echo 'finished'
+      #+END_SRC
+      Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
+       dramatically improve performance.
+    3) Run this with
+       #+BEGIN_EXAMPLE
+       ./box_eq.sh
+       #+END_EXAMPLE
+       This will leave you with an equilibrated geometry file =m1_md2.rst=.
 
-    Running with pmemd, there's a chance you'll receive
-    =ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.=
-    If you receive this error, change =box_eq.sh= to the following.
-    #+BEGIN_SRC shell-script
-    pmemd.cuda -O \
-                -i m1_md2.in \
-                -o m1_md2.out \
-                -r m1_md2.rst \
-                -c m1_md2.rst \
-                -p m1.prmtop
-     echo 'finished'
-    #+END_SRC
-    Keep running box_eq.sh until completion.
- 8) We now only need the NEXMD input and SANDER input file to begin. 
-     : md_qmmm_amb.in
+       Running with pmemd, there's a chance you'll receive
+       =ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.=
+       If you receive this error, change =box_eq.sh= to the following.
+       #+BEGIN_SRC shell-script
+       pmemd.cuda -O \
+                   -i m1_md2.in \
+                   -o m1_md2.out \
+                   -r m1_md2.rst \
+                   -c m1_md2.rst \
+                   -p m1.prmtop
+        echo 'finished'
+       #+END_SRC
+       Keep running box_eq.sh until completion.
+    4) We now only need the NEXMD input and SANDER input file to begin. 
+        : md_qmmm_amb.in
+        #+BEGIN_EXAMPLE
+        300K constant temp QMMMMD
+        &cntrl
+          imin=0,
+          iwrap=1,
+          irest=0,
+          ntx=5,
+          ntb=1,
+          ntp=0,
+          ig=-1,
+          taup=2.0,
+          cut=16.0,
+          ntr=0,
+          tempi=300.0,
+          temp0=300.0,
+          ntt=3, ! Use Langevin
+          gamma_ln=2.0, ! Lavenvin constant
+          nstlim=20000, ! Number of Step
+          dt=0.0005,
+          ntpr=10, ! print every 10 steps
+          ntwx=10, ! print coords every 10 steps
+          ntwv=-1, ! save velocities every time coords are saved
+          ifqnt=1 ! Do QM calculations
+        /
+        &qmmm
+          verbosity=1,
+          qmmask=':1', ! Only use QM on the solute
+          nae=1 ! Activate NEXMD Looks for input.ceon file
+        /
+        #+END_EXAMPLE
+         : input.ceon
+      #+BEGIN_EXAMPLE
+      &qmmm
+        qm_theory='AM1',
+        diag_routine=1,
+        qmcharge=0,
+        qmshake=0,
+        qm_ewald=0,
+        qm_pme=0,
+        scfconv=1.0000E-10,
+        printcharges=1,
+        printdipole=0,
+        printbondorders=0,
+        density_predict=0,
+        itrmax=300,
+        diag_routine=1,
+        exst_method=2,
+        dav_guess=0,
+        ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
+        ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
+        dav_maxcyc=200,
+        calcxdens=.false.,
+        maxcyc=0,
+        ntpr=1,
+        grms_tol=1.0000E-02,
+        solvent_model=0,
+        potential_type=1,
+        ceps=10,
+        linmixparam=1,
+        cosmo_scf_ftol=1.0000E-05,
+        EF=0,
+        Ex=0.0000E+00,
+        Ez=0.0000E+00, 
+        Ey=0.0000E+00,  !1.000E-02
+        onsager_radius=2,
+      &endqmmm
+      &moldyn
+        !***** General parameters
+        rnd_seed=1, ! seed for the random number generator
+        bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
+        exc_state_init=0, ! initial excited state (0 - ground state) [0]
+        n_exc_states_propagate=0, ! number of excited states [0]
+
+        !***** Dynamics parameters
+        time_init=0.d0, ! initial time, fs [0.0]
+        time_step=0.5, !time step, fs [0.1]
+        n_class_steps=0, !number of classical steps [1]
+        n_quant_steps=0, ! number of quantum steps for each classical step [4]
+        moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
+        num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
+        rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
+
+        !***** Non-adiabatic parameters
+        quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
+        decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
+        decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
+        decoher_c=0.d0, ! decoherence parameter C [0.1]
+        dotrivial=1
+
+        !***** Thermostat parameters
+        therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
+        therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
+        therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
+        berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
+        heating=0, ! heating (1) or equilibrated(0) [0]
+        heating_steps_per_degree=100, ! number of steps per degree during heating [100]
+
+        !***** Output & Log parameters
+        verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
+        out_data_steps=100, ! number of steps to write data [1]
+        out_coords_steps=100, ! number of steps to write the restart file [10]
+        out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
+        out_count_init=0, ! the initial count for output files [0]
+      &endmoldyn
+
+      &coord
+      &endcoord
+
+      &veloc
+      &endveloc
+
+      &coeff
+            0.0000000000000000       0.0000000000000000
+            0.0000000000000000       0.0000000000000000
+      &endcoeff
+
+      #+END_EXAMPLE
+
+      Note that the coord and veloc must be there, but there values will be
+      overridden by amber during dynamics.
+    5) Run the md with the command
      #+BEGIN_EXAMPLE
-     300K constant temp QMMMMD
-     &cntrl
-       imin=0,
-       iwrap=1,
-       irest=0,
-       ntx=5,
-       ntb=1,
-       ntp=0,
-       ig=-1,
-       taup=2.0,
-       cut=16.0,
-       ntr=0,
-       tempi=300.0,
-       temp0=300.0,
-       ntt=3, ! Use Langevin
-       gamma_ln=2.0, ! Lavenvin constant
-       nstlim=20000, ! Number of Step
-       dt=0.0005,
-       ntpr=10, ! print every 10 steps
-       ntwx=10, ! print coords every 10 steps
-       ntwv=-1, ! save velocities every time coords are saved
-       ifqnt=1 ! Do QM calculations
-     /
-     &qmmm
-       verbosity=1,
-       qmmask=':1', ! Only use QM on the solute
-       nae=1 ! Activate NEXMD Looks for input.ceon file
-     /
+     sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
      #+END_EXAMPLE
-      : input.ceon
-   #+BEGIN_EXAMPLE
-   &qmmm
-     qm_theory='AM1',
-     diag_routine=1,
-     qmcharge=0,
-     qmshake=0,
-     qm_ewald=0,
-     qm_pme=0,
-     scfconv=1.0000E-10,
-     printcharges=1,
-     printdipole=0,
-     printbondorders=0,
-     density_predict=0,
-     itrmax=300,
-     diag_routine=1,
-     exst_method=2,
-     dav_guess=0,
-     ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
-     ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
-     dav_maxcyc=200,
-     calcxdens=.false.,
-     maxcyc=0,
-     ntpr=1,
-     grms_tol=1.0000E-02,
-     solvent_model=0,
-     potential_type=1,
-     ceps=10,
-     linmixparam=1,
-     cosmo_scf_ftol=1.0000E-05,
-     EF=0,
-     Ex=0.0000E+00,
-     Ez=0.0000E+00, 
-     Ey=0.0000E+00,  !1.000E-02
-     onsager_radius=2,
-   &endqmmm
-   &moldyn
-     !***** General parameters
-     rnd_seed=1, ! seed for the random number generator
-     bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
-     exc_state_init=0, ! initial excited state (0 - ground state) [0]
-     n_exc_states_propagate=0, ! number of excited states [0]
-
-     !***** Dynamics parameters
-     time_init=0.d0, ! initial time, fs [0.0]
-     time_step=0.5, !time step, fs [0.1]
-     n_class_steps=0, !number of classical steps [1]
-     n_quant_steps=0, ! number of quantum steps for each classical step [4]
-     moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
-     num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
-     rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
-
-     !***** Non-adiabatic parameters
-     quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
-     decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
-     decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
-     decoher_c=0.d0, ! decoherence parameter C [0.1]
-     dotrivial=1
-
-     !***** Thermostat parameters
-     therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
-     therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
-     therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
-     berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
-     heating=0, ! heating (1) or equilibrated(0) [0]
-     heating_steps_per_degree=100, ! number of steps per degree during heating [100]
-
-     !***** Output & Log parameters
-     verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
-     out_data_steps=100, ! number of steps to write data [1]
-     out_coords_steps=100, ! number of steps to write the restart file [10]
-     out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
-     out_count_init=0, ! the initial count for output files [0]
-   &endmoldyn
-
-   &coord
-   &endcoord
-
-   &veloc
-   &endveloc
-
-   &coeff
-         0.0000000000000000       0.0000000000000000
-         0.0000000000000000       0.0000000000000000
-   &endcoeff
-
-   #+END_EXAMPLE
-
-   Note that the coord and veloc must be there, but there values will be
-   overridden by amber during dynamics.
- 9) Run the md with the command
-  #+BEGIN_EXAMPLE
-  sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
-  #+END_EXAMPLE
 * Pytraj
 [[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
 analyzer and editor. 
