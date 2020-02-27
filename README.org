@@ -218,9 +218,16 @@ You could then use any plotting software to looks at the =pops.out= file. The
 
 If you wish to filter the included trajectories using the outputs from the
 pulsepump single point trajectories, you can include a list of muab_files as follows.
+Note that now we need to make sure the files are paired with each other, so lets
+first copy the files and give each a unique id.
 
 #+BEGIN_SRC 
-export muab_files=`ls {trajs}/{restarts}/coeff*.out`
+mkdir coeffs
+for i in {1...$n_trajs}; do cp qmexcited/traj_$i/restart_0/coeff-n.out coeffs/coeff_$i.out; done
+export coeffs=`for i in {1...$n_trajs}; do echo coeffs/coeff_$i.out
+mkdir muabs
+for i in {1...$n_trajs}; do cp pulsepump/traj_$i/restart_0/muab.out muab/muab_$i.out; done
+export muabs=`for i in {1...$n_trajs}; do echo muabs/muab_$i.out
 #+END_SRC
 
 #+BEGIN_SRC shell-script
