@@ -26,15 +26,18 @@ def main():
     coeff_files=split_files(args.files)
     muab_files=split_files(args.muab_files)
     data = load_data_from_files(coeff_files, muab_files)
-    coeff_data = [d.coeff for d in data]
-    muab_data = [d.muab for d in data]
-    state_data = get_states(coeff_data)
+    datac, datam = itertools.tee(data)
+    coeff_data = (d.coeff for d in datac)
+    coeff_data1, coeff_data2 = itertools.tee(coeff_data)
+    muab_data = (d.muab for d in datam)
+    state_data = get_states(coeff_data1)
     if args.pulsepump:
       Restraints = namedtuple('Restraints', 'min_energy, max_energy, min_strength')
       restraints = Restraints(args.min_energy, args.max_energy, args.min_strength)
       state_data = filter_pump_pulse(state_data, muab_data, restraints)
-    nstates = get_nstates(coeff_data)
-    times = get_times(coeff_data)
+    first_coeff = next(coeff_data2)
+    nstates = get_nstates(first_coeff)
+    times = get_times(first_coeff)
     if args.pulsepump:
         print(string_list_of_pairs(times, get_pulse_pump_pops(state_data)))
     else:
@@ -57,7 +60,7 @@ def load_data_from_files(files, muab_files):
 def filter_completed(data):
     (data1, data2) = itertools.tee(data)
     max_length = max([len(d[0]) for d in data1])
-    return [d for d in data2 if len(d[0]) == max_length]
+    return (d for d in data2 if len(d[0]) == max_length)
 
 def read_coeff(coeff_file):
     if not path.exists(coeff_file):
@@ -75,7 +78,7 @@ def muab_line(line):
     return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
 
 def get_states(data):
-    return [d[:,0] for d in data]
+    return (d[:,0] for d in data)
 
 def filter_pump_pulse(state_data, muab_data, restraints):
     def sm_index(states):
@@ -101,10 +104,10 @@ def is_atmost(max_value, test):
 
 def get_nstates(data):
     ncols_not_coefficients=3
-    return data[0].shape[1] - ncols_not_coefficients
+    return data.shape[1] - ncols_not_coefficients
 
 def get_times(data):
-    return data[0][:,1]
+    return data[:,1]
 
 def string_list_of_pairs(times, pairs):
     return_value = ""
