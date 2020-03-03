@@ -21,131 +21,6 @@ def parser():
     parser.add_argument("--min_strength", help="minimum oscillator from S1 for state S_m", type=float)
     return parser.parse_args()
 
-def filter_completed(data):
-    (data1, data2) = itertools.tee(data)
-    max_length = max([len(d[0]) for d in data1])
-    return [d for d in data2 if len(d[0]) == max_length]
-
-def muab_line(line):
-    MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
-    return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
-
-def read_muab(muab_file):
-    if not path.exists(muab_file):
-        return []
-    muab_data = np.loadtxt(muab_file)
-    return [muab_line(line) for line in muab_data]
-
-def read_coeff(coeff_file):
-    if not path.exists(coeff_file):
-        return np.array([])
-    return np.loadtxt(coeff_file)
-
-def load_data_from_files(files, muab_files):
-    DataFiles = namedtuple('DataFiles', 'coeff, muab')
-    if muab_files:
-        return filter_completed(DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files))
-    return filter_completed([DataFiles(read_coeff(fin), None) for fin in files])
-
-def get_nstates(data):
-    ncols_not_coefficients=3
-    return data[0].shape[1] - ncols_not_coefficients
-
-def get_times(data):
-    return data[0][:,1]
-
-def get_states(data):
-    return [d[:,0] for d in data]
-
-def isstate(data, state):
-    return (data == state).astype(int)
-
-def pop_of_state(state_data, state):
-    return np.sum(np.array([isstate(d, state) for d in state_data]), axis=0) / len(state_data)
-
-def pop_of_nstates(state_data, nstates):
-    return [pop_of_state(state_data,n) for n in range(1,nstates+1)]
-
-def string_population_chart(times,pops):
-    return_string = ""
-    for i, time in enumerate(times):
-        return_string +=  "{:10.5f}{}\n".format(time, string_population_at_frame(pops,i))
-    return return_string
-
-def string_population_at_frame(pops,frame):
-    return "".join(["{:10.5f}".format(pop[frame]) for pop in pops])
-
-def s1_sm(state, sm):
-    return (int(state==1), int(state==sm))
-
-def sum_two_list_of_pairs(s1_sm_as, s1_sm_bs):
-    return tuple((s1_sm_a[0]+s1_sm_b[0], s1_sm_a[1]+s1_sm_b[1])
-                 for s1_sm_a, s1_sm_b in zip(s1_sm_as, s1_sm_bs))
-
-
-def trajectory_s1_sm(states):
-    '''
-    Returns a tuple where each element represents a frames condition
-    (is_S1, is_Sm)
-    '''
-    sm = states[0]
-    return tuple(s1_sm(frame_state, sm) for frame_state in states)
-
-def get_s1pop_smpops(state_data):
-    '''
-    Returns a tuple where each element is a nested tuple where each element represents a frame
-    (is_S1, is_Sm)
-    '''
-    return tuple(trajectory_s1_sm(traj) for traj in state_data)
-
-def get_s1pop_smpop_sum(state_data):
-    '''
-    Returns a tuple with each element being (number of s_1, number of s_m)
-    '''
-    return functools.reduce(sum_two_list_of_pairs, get_s1pop_smpops(state_data))
-
-def get_pulse_pump_pops(state_data):
-    '''
-    Returns a tuple with each element being (pop of s_1, pop of s_m)
-    '''
-    ntrajs = len(state_data)
-    return tuple((frame[0]/ntrajs,frame[1]/ntrajs) for frame in get_s1pop_smpop_sum(state_data))
-
-def string_list_of_pairs(times, pairs):
-    return_value = ""
-    for time, pair in zip(times, pairs):
-        return_value += "{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1])
-    return return_value
-
-def is_atleast(min_value, test):
-    if min_value is None:
-        return True
-    return test >= min_value
-
-def is_atmost(max_value, test):
-    if max_value is None:
-        return True
-    return test >= max_value
-
-def satisfies_pulse_pump(restraints, muab_for_sm):
-    return is_atleast(restraints.min_energy, muab_for_sm.energy) \
-        and is_atmost(restraints.max_energy, muab_for_sm.energy) \
-        and is_atleast(restraints.min_strength, muab_for_sm.strength)
-
-def filter_pump_pulse(state_data, muab_data, restraints):
-    def sm_index(states):
-        sm = states[0]
-        return int(sm-1)
-    return [states for (states, muab) in zip(state_data, muab_data)
-            if satisfies_pulse_pump(restraints, muab[sm_index(states)])]
-
-def split_files(infilenames):
-    outfilenames = None
-    if infilenames:
-        if len(infilenames) == 1:
-            return infilenames[0].split()
-    return infilenames
-
 def main():
     args = parser()
     coeff_files=split_files(args.files)
@@ -165,5 +40,130 @@ def main():
     else:
         pops = pop_of_nstates(state_data,nstates)
         print(string_population_chart(times,pops))
+
+def split_files(infilenames):
+    outfilenames = None
+    if infilenames:
+        if len(infilenames) == 1:
+            return infilenames[0].split()
+    return infilenames
+
+def load_data_from_files(files, muab_files):
+    DataFiles = namedtuple('DataFiles', 'coeff, muab')
+    if muab_files:
+        return filter_completed(DataFiles(read_coeff(fin), read_muab(muab)) for fin, muab in zip(files, muab_files))
+    return filter_completed([DataFiles(read_coeff(fin), None) for fin in files])
+
+def filter_completed(data):
+    (data1, data2) = itertools.tee(data)
+    max_length = max([len(d[0]) for d in data1])
+    return [d for d in data2 if len(d[0]) == max_length]
+
+def read_coeff(coeff_file):
+    if not path.exists(coeff_file):
+        return np.array([])
+    return np.loadtxt(coeff_file)
+
+def read_muab(muab_file):
+    if not path.exists(muab_file):
+        return []
+    muab_data = np.loadtxt(muab_file)
+    return [muab_line(line) for line in muab_data]
+
+def muab_line(line):
+    MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
+    return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
+
+def get_states(data):
+    return [d[:,0] for d in data]
+
+def filter_pump_pulse(state_data, muab_data, restraints):
+    def sm_index(states):
+        sm = states[0]
+        return int(sm-1)
+    return [states for (states, muab) in zip(state_data, muab_data)
+            if satisfies_pulse_pump(restraints, muab[sm_index(states)])]
+
+def satisfies_pulse_pump(restraints, muab_for_sm):
+    return is_atleast(restraints.min_energy, muab_for_sm.energy) \
+        and is_atmost(restraints.max_energy, muab_for_sm.energy) \
+        and is_atleast(restraints.min_strength, muab_for_sm.strength)
+
+def is_atleast(min_value, test):
+    if min_value is None:
+        return True
+    return test >= min_value
+
+def is_atmost(max_value, test):
+    if max_value is None:
+        return True
+    return test >= max_value
+
+def get_nstates(data):
+    ncols_not_coefficients=3
+    return data[0].shape[1] - ncols_not_coefficients
+
+def get_times(data):
+    return data[0][:,1]
+
+def string_list_of_pairs(times, pairs):
+    return_value = ""
+    for time, pair in zip(times, pairs):
+        return_value += "{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1])
+    return return_value
+
+def get_pulse_pump_pops(state_data):
+    '''
+    Returns a tuple with each element being (pop of s_1, pop of s_m)
+    '''
+    ntrajs = len(state_data)
+    return tuple((frame[0]/ntrajs,frame[1]/ntrajs) for frame in get_s1pop_smpop_sum(state_data))
+
+def isstate(data, state):
+    return (data == state).astype(int)
+
+def pop_of_state(state_data, state):
+    return np.sum(np.array([isstate(d, state) for d in state_data]), axis=0) / len(state_data)
+
+def pop_of_nstates(state_data, nstates):
+    return [pop_of_state(state_data,n) for n in range(1,nstates+1)]
+
+def string_population_chart(times,pops):
+    return_string = ""
+    for i, time in enumerate(times):
+        return_string +=  "{:10.5f}{}\n".format(time, string_population_at_frame(pops,i))
+    return return_string
+
+def string_population_at_frame(pops,frame):
+    return "".join(["{:10.5f}".format(pop[frame]) for pop in pops])
+
+def get_s1pop_smpop_sum(state_data):
+    '''
+    Returns a tuple with each element being (number of s_m, number of s_1,..., number of s_n)
+    '''
+    return functools.reduce(sum_two_list_of_tuples, get_s1pop_smpops(state_data))
+
+def sum_two_list_of_tuples(pop_as, pop_bs):
+    element_sum = lambda xs, ys : tuple([x+y for x,y in zip(xs,ys)])
+    return tuple(element_sum(a,b)
+                 for a, b in zip(pop_as, pop_bs))
+
+def get_s1pop_smpops(state_data):
+    '''
+    Returns a tuple where each element is a nested tuple where each element represents a frame
+    (is_S1, is_Sm)
+    '''
+    return tuple(trajectory_s1_sm(traj) for traj in state_data)
+
+def trajectory_s1_sm(states):
+    '''
+    Returns a tuple where each element represents a frames condition
+    (is_S1, is_Sm)
+    '''
+    sm = states[0]
+    return tuple(s1_sm(frame_state, sm) for frame_state in states)
+
+def s1_sm(state, sm):
+    return (int(state==1), int(state==sm))
 
 main()
