@@ -39,7 +39,7 @@ def main():
     nstates = get_nstates(first_coeff)
     times = get_times(first_coeff)
     if args.pulsepump:
-        print(string_list_of_pairs(times, get_pulse_pump_pops(state_data)))
+        print(string_list_of_pairs(times, get_pulse_pump_pops(state_data, nstates)))
     else:
         pops = pop_of_nstates(state_data,nstates)
         print(string_population_chart(times,pops))
@@ -112,15 +112,15 @@ def get_times(data):
 def string_list_of_pairs(times, pairs):
     return_value = ""
     for time, pair in zip(times, pairs):
-        return_value += "{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1])
+        return_value += "{:8.4f}{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1], pair[2])
     return return_value
 
-def get_pulse_pump_pops(state_data):
+def get_pulse_pump_pops(state_data, nstates):
     '''
     Returns a tuple with each element being (pop of s_1, pop of s_m)
     '''
     ntrajs = len(state_data)
-    return tuple((frame[0]/ntrajs,frame[1]/ntrajs) for frame in get_s1pop_smpop_sum(state_data))
+    return tuple((frame[0]/ntrajs,frame[1]/ntrajs,frame[2]/ntrajs) for frame in get_sm_s1tosn_pop_sum(state_data, nstates))
 
 def isstate(data, state):
     return (data == state).astype(int)
@@ -140,33 +140,34 @@ def string_population_chart(times,pops):
 def string_population_at_frame(pops,frame):
     return "".join(["{:10.5f}".format(pop[frame]) for pop in pops])
 
-def get_s1pop_smpop_sum(state_data):
+def get_sm_s1tosn_pop_sum(state_data, nstates):
     '''
     Returns a tuple with each element being (number of s_m, number of s_1,..., number of s_n)
     '''
-    return functools.reduce(sum_two_list_of_tuples, get_s1pop_smpops(state_data))
+    return functools.reduce(sum_two_list_of_tuples, get_sm_s1tosn_pops(state_data, nstates))
 
 def sum_two_list_of_tuples(pop_as, pop_bs):
     element_sum = lambda xs, ys : tuple([x+y for x,y in zip(xs,ys)])
     return tuple(element_sum(a,b)
                  for a, b in zip(pop_as, pop_bs))
 
-def get_s1pop_smpops(state_data):
+def get_sm_s1tosn_pops(state_data, nstates):
     '''
     Returns a tuple where each element is a nested tuple where each element represents a frame
-    (is_S1, is_Sm)
+    (is_Sm, is_S1, ..., is_Sn)
     '''
-    return tuple(trajectory_s1_sm(traj) for traj in state_data)
+    return tuple(trajectory_sm_s1tosn(traj, nstates) for traj in state_data)
 
-def trajectory_s1_sm(states):
+def trajectory_sm_s1tosn(states, nstates):
     '''
     Returns a tuple where each element represents a frames condition
     (is_S1, is_Sm)
     '''
     sm = states[0]
-    return tuple(s1_sm(frame_state, sm) for frame_state in states)
+    return tuple(sm_s1tosn(frame_state, sm, nstates) for frame_state in states)
 
-def s1_sm(state, sm):
-    return (int(state==1), int(state==sm))
+def sm_s1tosn(state, sm, nstates):
+    state_counts = [int(state==s) for s in range(1,nstates+1)]
+    return tuple([int(state==sm)] + state_counts)
 
 main()
