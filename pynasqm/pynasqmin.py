@@ -35,6 +35,8 @@ pynasqmin = ''\
 '    "constant_value": "1",\n'\
 '# Are you performing tully surface hopping?\n'\
 '    "is_tully": "False",\n'\
+'# If you are using tully, how many quantum steps should be performed for every classical?\n'\
+'    "qsteps": "4",\n'\
 '# Change here the time step, in fs, that will be shared by\n'\
 '# each trajectory\n'\
 '    "time_step": "0.5",\n'\
