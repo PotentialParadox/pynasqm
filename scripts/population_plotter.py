@@ -38,11 +38,7 @@ def main():
     first_coeff = next(coeff_data2)
     nstates = get_nstates(first_coeff)
     times = get_times(first_coeff)
-    if args.pulsepump:
-        print(string_list_of_pairs(times, get_pulse_pump_pops(state_data, nstates)))
-    else:
-        pops = pop_of_nstates(state_data,nstates)
-        print(string_population_chart(times,pops))
+    print(create_table(times, get_pulse_pump_pops(state_data, nstates)))
 
 get_states = lambda data: (d[:,0] for d in data)
 get_times = lambda data: data[:,1]
@@ -80,10 +76,14 @@ def muab_line(line):
     return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
 
 def filter_pump_pulse(state_data, muab_data, restraints):
+    md1, md2 = itertools.tee(muab_data)
+    first_muab = next(md1)
+    if first_muab is None:
+        return state_data
     def sm_index(states):
         sm = states[0]
         return int(sm-1)
-    return (states for (states, muab) in zip(state_data, muab_data)
+    return (states for (states, muab) in zip(state_data, md2)
             if satisfies_pulse_pump(restraints, muab[sm_index(states)]))
 
 def satisfies_pulse_pump(restraints, muab_for_sm):
@@ -105,11 +105,14 @@ def get_nstates(data):
     ncols_not_coefficients=3
     return data.shape[1] - ncols_not_coefficients
 
-def string_list_of_pairs(times, pairs):
+def create_table(times, popss):
     return_value = ""
-    for time, pair in zip(times, pairs):
-        return_value += "{:8.4f}{:8.4f}{:8.4f}{:8.4f}\n".format(time, pair[0], pair[1], pair[2])
+    for time, pops in zip(times, popss):
+        return_value += string_row(time, pops)
     return return_value
+
+def string_row(time, pops):
+    return f"{time:8.4f}" + "".join([f"{p:8.4f}" for p in pops]) + "\n"
 
 def get_pulse_pump_pops(state_data, nstates):
     '''
@@ -117,23 +120,8 @@ def get_pulse_pump_pops(state_data, nstates):
     '''
     sd1,sd2 = itertools.tee(state_data)
     ntrajs = len([s[0] for s in sd1])
-    return tuple((frame[0]/ntrajs,frame[1]/ntrajs,frame[2]/ntrajs) for frame in get_sm_s1tosn_pop_sum(sd2, nstates))
-
-def pop_of_state(state_data, state):
-    isstate = lambda data, state : (data == state).astype(int)
-    return np.sum(np.array([isstate(d, state) for d in state_data]), axis=0) / len(state_data)
-
-def pop_of_nstates(state_data, nstates):
-    return [pop_of_state(state_data,n) for n in range(1,nstates+1)]
-
-def string_population_chart(times,pops):
-    return_string = ""
-    for i, time in enumerate(times):
-        return_string +=  "{:10.5f}{}\n".format(time, string_population_at_frame(pops,i))
-    return return_string
-
-def string_population_at_frame(pops,frame):
-    return "".join(["{:10.5f}".format(pop[frame]) for pop in pops])
+    normalize = lambda xs, ntrajs : (x/ntrajs for x in xs)
+    return tuple(normalize(frame, ntrajs) for frame in get_sm_s1tosn_pop_sum(sd2, nstates))
 
 def get_sm_s1tosn_pop_sum(state_data, nstates):
     '''

@@ -214,7 +214,7 @@ population_plotter --files=$coeffs > pops.out
 You could then use any plotting software to looks at the =pops.out= file. The
 =pops.out= file is formatted as
 
-| Time (fs) | Pop S_1 | ... | Pop S_n |
+| Time (fs) | Initial State Population | Pop S_1 | ... | Pop S_n |
 
 If you wish to filter the included trajectories using the outputs from the
 pulsepump single point trajectories, you can include a list of muab_files as follows.
