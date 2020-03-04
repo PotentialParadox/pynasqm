@@ -33,11 +33,20 @@ class Amber:
         prmtop_file = conjoined_list[3]
         restart_file = conjoined_list[4]
         export_root = conjoined_list[5]
-        subprocess.run(['sander', '-O', '-i', "{}.in".format(input_root), '-o',
-                        "{}.out".format(output_root), '-c', coordinate_file,
-                        '-p', prmtop_file, '-r', "{}".format(restart_file),
-                        '-x', "{}.nc".format(export_root)])
+        if not self.should_skip():
+            subprocess.run(['sander', '-O', '-i', "{}.in".format(input_root), '-o',
+                            "{}.out".format(output_root), '-c', coordinate_file,
+                            '-p', prmtop_file, '-r', "{}".format(restart_file),
+                            '-x', "{}.nc".format(export_root)])
         os.chdir(cwd)
+
+    def should_skip(self):
+        inputceon = open("input.ceon", 'r').read()
+        flag_check_str = "exc_state_init=-"
+        if flag_check_str in inputceon:
+            return True
+        return False
+
 
     def run_amber(self, number_processors=1, is_ground_state=False):
         '''
