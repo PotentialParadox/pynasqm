@@ -44,8 +44,10 @@ def main():
         pops = pop_of_nstates(state_data,nstates)
         print(string_population_chart(times,pops))
 
+get_states = lambda data: (d[:,0] for d in data)
+get_times = lambda data: data[:,1]
+
 def split_files(infilenames):
-    outfilenames = None
     if infilenames:
         if len(infilenames) == 1:
             return infilenames[0].split()
@@ -77,15 +79,12 @@ def muab_line(line):
     MuabTuple = namedtuple('MuabTuple', 'init_state, fin_state, energy, x, y, z, strength')
     return MuabTuple(line[0], line[1], line[2], line[3], line[4], line[5], line[6])
 
-def get_states(data):
-    return (d[:,0] for d in data)
-
 def filter_pump_pulse(state_data, muab_data, restraints):
     def sm_index(states):
         sm = states[0]
         return int(sm-1)
-    return [states for (states, muab) in zip(state_data, muab_data)
-            if satisfies_pulse_pump(restraints, muab[sm_index(states)])]
+    return (states for (states, muab) in zip(state_data, muab_data)
+            if satisfies_pulse_pump(restraints, muab[sm_index(states)]))
 
 def satisfies_pulse_pump(restraints, muab_for_sm):
     return is_atleast(restraints.min_energy, muab_for_sm.energy) \
@@ -106,9 +105,6 @@ def get_nstates(data):
     ncols_not_coefficients=3
     return data.shape[1] - ncols_not_coefficients
 
-def get_times(data):
-    return data[:,1]
-
 def string_list_of_pairs(times, pairs):
     return_value = ""
     for time, pair in zip(times, pairs):
@@ -119,13 +115,12 @@ def get_pulse_pump_pops(state_data, nstates):
     '''
     Returns a tuple with each element being (pop of s_1, pop of s_m)
     '''
-    ntrajs = len(state_data)
-    return tuple((frame[0]/ntrajs,frame[1]/ntrajs,frame[2]/ntrajs) for frame in get_sm_s1tosn_pop_sum(state_data, nstates))
-
-def isstate(data, state):
-    return (data == state).astype(int)
+    sd1,sd2 = itertools.tee(state_data)
+    ntrajs = len([s[0] for s in sd1])
+    return tuple((frame[0]/ntrajs,frame[1]/ntrajs,frame[2]/ntrajs) for frame in get_sm_s1tosn_pop_sum(sd2, nstates))
 
 def pop_of_state(state_data, state):
+    isstate = lambda data, state : (data == state).astype(int)
     return np.sum(np.array([isstate(d, state) for d in state_data]), axis=0) / len(state_data)
 
 def pop_of_nstates(state_data, nstates):
