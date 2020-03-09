@@ -28,7 +28,7 @@ class QmGroundTrajectories(Trajectories):
         input_ceon.set_excited_state(0, user_input.n_qmground_exc)
         input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_qmground)
         input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.time_step)
+        input_ceon.set_time_step(user_input.qmground_time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.calc_transition_dipoles(False)
         input_ceon.set_istully(False, 0)

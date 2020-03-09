@@ -55,7 +55,6 @@ class UserInput:
         #################################
         # Change here the time step that will be shared by
         # each trajectory
-        self.time_step = float(data["time_step"]) # fs
 
         #################################
         # MM Ground State
@@ -77,9 +76,10 @@ class UserInput:
         # Change here the number of further qm ground state trajectories
         self.n_snapshots_qmground = int(data["n_snapshots_qmground"])
         # Change here the runtime of the initial ground state MD
+        self.ground_state_time_step = float(data["ground_state_time_step"]) # fs
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
         self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
-                                                          self.time_step,
+                                                          self.ground_state_time_step,
                                                           self.n_ground_runs,
                                                           self.n_steps_print_gmcrd,
                                                           self.n_snapshots_qmground)
@@ -111,9 +111,10 @@ class UserInput:
             self.n_steps_print_qmgmcrd = 0
         # Change here the runtime for the qmground trajectories
         self.qmground_run_time = float(data["qmground_run_time"]) # ps
+        self.qmground_time_step = float(data["qmground_time_step"]) # fs
         if self.qmground_run_time != 0 and self.n_steps_print_qmgmcrd != 0:
             self.qmground_run_time = self.adjust_run_time(self.qmground_run_time,
-                                                     self.time_step,
+                                                     self.qmground_time_step,
                                                      self.n_qmground_runs,
                                                      self.n_steps_print_qmgmcrd,
                                                      1)
@@ -220,9 +221,10 @@ class UserInput:
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
+        self.exc_time_step = float(data["exc_time_step"]) # fs
         if self.n_steps_print_emcrd != 0:
             self.exc_run_time = self.adjust_run_time(self.exc_run_time,
-                                                    self.time_step,
+                                                    self.exc_time_step,
                                                     self.n_exc_runs,
                                                     self.n_steps_print_emcrd,
                                                     1)
@@ -250,13 +252,13 @@ class UserInput:
         # Derived Values
         #################################
         self.restart_attempt = 0
-        self.n_steps_per_run_gs = self.n_steps_per_run(self.ground_state_run_time, self.time_step,
+        self.n_steps_per_run_gs = self.n_steps_per_run(self.ground_state_run_time, self.ground_state_time_step,
                                        self.n_ground_runs)
         self.n_mcrd_frames_per_run_gs = int(self.n_steps_per_run_gs / self.n_steps_print_gmcrd)
-        self.n_steps_per_run_qmground = self.n_steps_per_run(self.qmground_run_time, self.time_step, self.n_qmground_runs)
+        self.n_steps_per_run_qmground = self.n_steps_per_run(self.qmground_run_time, self.qmground_time_step, self.n_qmground_runs)
         self.n_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_to_print_qmground)
         self.n_mcrd_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_print_qmgmcrd)
-        self.n_steps_per_run_exc = self.n_steps_per_run(self.exc_run_time, self.time_step, self.n_exc_runs)
+        self.n_steps_per_run_exc = self.n_steps_per_run(self.exc_run_time, self.exc_time_step, self.n_exc_runs)
 
 
     @staticmethod
