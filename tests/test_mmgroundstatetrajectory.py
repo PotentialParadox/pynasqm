@@ -48,7 +48,7 @@ def userInput():
     user_input.n_steps_per_run_gs = 1
     user_input.n_steps_print_gmcrd = 10
     user_input.n_steps_to_print_gs = 15
-    user_input.time_step = 0.05
+    user_input.ground_state_time_step = 0.05
     return user_input
 
 def test_prepareDynamcs1of1(userInput):
