@@ -47,6 +47,9 @@ pynasqmin = ''\
 '    "run_ground_state_dynamics": "False",\n'\
 '# Change here the runtime, in ps, of the initial ground state MD\n'\
 '    "ground_state_run_time": "0.01",\n'\
+'# Change here the time step, in fs, that will be used by\n'\
+'# the mm ground state trajectory\n'\
+'    "ground_state_time_step": "0.5",\n'\
 '# Change here the number of restarts of length ground_state_run_time you wish to run\n'\
 '    "n_ground_runs": "2",\n'\
 '# Change here how often you want to print the ground state trajectory files\n'\
@@ -68,6 +71,9 @@ pynasqmin = ''\
 '# Change here the runtime in PS for the the trajectories\n'\
 '# used to create calculated the absorption\n'\
 '    "qmground_run_time": "0.004",\n'\
+'# Change here the time step, in fs, that will be used by\n'\
+'# the qm ground state trajectory\n'\
+'    "qmground_time_step": "0.5",\n'\
 '# Number of restarts = this number - 1. Controls how you want to segmentate\n'\
 '# the runs for shorter run times, and to allow restarting if failure arises\n'\
 '    "n_qmground_runs": "1",\n'\
@@ -123,6 +129,9 @@ pynasqmin = ''\
 '# Change here the runtime, in ps, for the the trajectories\n'\
 '# used to create calculated the fluorescence\n'\
 '    "exc_run_time": "0.002",\n'\
+'# Change here the time step, in fs, that will be used by\n'\
+'# the qm excited state trajectory\n'\
+'    "exc_time_step": "0.5",\n'\
 '# Number of restarts = this number - 1. Controls how you want to segmentate\n'\
 '# the runs for shorter run times, and to allow restarting if failure arises\n'\
 '    "n_exc_runs": "2",\n'\

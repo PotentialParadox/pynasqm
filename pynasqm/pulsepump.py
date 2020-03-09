@@ -34,7 +34,7 @@ class PulsePump(QmExcitedStateTrajectories):
         input_ceon.set_excited_state(1, n_states_to_prop)
         input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
         input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.time_step)
+        input_ceon.set_time_step(user_input.qmground_time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.set_istully(False, user_input.qsteps)
         input_ceon.calc_transition_dipoles(True)

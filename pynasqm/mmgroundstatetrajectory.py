@@ -21,7 +21,7 @@ def setInput(md_qmmm_amb, user_input):
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_gs)
     input_ceon.set_exc_state_init(0)
     input_ceon.set_verbosity(0)
-    input_ceon.set_time_step(user_input.time_step)
+    input_ceon.set_time_step(user_input.ground_state_time_step)
     input_ceon.set_random_velocities(israndomvelocity(restart))
 
 def createAmber(user_input):
