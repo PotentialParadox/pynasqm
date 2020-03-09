@@ -55,6 +55,10 @@ class UserInput:
         #################################
         # Change here the time step that will be shared by
         # each trajectory
+        try:
+            self.time_step = float(data["time_step"]) # fs
+        except KeyError:
+            self.time_step = 0
 
         #################################
         # MM Ground State
@@ -76,7 +80,10 @@ class UserInput:
         # Change here the number of further qm ground state trajectories
         self.n_snapshots_qmground = int(data["n_snapshots_qmground"])
         # Change here the runtime of the initial ground state MD
-        self.ground_state_time_step = float(data["ground_state_time_step"]) # fs
+        try:
+            self.ground_state_time_step = float(data["ground_state_time_step"]) # fs
+        except KeyError:
+            self.ground_state_time_step = self.time_step
         self.ground_state_run_time = float(data["ground_state_run_time"]) # ps
         self.ground_state_run_time = self.adjust_run_time(self.ground_state_run_time,
                                                           self.ground_state_time_step,
@@ -111,7 +118,11 @@ class UserInput:
             self.n_steps_print_qmgmcrd = 0
         # Change here the runtime for the qmground trajectories
         self.qmground_run_time = float(data["qmground_run_time"]) # ps
-        self.qmground_time_step = float(data["qmground_time_step"]) # fs
+        try:
+            self.qmground_time_step = float(data["qmground_time_step"]) # fs
+        except KeyError:
+            self.qmground_time_step = self.time_step
+
         if self.qmground_run_time != 0 and self.n_steps_print_qmgmcrd != 0:
             self.qmground_run_time = self.adjust_run_time(self.qmground_run_time,
                                                      self.qmground_time_step,
@@ -221,7 +232,11 @@ class UserInput:
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
-        self.exc_time_step = float(data["exc_time_step"]) # fs
+        try:
+            self.exc_time_step = float(data["exc_time_step"]) # fs
+        except KeyError:
+            self.exc_time_step = self.time_step
+
         if self.n_steps_print_emcrd != 0:
             self.exc_run_time = self.adjust_run_time(self.exc_run_time,
                                                     self.exc_time_step,
