@@ -87,6 +87,8 @@ class PulsePump(QmExcitedStateTrajectories):
         return [x for x in data if x.init_state == 1]
 
     def find_sm(self, filename, nstates):
+        if not os.path.exists(filename):
+            return -2
         from_s1 = self.muab_from_s1(filename)
         strengths = [x.strength for x in from_s1]
         tentative_sm_index = strengths.index(max(strengths))
