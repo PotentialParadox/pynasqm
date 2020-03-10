@@ -66,7 +66,6 @@ class PulsePump(QmExcitedStateTrajectories):
                               for traj in self.traj_indices()]
         nstates = self._user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
-        print("PulsePump Sm States:")
         with open('pulse_pump_states.txt', 'w') as fout:
             fout.write("{:15s}{:15s}\n".format("Traj","Init State"))
             for i, s in enumerate(sms):
@@ -87,17 +86,16 @@ class PulsePump(QmExcitedStateTrajectories):
         return [x for x in data if x.init_state == 1]
 
     def find_sm(self, filename, nstates):
+        print(f"Collecting from {filename}")
         if not os.path.exists(filename):
             return -1
         from_s1 = self.muab_from_s1(filename)
         strengths = [x.strength for x in from_s1]
         tentative_sm_index = strengths.index(max(strengths))
         sm_state = None
-        if self.satisfies_pulse_pump_criteria(from_s1[tentative_sm_index]):
-            sm_state = tentative_sm_index + 1
-        else:
-            sm_state = -1
-        return sm_state
+        if not self.satisfies_pulse_pump_criteria(from_s1[tentative_sm_index]):
+            return -1
+        return tentative_sm_index + 1
 
     def satisfies_pulse_pump_criteria(self, muab_line):
         return muab_line.strength > self._user_input.pump_pulse_min_strength \
