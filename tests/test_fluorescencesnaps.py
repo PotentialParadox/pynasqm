@@ -35,15 +35,15 @@ def userInput():
     user_input.qos = "roitberg"
     user_input.email = "dtracy.uf@gmail.com"
     user_input.email_options = 2
-    user_input.n_steps_qmexcited = 10
-    user_input.qmexcited_run_time = 0.005 #ps
+    user_input.n_steps_exc = 10
+    user_input.exc_run_time = 0.005 #ps
     user_input.n_steps_print_emcrd = 1
-    user_input.n_steps_to_print_qmexcited = 1
+    user_input.n_steps_to_print_exc = 1
     user_input.time_step = 0.5 #fs
     user_input.n_snapshots_ex = 4
     user_input.n_mcrd_frames_per_run_qmexcited = 10
     user_input.fluorescence_time_delay=0 #fs
-    user_input.n_qmexcited_runs = 1
+    user_input.n_exc_runs = 1
     user_input.restart_attempt = 0
     return user_input
 
