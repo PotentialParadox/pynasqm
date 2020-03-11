@@ -1,0 +1,78 @@
+&qmmm
+  maxcyc=0,
+  ntpr=1,
+  grms_tol=1.0d-2,
+  qm_theory='AM1',
+  scfconv=1.0d-8,
+  verbosity=1,
+  printdipole=1,
+  printbondorders=0,
+  density_predict=0,
+  itrmax=300,
+  exst_method=1,
+  dav_guess=1,
+  ftol0=1.0d-5,
+  ftol1=1.0d-5,
+  dav_maxcyc=200,
+  printcharges=0,
+  calcxdens=.false.,
+  solvent_model=0,
+  potential_type=1,
+  onsager_radius=2,
+  ceps=10,
+  linmixparam=1,
+  cosmo_scf_ftol=1.0d-5,
+  doZ=.false.,
+  index_of_refraction=100,
+  qm_ewald=0,
+  qm_pme=0,
+  EF=0,
+  Ex=0,
+  Ey=0,
+  Ez=0,
+&endqmmm
+
+&moldyn
+  rnd_seed=19345,
+  bo_dynamics_flag=0,
+  exc_state_init=1,
+  n_exc_states_propagate=5,
+  time_init=0.0,
+  time_step=0.5,
+  n_class_steps=0,
+  n_quant_steps=4,
+  moldyn_deriv_flag=1,
+  num_deriv_step=1.0d-3,
+  rk_tolerance=1.0d-7,
+  decoher_type=2,
+  decoher_e0=0.0,
+  decoher_c=0.0,
+  dotrivial=1,
+  quant_step_reduction_factor=2.5d-2,
+  therm_type=1,
+  therm_temperature=300,
+  therm_friction=2,
+  berendsen_relax_const=0.4,
+  heating=0,
+  heating_steps_per_degree=100,
+  verbosity=1,
+  out_data_steps=10,
+  out_coords_steps=10,
+  out_data_cube=0,
+  out_count_init=0,
+&endmoldyn
+
+
+&coord
+&endcoord
+
+&veloc
+&endveloc
+
+&coeff
+ 1.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+ 0.000000000000            0.0
+&endcoeff
