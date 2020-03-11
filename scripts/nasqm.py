@@ -21,6 +21,7 @@ from pynasqm.absorptionsnaps import AbsorptionSnaps
 from pynasqm.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.nasqmslurm import restart_nasqm
+from pynasqm.trajectories import combine_trajectories
 import subprocess
 
 

@@ -214,7 +214,7 @@ def write_spectra_flu_input(user_input):
     '''
     fluor_string, nfailed = accumulate_spectra(n_trajectories=user_input.n_snapshots_ex,
                                                n_states=user_input.n_exc_states_propagate_ex_param,
-                                               suffix='flu',
+                                               suffix='qmexcited',
                                                n_restarts=user_input.n_exc_runs-1)
     # The timestep needs to be adjusted for the number of frames skipped
     time_step = user_input.exc_time_step
@@ -250,7 +250,7 @@ def verify_coeffs(coeffs):
 
 def write_average_coeffs(n_trajectories, n_states=1):
     N = n_trajectories
-    filenames = ["flu/traj_{}/restart_0/coeff-n.out".format(x) for x in range(1, N+1)]
+    filenames = ["qmexcited/traj_{}/restart_0/coeff-n.out".format(x) for x in range(1, N+1)]
     coeffs = np.array([get_coeffs(f) for f in filenames])
     completed_trajectories = verify_coeffs(coeffs)
     coeffs = [coeffs[x] for x in completed_trajectories]
