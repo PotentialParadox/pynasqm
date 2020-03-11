@@ -16,6 +16,8 @@ tests/absorptionTrajectories/cpptraj.out
 tests/qmGroundTrajectories/cpptraj.out
 tests/absorptionSnapsTests/abs
 tests/absorptionSnapsTests/convert_to_crd.in
+tests/fluorescenceSnapsTests/flu
+tests/fluorescenceSnapsTests/convert_to_crd.in
 tests/qmGroundTrajectories/qmground
 tests/spectraCollection/abs_spectra
 #Emacs Temp files
