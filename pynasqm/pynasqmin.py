@@ -151,6 +151,12 @@ pynasqmin = ''\
 '# Change here the full width half max of the laser in fs\n'\
 '# Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening\n'\
 '    "fwhm": "100",\n'\
+'############################################################\n'\
+'#                  Fluorescence\n'\
+'############################################################\n'\
+'    "run_fluorescence_snapshots": "False",\n'\
+'# How many excited states do you want in your fluorescence calculations\n'\
+'    "n_flu_exc": "1",\n'\
 '# Do you want to collect the data from the exctied state trajectory\n'\
 '# calculations?\n'\
 '    "run_fluorescence_collection": "False",\n'\
