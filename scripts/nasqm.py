@@ -18,6 +18,7 @@ from pynasqm.pulsepump import PulsePump
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
 from pynasqm.mmgroundstatetrajectory import groundStateDynamics
 from pynasqm.absorptionsnaps import AbsorptionSnaps
+from pynasqm.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.nasqmslurm import restart_nasqm
 import subprocess
@@ -74,6 +75,8 @@ def main():
         run_pulse_pump_prep_collection(input_ceon, user_input)
     if user_input.run_excited_state_trajectories:
         run_excited_state_trajectories(input_ceon, user_input)
+    if user_input.run_fluorescence_snapshots:
+        run_fluorescence_snaps(input_ceon, user_input)
     if user_input.run_fluorescence_collection:
         run_fluorescence_collection(user_input)
 
@@ -201,6 +204,14 @@ def run_excited_state_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
     QmExcitedStateTrajectories(user_input, input_ceon).run()
     manage_restart(2, user_input, user_input.restart_attempt)
+
+def run_fluorescence_snaps(input_ceon, user_input):
+    '''
+    Take snapshots from the qmground trajectories ignoring a time delay.
+    Run singlepoints on these snaphsots
+    '''
+    title_print("Fluorescence Snaps")
+    FluorescenceSnaps(user_input, input_ceon).run()
 
 def run_fluorescence_collection(user_input):
     '''

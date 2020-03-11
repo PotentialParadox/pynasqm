@@ -188,10 +188,6 @@ class UserInput:
         if self.n_snapshots_ex > self.n_snapshots_qmground:
             raise ValueError("\nCurrently esmd runs start from the restarts of qmmm_gsmd\n"\
                              "therefore n_snapshots_ex must less than or equal to n_snapshots_qmground")
-        # Do you want to collect the data from the exctied state trajectory
-        # calculations?
-        self.run_fluorescence_collection = pynasqm.utils.str2bool(
-            data["run_fluorescence_collection"])
         # Change here how often you want to print the fluorescence trajectories
         try:
             self.n_steps_print_emcrd = int(data["n_steps_to_print_emcrd"])
@@ -222,13 +218,6 @@ class UserInput:
             self.is_pulse_pump = False
         # Change here how often you want to print the excited state trajectories
         self.n_steps_to_print_exc = int(data["n_steps_to_print_exc"])
-        # Some time will be needed for the molecule to equilibrate
-        # from jumping from the ground state to the excited state.
-        # We don't want to include this data in the calculation
-        # of the fluorescence. We therefore set a time delay.
-        self.fluorescence_time_delay = float(data["fluorescence_time_delay"]) # fs
-        # Truncation will remove so many fs off the back of the trajectory
-        self.fluorescence_time_truncation = float(data["fluorescence_time_truncation"]) # fs
         # Change here the runtime for the the trajectories
         # used to create calculated the fluorescence
         self.exc_run_time = float(data["exc_run_time"]) # ps
@@ -243,6 +232,30 @@ class UserInput:
                                                     self.n_exc_runs,
                                                     self.n_steps_print_emcrd,
                                                     1)
+        #################################
+        # Fluorescence
+        #################################
+        # Do you want to run the fluorescence snapshots
+        try:
+            self.run_fluorescence_snapshots = pynasqm.utils.str2bool(data["run_fluorescence_snapshots"])
+        except KeyError:
+            self.run_fluorescence_snapshots = False
+        # Number of states to include in the fluorescence calculations
+        try:
+            self.n_flu_exc = int(data["n_flu_exc"])
+        except KeyError:
+            self.n_flu_exc = 1
+        # Some time will be needed for the molecule to equilibrate
+        # from jumping from the ground state to the excited state.
+        # We don't want to include this data in the calculation
+        # of the fluorescence. We therefore set a time delay.
+        self.fluorescence_time_delay = float(data["fluorescence_time_delay"]) # fs
+        # Truncation will remove so many fs off the back of the trajectory
+        self.fluorescence_time_truncation = float(data["fluorescence_time_truncation"]) # fs
+        # Do you want to collect the data from the exctied state trajectory
+        # calculations?
+        self.run_fluorescence_collection = pynasqm.utils.str2bool(
+            data["run_fluorescence_collection"])
 
 
         #################################
@@ -274,6 +287,7 @@ class UserInput:
         self.n_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_to_print_qmground)
         self.n_mcrd_frames_per_run_qmground = int(self.n_steps_per_run_qmground / self.n_steps_print_qmgmcrd)
         self.n_steps_per_run_exc = self.n_steps_per_run(self.exc_run_time, self.exc_time_step, self.n_exc_runs)
+        self.n_mcrd_frames_per_run_qmexcited = int(self.n_steps_per_run_exc / self.n_steps_print_emcrd)
 
 
     @staticmethod

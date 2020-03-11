@@ -18,13 +18,13 @@ class FluorescenceSnaps(Trajectories):
         self._child_root = 'nasqm_flu_'
         self._job_suffix = 'flu'
         self._parent_restart_root = 'nasqm_qmexcited'
-        self._number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmexcited * user_input.n_qmexcited_runs
+        self._number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmexcited * user_input.n_exc_runs
         self._n_snapshots_per_trajectory = self.snaps_per_trajectory()
         self._amber_restart = False
 
     def snaps_per_trajectory(self):
         n_frames = self._number_frames_in_parent
-        run_time = self._user_input.qmexcited_run_time
+        run_time = self._user_input.exc_run_time
         time_delay = self._user_input.fluorescence_time_delay/1000
         return int(n_frames * ( 1 - time_delay/run_time))
 
@@ -37,7 +37,7 @@ class FluorescenceSnaps(Trajectories):
         input_ceon.set_excited_state(0, user_input.n_flu_exc)
         input_ceon.set_n_steps_to_print(1)
         input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.qmexcited_time_step)
+        input_ceon.set_time_step(user_input.exc_time_step)
         input_ceon.set_random_velocities(False)
         input_ceon.calc_transition_dipoles(True)
         input_ceon.set_istully(False, 0)
@@ -65,7 +65,7 @@ class FluorescenceSnaps(Trajectories):
         return not self.isrestarting()
 
     def start_from_qmexcited(self):
-        combine_trajectories("qmexcited", self._user_input.n_snapshots_ex, self._user_input.n_qmexcited_runs)
+        combine_trajectories("qmexcited", self._user_input.n_snapshots_ex, self._user_input.n_exc_runs)
         qmexcited_trajs = [f"qmexcited/traj_{traj}/nasqm_qmexcited_{traj}.nc"
                           for traj in range(1, self._number_trajectories+1)]
         outputs = [f"flu/traj_{traj}/qmexcited_t{traj}_snap" for traj in range(1, self._number_trajectories+1)]
@@ -100,7 +100,7 @@ class FluorescenceSnaps(Trajectories):
             restart_files = [f"snap_${{i}}_for_fluorescence_t${{ID}}_back.rst"]
             amber.prmtop_files = ["m1.prmtop"]
         else:
-            roots = [f"nasqm_flue_t{traj}_{snap_id}"
+            roots = [f"nasqm_flu_t{traj}_{snap_id}"
                      for traj in self.traj_indices()
                      for snap_id in self.snap_indices()]
             restart_files = [f"snap_{snap_id}_for_fluorescence_t{traj}_back.rst"
