@@ -70,7 +70,7 @@ def build_snap_command(directory, amber, n_snaps):
     command = exports
     command += f""\
         f"for i in {{1..{n_snaps}}};do\n"\
-        f"    cd abs/traj_${{ID}}/${{i}}\n"\
+        f"    cd {directory}\n"\
         f"    if test -f input.ceon; then\n"\
         f"        init_state=`grep \"exc_state_init.-\" input.ceon`\n"\
         f"        if [ \"$init_state\" != \"\" ];then\n"\

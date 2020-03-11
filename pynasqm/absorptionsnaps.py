@@ -78,7 +78,7 @@ class AbsorptionSnaps(Trajectories):
 
     def cpptraj_start_index(self):
         n_frames = self._number_frames_in_parent
-        return n_frames - self._n_snapshots_per_trajectory
+        return n_frames - self._n_snapshots_per_trajectory + 1
 
     def create_restarts_from_parent(self, override=True):
         self._create_directories()
