@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.absorptionsnaps import AbsorptionSnaps
+from pynasqm.trajectories.absorptionsnaps import AbsorptionSnaps
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 

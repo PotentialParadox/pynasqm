@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.fluorescencesnaps import FluorescenceSnaps
+from pynasqm.trajectories.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 

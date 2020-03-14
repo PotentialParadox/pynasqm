@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
+from pynasqm.trajectories.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir, touch
 

@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.mmgroundstatetrajectory import prepareDynamics, create_restarts_from_parent
+from pynasqm.trajectories.mmgroundstatetrajectory import prepareDynamics, create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 
 def setup_module(module):

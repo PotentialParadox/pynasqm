@@ -5,7 +5,7 @@ import os
 import subprocess
 import types
 import pytest
-from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
+from pynasqm.trajectories.qmgroundstatetrajectories import QmGroundTrajectories
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 

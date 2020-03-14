@@ -1,4 +1,4 @@
-from pynasqm.trajectories import Trajectories
+from pynasqm.trajectories.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 import pytraj as pt
 import pynasqm.nasqmslurm as nasqm_slurm
