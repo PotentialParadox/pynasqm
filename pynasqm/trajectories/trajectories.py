@@ -4,7 +4,7 @@ import subprocess
 from os import mkdir
 from pynasqm.closestrunner import ClosestRunner
 from pynasqm.solventmaskupdater import SolventMaskUpdater
-from pynasqm.nmrmanager import NMRManager, create_dist_file_name, toInputPath
+from pynasqm.nmr.nmrmanager import NMRManager, create_dist_file_name, toInputPath
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.restrictedatoms import RestrictedAtoms

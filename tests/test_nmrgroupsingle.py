@@ -4,7 +4,7 @@ Units tests for the cpptraj wrappers for nasqm
 import os
 import pytest
 import numpy as np
-from pynasqm.nmrgroupsingle import NMRGroupSingle
+from pynasqm.nmr.nmrgroupsingle import NMRGroupSingle
 import pynasqm.userinput as nasqm_user_input
 import pynasqm.inputceon as inputceon
 
