@@ -13,6 +13,8 @@ from pynasqm.closestreader import ClosestReader
 from pynasqm.utils import mkdir, copy_file, is_empty_file
 from pynasqm.cpptraj import create_restarts
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
+from pynasqm.trajectories.set_initial_input import set_initial_input
+from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -54,19 +56,7 @@ class Trajectories(ABC):
         create_restarts_from_parent(self.traj_data, 0, override=True)
 
     def create_inputceon_copies(self):
-        inputceons = []
-        attempt = self.user_input.restart_attempt
-        job = self.job_suffix
-        mkdir("{}".format(job))
-        for index in self.traj_indices():
-            file_name = "{}t{}_r{}.in".format(self.child_root, index, attempt)
-            mkdir("{}/traj_{}".format(job, index))
-            mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
-            directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
-            inputceons.append(self.input_ceons[0].copy(directory, file_name))
-        inputceons = self.set_nexmd_seed(inputceons)
-        inputceons = self.set_excited_states(inputceons)
-        self.input_ceons = inputceons
+        self.input_ceons = create_inputceon_copies(self.traj_data)
 
     def set_nexmd_seed(self, inputceons):
         return inputceons
@@ -144,7 +134,7 @@ class Trajectories(ABC):
                 for traj in range(1, self.number_trajectories+1)]
 
     def set_initial_input(self):
-        pass
+        set_initial_input(self.traj_data)
 
     def runDynamics(self, amber, slurm_file):
         if self.user_input.is_hpc:

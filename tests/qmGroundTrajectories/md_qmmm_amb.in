@@ -24,7 +24,7 @@
  &qmmm
   scfconv=1.0000E-10,
   verbosity=0,
-  qmmask=':1',
+  qmmask=':1,896',
   diag_routine=1,
   qmcharge=0,
   qm_theory='AM1',

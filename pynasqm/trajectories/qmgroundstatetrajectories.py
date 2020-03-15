@@ -21,20 +21,6 @@ class QmGroundTrajectories(Trajectories):
         self.amber_restart = False
         self.traj_data = QmGround(user_input, input_ceon)
 
-    def set_initial_input(self):
-        input_ceon = self.input_ceons[0]
-        user_input = self.user_input
-        input_ceon.set_n_steps(user_input.n_steps_per_run_qmground)
-        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_qmgmcrd)
-        input_ceon.set_quantum(True)
-        input_ceon.set_excited_state(0, user_input.n_qmground_exc)
-        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_qmground)
-        input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.qmground_time_step)
-        input_ceon.set_random_velocities(False)
-        input_ceon.calc_transition_dipoles(False)
-        input_ceon.set_istully(False, 0)
-
     def isrestarting(self):
         return self.user_input.restart_attempt < self.user_input.n_qmground_runs - 1
 
