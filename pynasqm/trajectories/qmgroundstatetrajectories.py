@@ -41,22 +41,6 @@ class QmGroundTrajectories(Trajectories):
     def islastrun(self):
         return not self.isrestarting()
 
-    # def start_from_mmground(self):
-    #     mm_traj = "mmground/nasqm_ground.nc"
-    #     self.check_trajins([mm_traj])
-    #     restart_step = int(self.number_frames_in_parent / self.number_trajectories)
-    #     nasqm_cpptraj.create_restarts(amber_inputfile=mm_traj,
-    #                                   output=self.parent_restart_root, step=restart_step)
-    #     self.move_restarts()
-
-    # def create_restarts_from_parent(self, override=True):
-    #     self.create_directories()
-    #     if self.user_input.restart_attempt == 0:
-    #         self.start_from_mmground()
-    #     else:
-    #         self.start_from_restart(override)
-
-
     def initial_snaps(self):
         if self.number_trajectories == 1:
             return ['{}'.format(self.parent_restart_root)]

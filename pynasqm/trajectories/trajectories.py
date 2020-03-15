@@ -50,7 +50,7 @@ class Trajectories(ABC):
         print(15 * " " + header)
         print(50*"*")
 
-    def create_restarts_from_parent(self):
+    def create_restarts_from_parent(self, override=True):
         create_restarts_from_parent(self.traj_data, 0, override=True)
 
     def create_inputceon_copies(self):

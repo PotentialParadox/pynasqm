@@ -5,6 +5,7 @@ from pynasqm.trajectories.trajectories import Trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
+from pynasqm.trajectories.qmexcited import QmExcited
 
 class QmExcitedStateTrajectories(Trajectories):
 
@@ -16,6 +17,7 @@ class QmExcitedStateTrajectories(Trajectories):
         self.job_suffix = 'qmexcited'
         self.parent_restart_root = 'nasqm_qmground_'
         self.amber_restart = True
+        self.traj_data = QmExcited(user_input, input_ceon)
 
     def restart_name(self, index):
         if index == -1:
@@ -40,47 +42,12 @@ class QmExcitedStateTrajectories(Trajectories):
         input_ceon.calc_transition_dipoles(False)
         input_ceon.set_istully(user_input.is_tully, user_input.qsteps)
 
-    @staticmethod
-    def test_for_qmground():
-        if not os.path.isdir("qmground"):
-            raise AssertionError("qmground directory not found.\n"\
-                                 "Did you run the QM ground-state trajectories?\n")
-
     def isrestarting(self):
         return self.user_input.restart_attempt < self.user_input.n_exc_runs - 1
 
     def islastrun(self):
         return not self.isrestarting()
 
-    def start_from_qmground(self, override):
-        self.copy_restarts_from_qmground(override)
-        if self.user_input.restrain_solvents:
-            self.copy_nmr_from_qmground()
-
-    def copy_nmr_from_qmground(self):
-        source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
-        output_files = ["qmexcited/traj_{}/nmr/rst_{}.dist".format(t, t) for t in self.traj_indices()]
-        copy_files(source_files, output_files)
-        source_files = ["qmground/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
-        output_files = ["qmexcited/traj_{}/nmr/closest_{}.txt".format(t, t) for t in self.traj_indices()]
-        copy_files(source_files, output_files)
-
-    def copy_restarts_from_qmground(self, override):
-        self.test_for_qmground()
-        r = self.user_input.n_qmground_runs - 1
-        source_files = ["qmground/traj_{}/restart_{}/snap_for_qmground_t{}_r{}.rst".format(t, r, t, r+1)
-                        for t in self.traj_indices()]
-        output_files = ["{1}/traj_{0}/restart_0/snap_for_{1}_t{0}_r0.rst".format(t, self.job_suffix)
-                        for t in self.traj_indices()]
-        copy_files(source_files, output_files, force=override)
-
-
-    def create_restarts_from_parent(self, override=False):
-        self.create_directories()
-        if self.user_input.restart_attempt == 0:
-            self.start_from_qmground(override)
-        else:
-            self.start_from_restart(override)
 
     def set_excited_states(self, input_ceons):
         print("Setting Initial Excited States")
