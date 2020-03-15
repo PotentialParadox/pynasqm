@@ -3,6 +3,7 @@ import pynasqm.cpptraj as nasqm_cpptraj
 import pytraj as pt
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.utils import mkdir
+from pynasqm.trajectories.qmground import QmGround
 import os
 
 import subprocess
@@ -18,6 +19,7 @@ class QmGroundTrajectories(Trajectories):
         self.parent_restart_root = 'ground_snap'
         self.number_frames_in_parent = user_input.n_mcrd_frames_per_run_gs * user_input.n_ground_runs
         self.amber_restart = False
+        self.traj_data = QmGround(user_input, input_ceon)
 
     def set_initial_input(self):
         input_ceon = self.input_ceons[0]
@@ -39,26 +41,21 @@ class QmGroundTrajectories(Trajectories):
     def islastrun(self):
         return not self.isrestarting()
 
-    def start_from_mmground(self):
-        mm_traj = "mmground/nasqm_ground.nc"
-        self.check_trajins([mm_traj])
-        restart_step = int(self.number_frames_in_parent / self.number_trajectories)
-        nasqm_cpptraj.create_restarts(amber_inputfile=mm_traj,
-                                      output=self.parent_restart_root, step=restart_step)
-        self.move_restarts()
+    # def start_from_mmground(self):
+    #     mm_traj = "mmground/nasqm_ground.nc"
+    #     self.check_trajins([mm_traj])
+    #     restart_step = int(self.number_frames_in_parent / self.number_trajectories)
+    #     nasqm_cpptraj.create_restarts(amber_inputfile=mm_traj,
+    #                                   output=self.parent_restart_root, step=restart_step)
+    #     self.move_restarts()
 
-    def create_restarts_from_parent(self, override=True):
-        self.create_directories()
-        if self.user_input.restart_attempt == 0:
-            self.start_from_mmground()
-        else:
-            self.start_from_restart(override)
+    # def create_restarts_from_parent(self, override=True):
+    #     self.create_directories()
+    #     if self.user_input.restart_attempt == 0:
+    #         self.start_from_mmground()
+    #     else:
+    #         self.start_from_restart(override)
 
-    def move_restarts(self):
-        for i, filename in enumerate(self.initial_snaps(), start=1):
-            new_resart_name = "snap_for_qmground_t{}_r{}.rst".format(i, self.user_input.restart_attempt)
-            directory = "qmground/traj_{}/restart_{}/{}".format(i, self.user_input.restart_attempt, new_resart_name)
-            subprocess.call(['mv', filename, directory])
 
     def initial_snaps(self):
         if self.number_trajectories == 1:

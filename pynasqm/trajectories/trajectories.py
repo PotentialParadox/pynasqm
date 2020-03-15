@@ -12,6 +12,7 @@ from pynasqm.trajdistance import TrajDistance
 from pynasqm.closestreader import ClosestReader
 from pynasqm.utils import mkdir, copy_file, is_empty_file
 from pynasqm.cpptraj import create_restarts
+from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -24,6 +25,7 @@ class Trajectories(ABC):
         self.job_suffix = "undefined_job_suffix"
         self.parent_restart_root = "undefined_parent_root"
         self.amber_restart = True
+        self.traj_data = None
 
     def run(self):
         self.set_initial_input()
@@ -49,7 +51,7 @@ class Trajectories(ABC):
         print(50*"*")
 
     def create_restarts_from_parent(self):
-        pass
+        create_restarts_from_parent(self.traj_data, 0, override=True)
 
     def create_inputceon_copies(self):
         inputceons = []
