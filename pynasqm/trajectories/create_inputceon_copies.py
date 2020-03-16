@@ -16,4 +16,4 @@ def create_inputceon_copies(traj_data):
         inputceons.append(traj_data.input_ceons[0].copy(directory, file_name))
     inputceons = set_nexmd_seed(traj_data, inputceons)
     inputceons = set_excited_states(traj_data, inputceons)
-    return inputceons
+    traj_data.input_ceons = inputceons

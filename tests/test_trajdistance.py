@@ -4,7 +4,7 @@ Units tests for the cpptraj wrappers for nasqm
 import os
 import pytest
 import numpy as np
-from pynasqm.trajdistance import TrajDistance
+from pynasqm.nmr.trajdistance import TrajDistance
 
 def setup_module(module):
     '''

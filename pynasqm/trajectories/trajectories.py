@@ -2,19 +2,20 @@ from abc import ABC, abstractmethod
 import os.path
 import subprocess
 from os import mkdir
-from pynasqm.closestrunner import ClosestRunner
-from pynasqm.solventmaskupdater import SolventMaskUpdater
+from pynasqm.nmr.closestrunner import ClosestRunner
+from pynasqm.nmr.solventmaskupdater import SolventMaskUpdater
 from pynasqm.nmr.nmrmanager import NMRManager, create_dist_file_name, toInputPath
 from pynasqm.amber import Amber
 import pynasqm.nasqmslurm as nasqm_slurm
-from pynasqm.restrictedatoms import RestrictedAtoms
-from pynasqm.trajdistance import TrajDistance
-from pynasqm.closestreader import ClosestReader
+from pynasqm.nmr.restrictedatoms import RestrictedAtoms
+from pynasqm.nmr.trajdistance import TrajDistance
+from pynasqm.nmr.closestreader import ClosestReader
 from pynasqm.utils import mkdir, copy_file, is_empty_file
 from pynasqm.cpptraj import create_restarts
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.trajectories.set_initial_input import set_initial_input
 from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
+from pynasqm.nmr.update_nmr_info import update_nmr_info
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -28,6 +29,14 @@ class Trajectories(ABC):
         self.parent_restart_root = "undefined_parent_root"
         self.amber_restart = True
         self.traj_data = None
+
+    def __str__(self):
+        print_value = ""\
+            f"Traj_Data Info:\n"\
+            f"Class: {self.job_suffix}:\n"\
+            f"Number input_ceons: {len(self.input_ceons)}\n"\
+            f"Number trajectories: {self.number_trajectories}\n"
+        return print_value
 
     def run(self):
         self.set_initial_input()
@@ -56,7 +65,8 @@ class Trajectories(ABC):
         create_restarts_from_parent(self.traj_data, 0, override=True)
 
     def create_inputceon_copies(self):
-        self.input_ceons = create_inputceon_copies(self.traj_data)
+        create_inputceon_copies(self.traj_data)
+        self.input_ceons = self.traj_data.input_ceons
 
     def set_nexmd_seed(self, inputceons):
         return inputceons
@@ -75,42 +85,7 @@ class Trajectories(ABC):
                 and self.user_input.number_nearest_solvents > 0)
 
     def update_nmr_info(self):
-        n_qm_solvents = self.user_input.number_nearest_solvents
-        nmrdirs = self.nmrdirs()
-        center_mask = self.user_input.mask_for_center
-        trajins = self.trajins()
-        # self.check_trajins(trajins)
-        closest_runner = ClosestRunner(n_qm_solvents, self.number_trajectories,
-                                        trajins, center_mask, nmrdirs)
-        closest_outputs = closest_runner.create_closest_outputs(run=self.should_update_nmr())
-        mask_updater = SolventMaskUpdater(self.input_ceons, self.user_input, closest_outputs)
-        mask_updater.update_masks()
-        trajins = closest_runner.get_trajins()
-        parmtop = "m1.prmtop"
-        restricted_atoms = None
-        if self.should_update_nmr():
-            restricted_atoms = self.get_list_restricted_atoms(parmtop, trajins, closest_outputs)
-            distances = self.get_distances(parmtop, trajins, closest_outputs, restricted_atoms[0].nresidues)
-            NMRManager(self.input_ceons, closest_outputs, restricted_atoms).update(distances, nmrdirs)
-        dist_files = [toInputPath(create_dist_file_name(directory, traj))
-                      for (directory, traj) in zip(nmrdirs, range(self.number_trajectories))]
-        NMRManager(self.input_ceons, closest_outputs, restricted_atoms, dist_files).update_inputs()
-
-    def get_distances(self, parmtop, trajins, closest_outputs, nresidues):
-        center_mask = self.user_input.mask_for_center
-        added_buffer = 0.0
-        list_distances = []
-        for traj, nmrdir in zip(range(self.number_trajectories), self.nmrdirs()):
-            residues = [":{}".format(x) for x in ClosestReader(closest_outputs[traj]).residues]
-            trajdist = TrajDistance(parmtop, center_mask)
-            distances = [trajdist(trajins[traj], residue, traj, nmrdir) + added_buffer for residue in residues]
-            maxdistance = max(distances)
-            newdistances = [maxdistance for _ in distances]
-            distances = newdistances
-            far_distances = [-maxdistance for _ in range(nresidues-len(distances)-1)]
-            distances = distances + far_distances
-            list_distances.append(distances)
-        return list_distances
+        update_nmr_info(self.traj_data)
 
     @staticmethod
     def check_trajins(trajins):
@@ -120,14 +95,6 @@ class Trajectories(ABC):
                                    f"mm_ground_state ->  qm_ground_state ->  absorption -> excited_state -> fluorescence\n"\
                                    f"                                    -> pulse_pump \n")
 
-    def get_list_restricted_atoms(self, parmtop, trajins, closest_outputs):
-        center_mask = self.user_input.mask_for_center
-        list_restricted_atoms = []
-        for traj in range(self.number_trajectories):
-            print("Generating restricted atoms list for traj {}".format(traj+1))
-            list_restricted_atoms.append(RestrictedAtoms(parmtop, trajins[traj], center_mask,
-                                                         closest_outputs[traj]))
-        return list_restricted_atoms
 
     def trajins(self):
         return [self.restart_path(traj, self.user_input.restart_attempt)

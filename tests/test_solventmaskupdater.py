@@ -4,7 +4,7 @@ Units tests for the cpptraj wrappers for nasqm
 import os
 import types
 import pytest
-from pynasqm.solventmaskupdater import SolventMaskUpdater
+from pynasqm.nmr.solventmaskupdater import SolventMaskUpdater
 from pynasqm.inputceon import InputCeon
 
 def setup_module(module):

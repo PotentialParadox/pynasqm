@@ -4,7 +4,7 @@ Units tests for the cpptraj wrappers for nasqm
 import os
 import pytest
 import numpy as np
-from pynasqm.restrictedatoms import RestrictedAtoms
+from pynasqm.nmr.restrictedatoms import RestrictedAtoms
 
 def setup_module(module):
     '''
