@@ -4,6 +4,7 @@ from pynasqm.trajectories.qmground import QmGround
 from pynasqm.trajectories.qmexcited import QmExcited
 from pynasqm.trajectories.fluorescence import Fluorescence
 from pynasqm.trajectories.absorption import Absorption
+from pynasqm.trajectories.ppump import PPump
 from pynasqm.trajectories.utils import traj_indices, snap_indices
 from pynasqm.trajectories.set_nexmd_seed import set_nexmd_seed
 from pynasqm.trajectories.set_excited_states import set_excited_states
@@ -17,6 +18,7 @@ def create_inputceon_copies(traj_data):
 
 @create_inputceon_copies.register(QmGround)
 @create_inputceon_copies.register(QmExcited)
+@create_inputceon_copies.register(PPump)
 def _(traj_data):
     inputceons = []
     attempt = traj_data.user_input.restart_attempt

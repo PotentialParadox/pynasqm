@@ -2,6 +2,7 @@ from functools import singledispatch
 from pynasqm.trajectories.qmground import QmGround
 from pynasqm.trajectories.fluorescence import Fluorescence
 from pynasqm.trajectories.absorption import Absorption
+from pynasqm.trajectories.ppump import PPump
 
 @singledispatch
 def set_excited_states(job_data, inputceons):

@@ -26,39 +26,10 @@ class PulsePump(QmExcitedStateTrajectories):
             return "{}{}.rst".format(self.parent_restart_root, 1)
         return "{}{}.rst".format(self.parent_restart_root, index+1)
 
-    def _set_initial_input(self):
-        input_ceon = self.input_ceons[0]
-        user_input = self.user_input
-        input_ceon.set_quantum(True)
-        input_ceon.set_n_steps(0)
-        input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
-        n_states_to_prop = user_input.n_exc_states_propagate_ex_param-1
-        input_ceon.set_excited_state(1, n_states_to_prop)
-        input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
-        input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.qmground_time_step)
-        input_ceon.set_random_velocities(False)
-        input_ceon.set_istully(False, user_input.qsteps)
-        input_ceon.calc_transition_dipoles(True)
-        user_input.walltime="01:00:00" # This calculation does not take a lot of time
 
     def create_restarts_from_parent(self, override=False):
         self.create_directories()
         self.start_from_qmground(override)
-
-    def create_inputceon_copies(self):
-        inputceons = []
-        attempt = self.user_input.restart_attempt
-        job = self.job_suffix
-        mkdir("{}".format(job))
-        for index in range(1, self.number_trajectories+1):
-            file_name = "{}t{}_r{}.in".format(self.child_root, index, attempt)
-            mkdir("{}/traj_{}".format(job, index))
-            mkdir("{}/traj_{}/restart_{}".format(job, index, attempt))
-            directory = "{}/traj_{}/restart_{}".format(job, index, attempt)
-            inputceons.append(self.input_ceons[0].copy(directory, file_name))
-        inputceons = self.set_nexmd_seed(inputceons)
-        self.input_ceons = inputceons
 
     def _update_nmr_info(self):
         pass

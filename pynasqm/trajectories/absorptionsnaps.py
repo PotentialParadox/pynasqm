@@ -31,20 +31,6 @@ class AbsorptionSnaps(Trajectories):
         time_delay = self.user_input.absorption_time_delay/1000
         return int(n_frames * ( 1 - time_delay/run_time))
 
-    def set_initial_input(self):
-        input_ceon = self.input_ceons[0]
-        user_input = self.user_input
-        input_ceon.set_n_steps(0)
-        input_ceon.set_n_steps_to_mcrd(0)
-        input_ceon.set_quantum(True)
-        input_ceon.set_excited_state(0, user_input.n_abs_exc)
-        input_ceon.set_n_steps_to_print(1)
-        input_ceon.set_verbosity(1)
-        input_ceon.set_time_step(user_input.qmground_time_step)
-        input_ceon.set_random_velocities(False)
-        input_ceon.calc_transition_dipoles(False)
-        input_ceon.set_istully(False, 0)
-
     def create_slurm(self, amber):
         if self.user_input.is_hpc:
             job_name = self.user_input.job_name + self.job_suffix
