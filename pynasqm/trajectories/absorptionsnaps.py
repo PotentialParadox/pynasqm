@@ -1,10 +1,12 @@
 from pynasqm.trajectories.trajectories import Trajectories
 from pynasqm.amber import Amber
 from pynasqm.trajectories.combine_trajectores import combine_trajectories
+from pynasqm.trajectories.utils import check_trajins
 import pynasqm.cpptraj as nasqm_cpptraj
 import pytraj as pt
 import pynasqm.nasqmslurm as nasqm_slurm
 from pynasqm.utils import mkdir
+from pynasqm.trajectories.absorption import Absorption
 import os
 
 import subprocess
@@ -21,6 +23,7 @@ class AbsorptionSnaps(Trajectories):
         self.number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmground * user_input.n_qmground_runs
         self.n_snapshots_per_trajectory = self.snaps_per_trajectory()
         self.amber_restart = False
+        self.traj_data = Absorption(user_input, input_ceon)
 
     def snaps_per_trajectory(self):
         n_frames = self.number_frames_in_parent
@@ -69,7 +72,7 @@ class AbsorptionSnaps(Trajectories):
         qmground_trajs = [f"qmground/traj_{traj}/nasqm_qmground_{traj}.nc"
                           for traj in range(1, self.number_trajectories+1)]
         outputs = [f"abs/traj_{traj}/qmground_t{traj}_snap" for traj in range(1, self.number_trajectories+1)]
-        self.check_trajins(qmground_trajs)
+        check_trajins(qmground_trajs)
         restart_step = 1
         for trajin, output in zip(qmground_trajs, outputs):
             nasqm_cpptraj.create_restarts(amber_inputfile=trajin, start=self.cpptraj_start_index(),
@@ -167,23 +170,6 @@ class AbsorptionSnaps(Trajectories):
 
     def snap_indices(self):
         return range(1,self.n_snapshots_per_trajectory+1)
-
-    def create_inputceon_copies(self):
-        inputceons = []
-        attempt = self.user_input.restart_attempt
-        job = self.job_suffix
-        directories = [f"abs/traj_{traj}/{snap_id}"
-                       for traj in self.traj_indices()
-                       for snap_id in self.snap_indices()]
-        file_names = [f"nasqm_abs_t{traj}_{snap_id}.in"
-                       for traj in self.traj_indices()
-                       for snap_id in self.snap_indices()]
-        for directory, file_name in zip(directories, file_names):
-            mkdir(directory)
-            inputceons.append(self.input_ceons[0].copy(directory, file_name))
-        inputceons = self.set_nexmd_seed(inputceons)
-        inputceons = self.set_excited_states(inputceons)
-        self.input_ceons = inputceons
 
     def restart_name(self, index):
         if index == -1:

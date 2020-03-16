@@ -7,6 +7,7 @@ from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
+from pynasqm.trajectories.ppump import PPump
 
 class PulsePump(QmExcitedStateTrajectories):
 
@@ -18,6 +19,7 @@ class PulsePump(QmExcitedStateTrajectories):
         self.job_suffix = 'pulse_pump'
         self.parent_restart_root = 'nasqm_qmground_'
         self.amber_restart = True
+        self.traj_data = PPump(user_input, input_ceon)
 
     def _restart_name(self, index):
         if index == -1:

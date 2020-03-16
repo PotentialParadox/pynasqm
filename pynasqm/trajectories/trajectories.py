@@ -68,8 +68,6 @@ class Trajectories(ABC):
         create_inputceon_copies(self.traj_data)
         self.input_ceons = self.traj_data.input_ceons
 
-    def set_nexmd_seed(self, inputceons):
-        return inputceons
 
     def set_excited_states(self, inputceons):
         return inputceons
@@ -86,14 +84,6 @@ class Trajectories(ABC):
 
     def update_nmr_info(self):
         update_nmr_info(self.traj_data)
-
-    @staticmethod
-    def check_trajins(trajins):
-        for trajin in trajins:
-            if not os.path.isfile(trajin):
-                raise RuntimeError(f"{trajin} was not found, make sure you ran the previous step: \n"\
-                                   f"mm_ground_state ->  qm_ground_state ->  absorption -> excited_state -> fluorescence\n"\
-                                   f"                                    -> pulse_pump \n")
 
 
     def trajins(self):
@@ -184,37 +174,6 @@ class Trajectories(ABC):
             index = 0
         return "{}{}".format(self.child_root, index+1)
 
-
-    def create_directories(self):
-        job = self.job_suffix
-        mkdir("{}".format(job))
-        for i in range(1, self.number_trajectories + 1):
-            directory = "{}/traj_{}".format(job, i)
-            restart_directory = "{}/traj_{}/restart_{}".format(job, i,
-                                                               self.user_input.restart_attempt)
-            nmr_directory = "{}/traj_{}/nmr".format(job, i)
-            mkdir(directory)
-            mkdir(restart_directory)
-            mkdir(nmr_directory)
-
-    def start_from_restart(self, override):
-        restart = self.user_input.restart_attempt
-        job = self.job_suffix
-        for traj in range(1, self.number_trajectories+1):
-            source_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
-                                                                                 restart-1,
-                                                                                 job,
-                                                                                 traj,
-                                                                                 restart)
-            output_path = "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(job, traj,
-                                                                                 restart,
-                                                                                 job,
-                                                                                 traj,
-                                                                                 restart)
-            if os.path.isfile(source_path) and not is_empty_file(source_path):
-                create_restarts(source_path, output_path, override=override)
-            if os.path.isfile(source_path) and is_empty_file(source_path):
-                copy_file(source_path, output_path, override)
 
     def restart_path(self, trajectory, restart):
         return "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(self.job_suffix,
