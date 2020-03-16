@@ -54,28 +54,6 @@ class FluorescenceSnaps(Trajectories):
     def islastrun(self):
         return not self.isrestarting()
 
-    def start_from_qmexcited(self):
-        combine_trajectories("qmexcited", self.user_input.n_snapshots_ex, self.user_input.n_exc_runs)
-        qmexcited_trajs = [f"qmexcited/traj_{traj}/nasqm_qmexcited_{traj}.nc"
-                          for traj in range(1, self.number_trajectories+1)]
-        outputs = [f"flu/traj_{traj}/qmexcited_t{traj}_snap" for traj in range(1, self.number_trajectories+1)]
-        check_trajins(qmexcited_trajs)
-        restart_step = 1
-        for trajin, output in zip(qmexcited_trajs, outputs):
-            nasqm_cpptraj.create_restarts(amber_inputfile=trajin, start=self.cpptraj_start_index(),
-                                          output=output, step=restart_step)
-        self.move_restarts()
-
-    def cpptraj_start_index(self):
-        n_frames = self.number_frames_in_parent
-        return n_frames - self.n_snapshots_per_trajectory + 1
-
-    def create_restarts_from_parent(self, override=True):
-        self.create_directories()
-        self.start_from_qmexcited()
-        job = self.job_suffix
-        mkdir("{}".format(job))
-
     def prepareScript(self):
         amber = self.create_amber()
         slurm_files = self.create_slurm(amber)
@@ -125,35 +103,6 @@ class FluorescenceSnaps(Trajectories):
                 for traj in self.traj_indices()
                 for snap_id in self.snap_indices()]
 
-    def create_directories(self):
-        directories = [f"flu/traj_{traj}" for traj in range(1, self.number_trajectories+1)]
-        for directory in directories:
-            mkdir(directory)
-
-    def move_restarts(self):
-        directories = [f"flu/traj_{traj}/{snap_id}"
-                       for traj in range(1, self.number_trajectories+1)
-                       for snap_id in self.snap_indices()]
-        for directory in directories:
-            mkdir(directory)
-        for inputfile, outputfile in zip(self.initial_snaps(), self.final_snaps()):
-            subprocess.call(['mv', inputfile, outputfile])
-
-    def initial_snaps(self):
-        if self.n_snapshots_per_trajectory == 1:
-            return [f'flu/traj_{traj}/qmexcited_t{traj}_snap'
-                    for traj in self.traj_indices()]
-        return [f'flu/traj_{traj}/qmexcited_t{traj}_snap.{snap_id}'
-                for traj in self.traj_indices()
-                for snap_id in self.snap_indices()]
-
-    def final_snaps(self):
-        if self.n_snapshots_per_trajectory == 1:
-            return [f'flu/traj_{traj}/1/snap_1_for_fluorescence_t{traj}.rst'
-                    for traj in self.traj_indices()]
-        return [f'flu/traj_{traj}/{snap_id}/snap_{snap_id}_for_fluorescence_t{traj}.rst'
-                for traj in self.traj_indices()
-                for snap_id in self.snap_indices()]
 
     def snap_indices(self):
         return range(1,self.n_snapshots_per_trajectory+1)

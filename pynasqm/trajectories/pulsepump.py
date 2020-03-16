@@ -27,10 +27,6 @@ class PulsePump(QmExcitedStateTrajectories):
         return "{}{}.rst".format(self.parent_restart_root, index+1)
 
 
-    def create_restarts_from_parent(self, override=False):
-        self.create_directories()
-        self.start_from_qmground(override)
-
     def _update_nmr_info(self):
         pass
 
