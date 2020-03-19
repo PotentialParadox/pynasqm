@@ -69,11 +69,11 @@ class AbsorptionSnaps(Trajectories):
         n_frames = self.number_frames_in_parent
         return n_frames - self.n_snapshots_per_trajectory + 1
 
-    def create_restarts_from_parent(self, override=True):
-        self.create_directories()
-        self.start_from_qmground()
-        job = self.job_suffix
-        mkdir("{}".format(job))
+    # def create_restarts_from_parent(self, override=True):
+    #     self.create_directories()
+    #     self.start_from_qmground()
+    #     job = self.job_suffix
+    #     mkdir("{}".format(job))
 
     def prepareScript(self):
         amber = self.create_amber()

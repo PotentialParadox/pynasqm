@@ -4,6 +4,7 @@ from pynasqm.trajectories.qmground import QmGround
 from pynasqm.trajectories.qmexcited import QmExcited
 from pynasqm.trajectories.ppump import PPump
 from pynasqm.trajectories.fluorescence import Fluorescence
+from pynasqm.trajectories.absorption import Absorption
 from pynasqm.trajectories.start_from_mmground import start_from_mmground
 from pynasqm.trajectories.start_from_qmground import start_from_qmground
 from pynasqm.trajectories.snaps_from_parent import snaps_from_parent
@@ -11,7 +12,8 @@ from pynasqm.trajectories.start_from_restart import start_from_restart
 
 @singledispatch
 def create_restarts_from_parent(traj_data, restart, override):
-    raise NotImplementedError("traj_data type not supported by create_restarts")
+    raise NotImplementedError(f"traj_data type not supported by create_restarts\n"\
+                              f"{traj_data}")
 
 
 @create_restarts_from_parent.register(QmGround)
@@ -36,6 +38,7 @@ def _(traj_data, restart, override=False):
     start_from_qmground(traj_data, override)
 
 @create_restarts_from_parent.register(Fluorescence)
+@create_restarts_from_parent.register(Absorption)
 def _(traj_data, restart, override=False):
     create_directories(traj_data)
     snaps_from_parent(traj_data)
