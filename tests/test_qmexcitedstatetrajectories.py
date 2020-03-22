@@ -6,6 +6,7 @@ import subprocess
 import types
 import pytest
 from pynasqm.trajectories.qmexcitedstatetrajectories import QmExcitedStateTrajectories
+from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir, touch
 
@@ -73,7 +74,7 @@ def test_fluCreateFromQmground(userInput, inputCeon):
     open("qmground/traj_2/nmr/closest_2.txt", 'w').write("rst_2")
     flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
     override = False
-    flu_traj.create_restarts_from_parent(override)
+    create_restarts_from_parent(flu_traj.traj_data, 0, override=True)
     if not os.path.isfile("qmexcited/traj_1/restart_0/snap_for_qmexcited_t1_r0.rst"):
         raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t1_r0.rst")
     if not os.path.isfile("qmexcited/traj_2/restart_0/snap_for_qmexcited_t2_r0.rst"):
@@ -108,7 +109,7 @@ def test_fluCreateFromQmGroundFail(userInput, inputCeon):
     # Failed touch("qmground/traj_2/restart_1/snap_for_qmground_t1_r2.rst")
     touch("qmground/traj_2/restart_1/snap_for_qmground_t2_r2.rst")
     flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
-    flu_traj.create_restarts_from_parent()
+    create_restarts_from_parent(flu_traj.traj_data, 0, override=True)
     # if not os.path.isfile("qmexcited/traj_1/restart_0/snap_for_qmexcited_t1_r0.rst"):
     #     raise AssertionError("QmExcitedStateTrajectory did not create a snap_for_qmexcited_t1_r0.rst Dummy")
     if not os.path.isfile("qmexcited/traj_2/restart_0/snap_for_qmexcited_t2_r0.rst"):
@@ -135,7 +136,7 @@ def test_fluCreateFromRestarts(userInput, inputCeon):
     userInput.restart_attempt = 1
     flu_traj = QmExcitedStateTrajectories(userInput, inputCeon)
     override = False
-    flu_traj.create_restarts_from_parent(override)
+    create_restarts_from_parent(flu_traj.traj_data, 0, override=True)
     if not os.path.isfile("qmexcited/traj_1/restart_1/snap_for_qmexcited_t1_r1.rst"):
         raise AssertionError("QmExcitedStateTrajectory did not create snap_for_qmexcited_t1_r1.rst")
     if not os.path.isfile("qmexcited/traj_2/restart_1/snap_for_qmexcited_t2_r1.rst"):

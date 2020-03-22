@@ -6,6 +6,7 @@ import subprocess
 import types
 import pytest
 from pynasqm.trajectories.qmgroundstatetrajectories import QmGroundTrajectories
+from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -60,7 +61,7 @@ def test_qmgroundCreateRestarts(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-    qmground_traj.create_restarts_from_parent()
+    create_restarts_from_parent(qmground_traj.traj_data, 0, override=True)
     if not os.path.isfile("qmground/traj_1/restart_0/snap_for_qmground_t1_r0.rst"):
         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t1_r0.rst")
     if not os.path.isfile("qmground/traj_2/restart_0/snap_for_qmground_t2_r0.rst"):
@@ -99,7 +100,7 @@ def test_qmgroundCreateRestarts1(userInput, inputCeon):
         os.mkdir("qmground/traj_1/restart_0")
     open("qmground/traj_1/restart_0/snap_for_qmground_t1_r1.rst", 'w').close()
     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-    qmground_traj.create_restarts_from_parent()
+    create_restarts_from_parent(qmground_traj.traj_data, 0, override=True)
     if not os.path.isfile("qmground/traj_1/restart_1/snap_for_qmground_t1_r1.rst"):
         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t1_r1")
     if os.path.isfile("qmground/traj_2/restart_2/snap_for_qmground_t2_r2.rst"):
@@ -123,7 +124,7 @@ def test_qmgroundCreateRestarts2(userInput, inputCeon):
     open("qmground/traj_1/restart_0/snap_for_qmground_t1_r1.rst", 'w').close()
     open("qmground/traj_2/restart_0/snap_for_qmground_t2_r1.rst", 'w').close()
     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-    qmground_traj.create_restarts_from_parent()
+    create_restarts_from_parent(qmground_traj.traj_data, 0, override=True)
     if not os.path.isfile("qmground/traj_1/restart_1/snap_for_qmground_t1_r1.rst"):
         raise AssertionError("QmGroundTrajectories did not create snap_for_qmground_t1_r1")
     if not os.path.isfile("qmground/traj_2/restart_1/snap_for_qmground_t2_r1.rst"):
@@ -181,7 +182,7 @@ def test_restart_on_failed(userInput, inputCeon):
     open("qmground/traj_1/restart_0/snap_for_abs_t1_r1.rst", 'w').close()
     # Failure here
     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-    qmground_traj.create_restarts_from_parent()
+    create_restarts_from_parent(qmground_traj.traj_data, 0, override=True)
     # if not os.path.isfile("abs/traj_2/restart_1/snap_for_abs_t2_r1.rst"):
     #     raise AssertionError("AbsTrajectory did not create a dummy snap_for_abs_t2_r1")
     if os.path.isdir("qmground/traj_3"):

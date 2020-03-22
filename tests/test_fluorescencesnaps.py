@@ -6,6 +6,7 @@ import subprocess
 import types
 import pytest
 from pynasqm.trajectories.fluorescencesnaps import FluorescenceSnaps
+from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -60,7 +61,7 @@ def test_fluTimeDelay(userInput, inputCeon):
     userInput.fluorescence_time_delay=1 #fs
     userInput.restart_attempt = 0
     flu_traj = FluorescenceSnaps(userInput, inputCeon)
-    flu_traj.create_restarts_from_parent()
+    create_restarts_from_parent(flu_traj.traj_data, 0, override=True)
     if not os.path.isfile("fluorescence/traj_1/6/snap_6_for_fluorescence_t1.rst"):
         raise AssertionError("FluorescenceSnaps did not create enough snaps")
     if os.path.isfile("fluorescence/traj_1/9/snap_9_for_fluorescence_t1.rst"):

@@ -39,14 +39,14 @@ class Trajectories(ABC):
         return print_value
 
     def run(self):
-        self.set_initial_input()
+        set_initial_input(self.traj_data)
         self.gen_inputfiles()
         self.print_header("Running {} Dynamics".format(self.job_suffix))
         (amber, slurm) = self.prepareScript()
         self.runDynamics(amber, slurm)
 
     def gen_inputfiles(self):
-        self.create_restarts_from_parent()
+        create_restarts_from_parent(self.traj_data, 0, override=True)
         self.create_inputceon_copies()
         if self.user_input.number_nearest_solvents > 0:
             self.update_nmr_info()
@@ -60,9 +60,6 @@ class Trajectories(ABC):
         print(50*"*")
         print(15 * " " + header)
         print(50*"*")
-
-    def create_restarts_from_parent(self, override=True):
-        create_restarts_from_parent(self.traj_data, 0, override=True)
 
     def create_inputceon_copies(self):
         create_inputceon_copies(self.traj_data)
@@ -89,9 +86,6 @@ class Trajectories(ABC):
     def trajins(self):
         return [self.restart_path(traj, self.user_input.restart_attempt)
                 for traj in range(1, self.number_trajectories+1)]
-
-    def set_initial_input(self):
-        set_initial_input(self.traj_data)
 
     def runDynamics(self, amber, slurm_file):
         if self.user_input.is_hpc:

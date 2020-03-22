@@ -6,6 +6,7 @@ import subprocess
 import types
 import pytest
 from pynasqm.trajectories.absorptionsnaps import AbsorptionSnaps
+from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -74,7 +75,7 @@ def test_absTimeDelay(userInput, inputCeon):
     userInput.absorption_time_delay=5 #fs
     userInput.restart_attempt = 0
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
-    abs_traj.create_restarts_from_parent()
+    create_restarts_from_parent(abs_traj.traj_data, 0, override=True)
     if os.path.isfile("absorption/traj_1/6/snap_6_for_absorption_t1.rst"):
         raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
     subprocess.run(['rm', '-rf', 'absorption', './convert_to_crd.out', './convert_to_crd.out'])
