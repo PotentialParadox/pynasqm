@@ -4,8 +4,8 @@ class Absorption:
         self.user_input = user_input
         self.input_ceons = [input_ceon]
         self.number_trajectories = user_input.n_snapshots_qmground
-        self.child_root = 'nasqm_abs_'
-        self.job_suffix = 'abs'
+        self.child_root = 'nasqm_absorption_'
+        self.job_suffix = 'absorption'
         self.parent_restart_root = 'nasqm_qmground'
         self.number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmground * user_input.n_qmground_runs
         self.n_snapshots_per_trajectory = self.snaps_per_trajectory()

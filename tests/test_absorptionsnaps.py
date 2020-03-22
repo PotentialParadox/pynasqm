@@ -75,9 +75,9 @@ def test_absTimeDelay(userInput, inputCeon):
     userInput.restart_attempt = 0
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
     abs_traj.create_restarts_from_parent()
-    if os.path.isfile("abs/traj_1/6/snap_6_for_absorption_t1.rst"):
+    if os.path.isfile("absorption/traj_1/6/snap_6_for_absorption_t1.rst"):
         raise AssertionError("AbsorptionSnaps created too many snaps possibly ignoring time delay")
-    # subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    subprocess.run(['rm', '-rf', 'absorption', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absInputFileCopying(userInput, inputCeon):
     '''
@@ -86,9 +86,9 @@ def test_absInputFileCopying(userInput, inputCeon):
     userInput.restart_attempt = 0
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
     abs_traj.create_inputceon_copies()
-    if not os.path.isfile("abs/traj_1/1/nasqm_abs_t1_1.in"):
-        raise AssertionError("AbsorptionSnaps did not create nasqm_abs_t1_1.in")
-    # subprocess.run(['rm', '-rf', 'abs', './convert_to_crd.out', './convert_to_crd.out'])
+    if not os.path.isfile("absorption/traj_1/1/nasqm_absorption_t1_1.in"):
+        raise AssertionError("AbsorptionSnaps did not create nasqm_absorption_t1_1.in")
+    subprocess.run(['rm', '-rf', 'absorption', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_absPrepareDynamics(userInput, inputCeon):
     '''

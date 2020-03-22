@@ -61,11 +61,11 @@ def test_fluTimeDelay(userInput, inputCeon):
     userInput.restart_attempt = 0
     flu_traj = FluorescenceSnaps(userInput, inputCeon)
     flu_traj.create_restarts_from_parent()
-    if not os.path.isfile("flu/traj_1/6/snap_6_for_fluorescence_t1.rst"):
+    if not os.path.isfile("fluorescence/traj_1/6/snap_6_for_fluorescence_t1.rst"):
         raise AssertionError("FluorescenceSnaps did not create enough snaps")
-    if os.path.isfile("flu/traj_1/9/snap_9_for_fluorescence_t1.rst"):
+    if os.path.isfile("fluorescence/traj_1/9/snap_9_for_fluorescence_t1.rst"):
         raise AssertionError("FluorescenceSnaps created too many snaps possibly ignoring time delay")
-    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out'])
+    subprocess.run(['rm', '-rf', 'fluorescence', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_fluInputFileCopying(userInput, inputCeon):
     '''
@@ -74,9 +74,9 @@ def test_fluInputFileCopying(userInput, inputCeon):
     userInput.restart_attempt = 0
     flu_traj = FluorescenceSnaps(userInput, inputCeon)
     flu_traj.create_inputceon_copies()
-    if not os.path.isfile("flu/traj_1/1/nasqm_flu_t1_1.in"):
-        raise AssertionError("FluorescenceSnaps did not create nasqm_flu_t1_1.in")
-    subprocess.run(['rm', '-rf', 'flu', './convert_to_crd.out', './convert_to_crd.out'])
+    if not os.path.isfile("fluorescence/traj_1/1/nasqm_fluorescence_t1_1.in"):
+        raise AssertionError("FluorescenceSnaps did not create nasqm_fluorescence_t1_1.in")
+    subprocess.run(['rm', '-rf', 'fluorescence', './convert_to_crd.out', './convert_to_crd.out'])
 
 def test_fluPrepareDynamics(userInput, inputCeon):
     '''

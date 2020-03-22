@@ -4,8 +4,8 @@ class Fluorescence:
         self.user_input = user_input
         self.input_ceons = [input_ceon]
         self.number_trajectories = user_input.n_snapshots_ex
-        self.child_root = 'nasqm_flu_'
-        self.job_suffix = 'flu'
+        self.child_root = 'nasqm_fluorescence_'
+        self.job_suffix = 'fluorescence'
         self.parent_restart_root = 'nasqm_qmexcited'
         self.number_frames_in_parent = user_input.n_mcrd_frames_per_run_qmexcited * user_input.n_exc_runs
         self.n_snapshots_per_trajectory = self.snaps_per_trajectory()
