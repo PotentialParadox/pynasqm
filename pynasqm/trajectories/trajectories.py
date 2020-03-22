@@ -47,7 +47,8 @@ class Trajectories(ABC):
 
     def gen_inputfiles(self):
         create_restarts_from_parent(self.traj_data, 0, override=True)
-        self.create_inputceon_copies()
+        create_inputceon_copies(self.traj_data)
+        self.input_ceons = self.traj_data.input_ceons
         if self.user_input.number_nearest_solvents > 0:
             self.update_nmr_info()
 
@@ -60,11 +61,6 @@ class Trajectories(ABC):
         print(50*"*")
         print(15 * " " + header)
         print(50*"*")
-
-    def create_inputceon_copies(self):
-        create_inputceon_copies(self.traj_data)
-        self.input_ceons = self.traj_data.input_ceons
-
 
     def set_excited_states(self, inputceons):
         return inputceons

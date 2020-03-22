@@ -7,6 +7,7 @@ import types
 import pytest
 from pynasqm.trajectories.absorptionsnaps import AbsorptionSnaps
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
+from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -86,7 +87,7 @@ def test_absInputFileCopying(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     abs_traj = AbsorptionSnaps(userInput, inputCeon)
-    abs_traj.create_inputceon_copies()
+    create_inputceon_copies(abs_traj.traj_data)
     if not os.path.isfile("absorption/traj_1/1/nasqm_absorption_t1_1.in"):
         raise AssertionError("AbsorptionSnaps did not create nasqm_absorption_t1_1.in")
     subprocess.run(['rm', '-rf', 'absorption', './convert_to_crd.out', './convert_to_crd.out'])

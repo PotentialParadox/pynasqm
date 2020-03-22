@@ -7,6 +7,7 @@ import types
 import pytest
 from pynasqm.trajectories.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
+from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -74,7 +75,7 @@ def test_fluInputFileCopying(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     flu_traj = FluorescenceSnaps(userInput, inputCeon)
-    flu_traj.create_inputceon_copies()
+    create_inputceon_copies(flu_traj.traj_data)
     if not os.path.isfile("fluorescence/traj_1/1/nasqm_fluorescence_t1_1.in"):
         raise AssertionError("FluorescenceSnaps did not create nasqm_fluorescence_t1_1.in")
     subprocess.run(['rm', '-rf', 'fluorescence', './convert_to_crd.out', './convert_to_crd.out'])

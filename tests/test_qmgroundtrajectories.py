@@ -7,6 +7,7 @@ import types
 import pytest
 from pynasqm.trajectories.qmgroundstatetrajectories import QmGroundTrajectories
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
+from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.inputceon import InputCeon
 from pynasqm.utils import mkdir
 
@@ -82,7 +83,7 @@ def test_qmgroundInputFileCopying(userInput, inputCeon):
     '''
     userInput.restart_attempt = 0
     qmground_traj = QmGroundTrajectories(userInput, inputCeon)
-    qmground_traj.create_inputceon_copies()
+    create_inputceon_copies(qmground_traj.traj_data)
     if not os.path.isfile("qmground/traj_1/restart_0/nasqm_qmground_t1_r0.in"):
         raise AssertionError("QmGroundTrajectories did not create nasqm_qmground_t1_r0.in")
 
