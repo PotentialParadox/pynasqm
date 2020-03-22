@@ -17,6 +17,7 @@ from pynasqm.trajectories.set_initial_input import set_initial_input
 from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.nmr.update_nmr_info import update_nmr_info
 from pynasqm.trajectories.create_amber import create_amber
+from pynasqm.trajectories.create_slurm import create_slurm
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -92,7 +93,7 @@ class Trajectories(ABC):
 
     def prepareScript(self):
         amber = create_amber(self.traj_data)
-        slurm_files = self.create_slurm(amber)
+        slurm_files = create_slurm(self.traj_data, amber)
         return amber, slurm_files
 
 
