@@ -16,6 +16,7 @@ from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.trajectories.set_initial_input import set_initial_input
 from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.nmr.update_nmr_info import update_nmr_info
+from pynasqm.trajectories.create_amber import create_amber
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -52,18 +53,12 @@ class Trajectories(ABC):
         if self.user_input.number_nearest_solvents > 0:
             update_nmr_info(self.traj_data)
 
-    @abstractmethod
-    def islastrun(self):
-        pass
 
     @staticmethod
     def print_header(header):
         print(50*"*")
         print(15 * " " + header)
         print(50*"*")
-
-    def set_excited_states(self, inputceons):
-        return inputceons
 
     @abstractmethod
     def nmrdirs(self):
@@ -74,11 +69,6 @@ class Trajectories(ABC):
                 and self.job_suffix == "qmground"
                 and self.user_input.restrain_solvents is True
                 and self.user_input.number_nearest_solvents > 0)
-
-
-    def trajins(self):
-        return [self.restart_path(traj, self.user_input.restart_attempt)
-                for traj in range(1, self.number_trajectories+1)]
 
     def runDynamics(self, amber, slurm_file):
         if self.user_input.is_hpc:
@@ -148,23 +138,10 @@ class Trajectories(ABC):
         return slurm_file
 
     def prepareScript(self):
-        amber = self.create_amber()
+        # amber = self.create_amber()
+        amber = create_amber(self.traj_data)
         slurm_files = self.create_slurm(amber)
         return amber, slurm_files
 
-    @abstractmethod
-    def restart_name(self, index):
-        pass
 
-    def trajectory_name(self, index):
-        if index == -1:
-            index = 0
-        return "{}{}".format(self.child_root, index+1)
-
-
-    def restart_path(self, trajectory, restart):
-        return "{}/traj_{}/restart_{}/snap_for_{}_t{}_r{}.rst".format(self.job_suffix,
-                                                                      trajectory, restart,
-                                                                      self.job_suffix,
-                                                                      trajectory, restart)
 
