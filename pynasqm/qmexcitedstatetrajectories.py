@@ -84,7 +84,12 @@ class QmExcitedStateTrajectories(Trajectories):
 
     def set_excited_states(self, input_ceons):
         print("Setting Initial Excited States")
-        if self.doing_laser_excitation():
+        if self._user_input.restart_attempt > 0:
+            print("From Restarts")
+            r_attempt = self._user_input.restart_attempt
+            init_states = [self.get_state_from_restart(r_attempt, traj_id)
+                           for traj_id in self.traj_indices()]
+        elif self.doing_laser_excitation():
             init_states = get_n_initial_states_w_laser_energy_and_fwhm(self._number_trajectories,
                                                                        'spectra_abs.input',
                                                                        self._user_input.laser_energy,
@@ -98,6 +103,14 @@ class QmExcitedStateTrajectories(Trajectories):
 
         print("Finished Setting Initial Excited States")
         return input_ceons
+
+    def get_state_from_restart(self, restart_attempt, traj_id):
+        refference_restart = restart_attempt - 1
+        coeffn_file = f"qmexcited/traj_{traj_id}/restart_{refference_restart}/coeff-n.out"
+        if os.path.isfile(coeffn_file):
+            coeffn_data = open(coeffn_file, 'r').readlines()
+            return int(coeffn_data[-1].split()[0])
+        return -1
 
     def get_sm_states(self):
         pulse_pump_text = open("pulse_pump_states.txt").readlines()
