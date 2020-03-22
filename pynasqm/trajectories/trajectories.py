@@ -50,7 +50,7 @@ class Trajectories(ABC):
         create_inputceon_copies(self.traj_data)
         self.input_ceons = self.traj_data.input_ceons
         if self.user_input.number_nearest_solvents > 0:
-            self.update_nmr_info()
+            update_nmr_info(self.traj_data)
 
     @abstractmethod
     def islastrun(self):
@@ -74,9 +74,6 @@ class Trajectories(ABC):
                 and self.job_suffix == "qmground"
                 and self.user_input.restrain_solvents is True
                 and self.user_input.number_nearest_solvents > 0)
-
-    def update_nmr_info(self):
-        update_nmr_info(self.traj_data)
 
 
     def trajins(self):
