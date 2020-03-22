@@ -77,55 +77,8 @@ class Trajectories(ABC):
             amber.run_amber(number_processors=self.user_input.processors_per_node,
                             is_ground_state=False)
 
-    def hpc_coordinate_files(self):
-        return ["snap_for_{}_t${{ID}}_r{}.rst".format(self.job_suffix,
-                                                      self.user_input.restart_attempt)]
-
-    def pc_coordinate_files(self):
-        return ["snap_for_{}_t{}_r{}.rst".format(self.job_suffix, traj, self.user_input.restart_attempt)
-                for traj in range(1, self.number_trajectories+1)]
-
-    def coordinate_files(self):
-        if self.user_input.is_hpc:
-            return self.hpc_coordinate_files()
-        return self.pc_coordinate_files()
-
-    def prmtop_files(self):
-        if self.user_input.is_hpc:
-            return ["m1.prmtop"]
-        return ["m1.prmtop"] * self.number_trajectories
-
     def traj_indices(self):
         return range(1, self.number_trajectories+1)
-
-    def output_directories(self):
-        restart = self.user_input.restart_attempt
-        job = self.job_suffix
-        return ["{}/traj_{}/restart_{}".format(job, traj, restart)
-                for traj in self.traj_indices()]
-
-    def create_amber(self):
-        amber = Amber()
-        roots = None
-        restart_attempt = self.user_input.restart_attempt
-        if self.user_input.is_hpc:
-            roots = ["{}t${{ID}}_r{}".format(self.child_root, restart_attempt)]
-            restart_files = ["snap_for_{}_t${{ID}}_r{}.rst".format(self.job_suffix, restart_attempt+1)]
-            amber.prmtop_files = ["m1.prmtop"]
-        else:
-            roots = ["{}t{}_r{}".format(self.child_root, i, restart_attempt)
-                     for i in range(1, self.number_trajectories+1)]
-            restart_files = ["snap_for_{}_t{}_r{}.rst".format(self.job_suffix, i, restart_attempt+1)
-                             for i in range(1, self.number_trajectories+1)]
-            amber.prmtop_files = ["m1.prmtop"] * self.number_trajectories
-        amber.input_roots = roots
-        amber.output_roots = roots
-        amber.restart_files = restart_files
-        amber.export_roots = roots
-        amber.coordinate_files = self.coordinate_files()
-        amber.prmtop_files = self.prmtop_files()
-        amber.directories = self.output_directories()
-        return amber
 
     def create_slurm(self, amber):
         if self.user_input.is_hpc:
@@ -138,7 +91,6 @@ class Trajectories(ABC):
         return slurm_file
 
     def prepareScript(self):
-        # amber = self.create_amber()
         amber = create_amber(self.traj_data)
         slurm_files = self.create_slurm(amber)
         return amber, slurm_files
