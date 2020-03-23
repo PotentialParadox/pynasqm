@@ -81,16 +81,6 @@ class Trajectories(ABC):
     def traj_indices(self):
         return range(1, self.number_trajectories+1)
 
-    def create_slurm(self, amber):
-        if self.user_input.is_hpc:
-            job_name = self.user_input.job_name + self.job_suffix
-            directory = "{}/traj_${{ID}}/restart_{}".format(self.job_suffix, self.user_input.restart_attempt)
-            slurm_file = nasqm_slurm.slurm_trajectory_files(self.user_input, amber,
-                                                             job_name, self.job_suffix, directory)
-        else:
-            slurm_file = None
-        return slurm_file
-
     def prepareScript(self):
         amber = create_amber(self.traj_data)
         slurm_files = create_slurm(self.traj_data, amber)
