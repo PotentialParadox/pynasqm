@@ -41,10 +41,7 @@ def main():
     print(create_table(times, get_pulse_pump_pops(state_data, nstates)))
 
 get_states = lambda data: (d[:,0] for d in data)
-
-def get_times(data):
-    ts = data[1,1] - data[0,1]
-    return [ts*x for x in range(len(data[:,0]))]
+get_times = lambda data: data[:,1]
 
 def split_files(infilenames):
     if infilenames:
