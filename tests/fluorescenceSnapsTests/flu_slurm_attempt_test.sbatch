@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=MyJobflu # A name for your job
+#SBATCH --job-name=MyJobfluorescence # A name for your job
 #SBATCH --qos=roitberg # The queue for your job
-#SBATCH --output=./Reports/MyJobflu-%j.output # Output File
-#SBATCH --error=./Reports/MyJobflu-%j.err #Error File
+#SBATCH --output=./Reports/MyJobfluorescence-%j.output # Output File
+#SBATCH --error=./Reports/MyJobfluorescence-%j.err #Error File
 #SBATCH --partition=hpg2-compute
 #SBATCH --constraint=haswell
 #SBATCH --mail-user=dtracy.uf@gmail.com # Email address
