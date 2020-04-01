@@ -12,9 +12,9 @@ def get_number_trajectories(user_input, job_suffix):
         return user_input.n_snapshots_qmground
     if job_suffix == "qmexcited":
         return user_input.n_snapshots_ex
-    if job_suffix == "abs":
+    if job_suffix == "absorption":
         return user_input.n_snapshots_qmground
-    if job_suffix == "flu":
+    if job_suffix == "fluorescence":
         return user_input.n_snapshots_ex
     if job_suffix == "pulse_pump":
         return user_input.n_snapshots_ex

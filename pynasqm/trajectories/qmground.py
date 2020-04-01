@@ -8,6 +8,7 @@ class QmGround:
         self.job_suffix = 'qmground'
         self.parent_restart_root = 'ground_snap'
         self.number_frames_in_parent = user_input.n_mcrd_frames_per_run_gs * user_input.n_ground_runs
+        self.n_snapshots_per_trajectory = 0
         self.amber_restart = False
 
     def __str__(self):

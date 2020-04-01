@@ -1,5 +1,7 @@
 from pynasqm.amber import Amber
 from pynasqm.trajectories.utils import traj_indices
+from pynasqm.trajectories.amber_restart_files import amber_pc_restart_files, amber_hpc_restart_files
+from pynasqm.trajectories.getambercoordinatefiles import get_coordinate_files
 
 def create_amber(traj_data):
     amber = Amber()
@@ -7,27 +9,22 @@ def create_amber(traj_data):
     restart_attempt = traj_data.user_input.restart_attempt
     if traj_data.user_input.is_hpc:
         roots = ["{}t${{ID}}_r{}".format(traj_data.child_root, restart_attempt)]
-        restart_files = ["snap_for_{}_t${{ID}}_r{}.rst".format(traj_data.job_suffix, restart_attempt+1)]
+        restart_files = amber_hpc_restart_files(traj_data, restart_attempt)
         amber.prmtop_files = ["m1.prmtop"]
     else:
         roots = ["{}t{}_r{}".format(traj_data.child_root, i, restart_attempt)
                     for i in traj_indices(traj_data)]
-        restart_files = ["snap_for_{}_t{}_r{}.rst".format(traj_data.job_suffix, i, restart_attempt+1)
-                            for i in traj_indices(traj_data)]
+        restart_files = amber_pc_restart_files(traj_data, restart_attempt)
         amber.prmtop_files = ["m1.prmtop"] * traj_data.number_trajectories
     amber.input_roots = roots
     amber.output_roots = roots
     amber.restart_files = restart_files
     amber.export_roots = roots
-    amber.coordinate_files = coordinate_files(traj_data)
+    amber.coordinate_files = get_coordinate_files(traj_data)
     amber.prmtop_files = prmtop_files(traj_data)
     amber.directories = output_directories(traj_data)
     return amber
 
-def coordinate_files(traj_data):
-    if traj_data.user_input.is_hpc:
-        return hpc_coordinate_files(traj_data)
-    return pc_coordinate_files(traj_data)
 
 def prmtop_files(traj_data):
     if traj_data.user_input.is_hpc:
@@ -40,10 +37,3 @@ def output_directories(traj_data):
     return ["{}/traj_{}/restart_{}".format(job, traj, restart)
             for traj in traj_indices(traj_data)]
 
-def hpc_coordinate_files(traj_data):
-    return ["snap_for_{}_t${{ID}}_r{}.rst".format(traj_data.job_suffix,
-                                                  traj_data.user_input.restart_attempt)]
-
-def pc_coordinate_files(traj_data):
-    return ["snap_for_{}_t{}_r{}.rst".format(traj_data.job_suffix, traj, traj_data.user_input.restart_attempt)
-            for traj in traj_indices(traj_data)]

@@ -21,7 +21,7 @@ export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
 ID=${SLURM_ARRAY_TASK_ID}
 for i in {1..8};do
-    cd flu/traj_${ID}/${i}
+    cd fluorescence/traj_${ID}/${i}
     if test -f input.ceon; then
         init_state=`grep "exc_state_init.-" input.ceon`
         if [ "$init_state" != "" ];then
@@ -30,8 +30,8 @@ for i in {1..8};do
     fi
 
     $AMBERHOME/bin/sander -O\
-    -i nasqm_flu_t${ID}_${i}.in\
-    -o nasqm_flu_t${ID}_${i}.out\
+    -i nasqm_fluorescence_t${ID}_r0.in\
+    -o nasqm_fluorescence_t${ID}_r0.out\
     -c snap_${i}_for_fluorescence_t${ID}.rst\
     -p m1.prmtop
 

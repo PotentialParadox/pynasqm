@@ -61,25 +61,12 @@ class Trajectories(ABC):
         print(15 * " " + header)
         print(50*"*")
 
-    @abstractmethod
-    def nmrdirs(self):
-        pass
-
-    def should_update_nmr(self):
-        return (self.user_input.restart_attempt == 0
-                and self.job_suffix == "qmground"
-                and self.user_input.restrain_solvents is True
-                and self.user_input.number_nearest_solvents > 0)
-
     def runDynamics(self, amber, slurm_file):
         if self.user_input.is_hpc:
             nasqm_slurm.run_nasqm_slurm_file(slurm_file)
         else:
             amber.run_amber(number_processors=self.user_input.processors_per_node,
                             is_ground_state=False)
-
-    def traj_indices(self):
-        return range(1, self.number_trajectories+1)
 
     def prepareScript(self):
         amber = create_amber(self.traj_data)

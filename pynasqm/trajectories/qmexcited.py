@@ -7,4 +7,13 @@ class QmExcited:
         self.child_root = 'nasqm_qmexcited_'
         self.job_suffix = 'qmexcited'
         self.parent_restart_root = 'nasqm_qmground_'
+        self.n_snapshots_per_trajectory = 0
         self.amber_restart = True
+
+    def __str__(self):
+        print_value = ""\
+            f"Traj_Data Info:\n"\
+            f"Class: {self.job_suffix}:\n"\
+            f"Number input_ceons: {len(self.input_ceons)}\n"\
+            f"Number trajectories: {self.number_trajectories}\n"
+        return print_value

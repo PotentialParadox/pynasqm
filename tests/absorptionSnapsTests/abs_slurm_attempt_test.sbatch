@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=MyJobabs # A name for your job
+#SBATCH --job-name=MyJobabsorption # A name for your job
 #SBATCH --qos=roitberg # The queue for your job
-#SBATCH --output=./Reports/MyJobabs-%j.output # Output File
-#SBATCH --error=./Reports/MyJobabs-%j.err #Error File
+#SBATCH --output=./Reports/MyJobabsorption-%j.output # Output File
+#SBATCH --error=./Reports/MyJobabsorption-%j.err #Error File
 #SBATCH --partition=hpg2-compute
 #SBATCH --constraint=haswell
 #SBATCH --mail-user=dtracy.uf@gmail.com # Email address
@@ -21,7 +21,7 @@ export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK}
 
 ID=${SLURM_ARRAY_TASK_ID}
 for i in {1..5};do
-    cd abs/traj_${ID}/${i}
+    cd absorption/traj_${ID}/${i}
     if test -f input.ceon; then
         init_state=`grep "exc_state_init.-" input.ceon`
         if [ "$init_state" != "" ];then
@@ -30,8 +30,8 @@ for i in {1..5};do
     fi
 
     $AMBERHOME/bin/sander -O\
-    -i nasqm_abs_t${ID}_${i}.in\
-    -o nasqm_abs_t${ID}_${i}.out\
+    -i nasqm_absorption_t${ID}_r0.in\
+    -o nasqm_absorption_t${ID}_r0.out\
     -c snap_${i}_for_absorption_t${ID}.rst\
     -p m1.prmtop
 
