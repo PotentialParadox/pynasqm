@@ -157,6 +157,12 @@ class UserInput:
         self.pump_pulse_min_energy = float(data["pump_pulse_min_energy"])
         self.pump_pulse_max_energy = float(data["pump_pulse_max_energy"])
         self.pump_pulse_min_strength = float(data["pump_pulse_min_strength"])
+        # Change here the number of excited states you
+        # with to have in the CIS calculation
+        try:
+            self.n_pulsepump_excited_states = int(data["n_pulsepump_excited_states"])
+        except KeyError:
+            self.n_pulsepump_excited_states = int(data["n_exc_states_propagate"])
         try:
             self.run_pulse_pump_collection = pynasqm.utils.str2bool(
                 data["run_pulse_point_collection"])

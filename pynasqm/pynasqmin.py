@@ -106,6 +106,8 @@ pynasqmin = ''\
 '############################################################\n'\
 '# Do you want to run the pulse pump singlepoins?\n'\
 '    "run_pulse_point_singlepoints": "False",\n'\
+'# How many excited states do you want to include?\n'\
+'    "n_pulsepump_excited_states": "25",\n'\
 '# Whats the minimum energy of the pump pulse state Sm?\n'\
 '    "pump_pulse_min_energy": "0",\n'\
 '# Whats the maximum energy of the pump pulse state Sm?\n'\

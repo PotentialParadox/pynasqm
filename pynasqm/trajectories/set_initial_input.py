@@ -78,7 +78,7 @@ def _(traj_data):
     input_ceon.set_quantum(True)
     input_ceon.set_n_steps(0)
     input_ceon.set_n_steps_to_mcrd(user_input.n_steps_print_emcrd)
-    n_states_to_prop = user_input.n_exc_states_propagate_ex_param-1
+    n_states_to_prop = user_input.n_pulsepump_excited_states
     input_ceon.set_excited_state(1, n_states_to_prop)
     input_ceon.set_n_steps_to_print(user_input.n_steps_to_print_exc)
     input_ceon.set_verbosity(1)
