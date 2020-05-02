@@ -469,8 +469,8 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
                            -o $molecule.mol2
                            -at gaff
                # Generate frcmod file
-               parmchk2 -f prepi \
-                        -i $molecule.prepi \
+               parmchk2 -f mol2 \
+                        -i $molecule.mol2 \
                         -o $molecule.frcmod
        #+END_SRC
 
