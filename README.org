@@ -697,7 +697,7 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
           ntp=0,
           ig=-1,
           taup=2.0,
-          cut=16.0,
+          cut=8.0,
           ntr=0,
           tempi=300.0,
           temp0=300.0,
