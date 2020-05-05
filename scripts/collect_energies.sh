@@ -18,6 +18,7 @@ timeinrestart=`echo "${totaltime} / (${nrestarts} + 1)" | bc -l`
 appendsize=$((nstates+2))
 blocksize=$((nstates+4))
 
+awk 'Trajectory,Time(fs),State,Energy(eV),Energy(AU)'
 for ((traj=1;traj<=$ntrajs;++traj)) do
     for ((res=0;res<=$nrestarts;++res)) do
         infile=${directory}/traj_${traj}/restart_${res}/nasqm_${directory}_t${traj}_r${res}.out
