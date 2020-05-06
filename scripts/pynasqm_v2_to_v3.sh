@@ -11,6 +11,12 @@ for infile in `ls qmground/traj_*/restart*/*abs*`;do
         mv ${infile} ${infile//abs/qmground}
     fi
 done
+# Convert the files
+for infile in `ls qmground/traj_*/*abs*.nc`;do
+    if [ -f ${infile} ];then
+        mv ${infile} ${infile//abs/qmground}
+    fi
+done
 
 ##########################
 # Convert Flu to qmexcited
@@ -21,6 +27,12 @@ if [ ! -d "qmexcited" ];then
 fi
 # Convert the files
 for infile in `ls qmexcited/traj_*/restart*/*flu*`;do
+    if [ -f ${infile} ];then
+        mv ${infile} ${infile//flu/qmexcited}
+    fi
+done
+# Convert the files
+for infile in `ls qmexcited/traj_*/*flu*.nc`;do
     if [ -f ${infile} ];then
         mv ${infile} ${infile//flu/qmexcited}
     fi
