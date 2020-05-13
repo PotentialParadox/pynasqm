@@ -18,10 +18,11 @@ def combine_trajectories(suffix, n_trajs, n_runs):
         else:
             print("traj {} is not combined".format(traj_id))
         if iscompleted(suffix, traj_id, n_runs):
+            init_frame = [f"{suffix}/traj_{traj_id}/restart_{restart}/snap_for_{suffix}_t{traj}_r{restart}.rst"]
             trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
                                                                         suffix, traj_id, restart)
                      for restart in range(n_runs)]
-            traj = pt.load(trajs, top=prmtop)
+            traj = pt.load(init_frame + trajs, top=prmtop)
             pt.io.write_traj("{}/traj_{}/nasqm_{}_{}.nc".format(suffix, traj_id, suffix, traj_id),
                              traj, velocity=True, overwrite=True)
             subprocess.call(['rm'] + trajs)
