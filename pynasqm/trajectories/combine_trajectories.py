@@ -1,4 +1,6 @@
 import os
+import pytraj as pt
+import subprocess
 
 def combine_trajectories(suffix, n_trajs, n_runs):
     prmtop = "m1.prmtop"
@@ -18,7 +20,7 @@ def combine_trajectories(suffix, n_trajs, n_runs):
         else:
             print("traj {} is not combined".format(traj_id))
         if iscompleted(suffix, traj_id, n_runs):
-            init_frame = [f"{suffix}/traj_{traj_id}/restart_{restart}/snap_for_{suffix}_t{traj}_r{restart}.rst"]
+            init_frame = [f"{suffix}/traj_{traj_id}/restart_0/snap_for_{suffix}_t{traj_id}_r0.rst"]
             trajs = ["{}/traj_{}/restart_{}/nasqm_{}_t{}_r{}.nc".format(suffix, traj_id, restart,
                                                                         suffix, traj_id, restart)
                      for restart in range(n_runs)]

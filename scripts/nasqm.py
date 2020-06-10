@@ -12,16 +12,16 @@ from pynasqm.write import (write_omega_vs_time, write_spectra_flu_input,
                            write_average_coeffs)
 from pynasqm.spectracollection import write_spectra_input
 from pynasqm.userinput import UserInput
-from pynasqm.qmgroundstatetrajectories import QmGroundTrajectories
-from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
-from pynasqm.pulsepump import PulsePump
+from pynasqm.trajectories.qmgroundstatetrajectories import QmGroundTrajectories
+from pynasqm.trajectories.qmexcitedstatetrajectories import QmExcitedStateTrajectories
+from pynasqm.trajectories.pulsepump import PulsePump
 from pynasqm.initialexcitedstates import get_energies_and_strenghts
-from pynasqm.mmgroundstatetrajectory import groundStateDynamics
-from pynasqm.absorptionsnaps import AbsorptionSnaps
-from pynasqm.fluorescencesnaps import FluorescenceSnaps
+from pynasqm.trajectories.mmgroundstatetrajectory import groundStateDynamics
+from pynasqm.trajectories.absorptionsnaps import AbsorptionSnaps
+from pynasqm.trajectories.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.nasqmslurm import restart_nasqm
-from pynasqm.trajectories import combine_trajectories
+from pynasqm.trajectories.combine_trajectories import combine_trajectories
 import subprocess
 
 

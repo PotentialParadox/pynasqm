@@ -100,4 +100,4 @@ initinputceon = ""\
 "&veloc\n"\
 "&endveloc\n"\
 "&coeff\n"\
-"&endcoeff\n"\
+"&endcoeff\n"

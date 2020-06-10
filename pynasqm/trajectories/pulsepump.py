@@ -3,7 +3,7 @@ import numpy as np
 from collections import namedtuple
 from random import randint
 from pynasqm.utils import copy_files, mkdir
-from pynasqm.qmexcitedstatetrajectories import QmExcitedStateTrajectories
+from pynasqm.trajectories.qmexcitedstatetrajectories import QmExcitedStateTrajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon

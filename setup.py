@@ -6,7 +6,7 @@ setup(
    description='Scripts a modules to interface with nasqm',
    author='Dustin Tracy',
    author_email='dtracy.uf@gmail.com',
-   packages=['pynasqm'],  #same as name
+   packages=['pynasqm', 'pynasqm.trajectories', 'pynasqm.nmr'],  #same as name
    install_requires=['numpy', 'matplotlib', 'pytraj'], #external packages as dependencies
    scripts=[
             'scripts/nasqm.py',
