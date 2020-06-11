@@ -20,6 +20,25 @@ class Amber:
         self.export_roots = export_roots
         self.directories = directories
 
+    def __str__(self):
+        print_value = ""\
+            f"Amber class info Info:\n"\
+            f"Input Roots: {self.short_print(self.input_roots)}:\n\n"\
+            f"Output Roots: {self.short_print(self.output_roots)}\n\n"\
+            f"Coordinate Files: {self.short_print(self.coordinate_files)}\n\n"\
+            f"Prmtop Files: {self.short_print(self.prmtop_files)}\n\n"\
+            f"Restart Files: {self.short_print(self.restart_files)}\n\n"\
+            f"Export Roots: {self.short_print(self.export_roots)}\n\n"\
+            f"Directories: {self.short_print(self.directories)}\n\n"
+        return print_value
+
+    def short_print(self, alist):
+        if not alist:
+            return None
+        if len(alist) > 5:
+            return alist[0:5]
+        return alist
+
     def run_amber_worker(self, conjoined_list):
         '''
         Explanation for run amber parallel, needs to be private
