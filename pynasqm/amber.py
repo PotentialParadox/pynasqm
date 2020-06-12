@@ -22,14 +22,21 @@ class Amber:
 
     def __str__(self):
         print_value = ""\
-            f"Amber class info Info:\n"\
-            f"Input Roots: {self.short_print(self.input_roots)}:\n\n"\
-            f"Output Roots: {self.short_print(self.output_roots)}\n\n"\
-            f"Coordinate Files: {self.short_print(self.coordinate_files)}\n\n"\
-            f"Prmtop Files: {self.short_print(self.prmtop_files)}\n\n"\
-            f"Restart Files: {self.short_print(self.restart_files)}\n\n"\
-            f"Export Roots: {self.short_print(self.export_roots)}\n\n"\
-            f"Directories: {self.short_print(self.directories)}\n\n"
+            f"Amber Class Info:\n"\
+            f"Input Roots: {self.short_print(self.input_roots)}:\n"\
+            f"With length {len(self.input_roots)}\n\n"\
+            f"Output Roots: {self.short_print(self.output_roots)}\n"\
+            f"With length {len(self.output_roots)}\n\n"\
+            f"Coordinate Files: {self.short_print(self.coordinate_files)}\n"\
+            f"With length {len(self.coordinate_files)}\n\n"\
+            f"Prmtop Files: {self.short_print(self.prmtop_files)}\n"\
+            f"With length {len(self.prmtop_files)}\n\n"\
+            f"Restart Files: {self.short_print(self.restart_files)}\n"\
+            f"With length {len(self.restart_files)}\n\n"\
+            f"Export Roots: {self.short_print(self.export_roots)}\n"\
+            f"With length {len(self.export_roots)}\n\n"\
+            f"Directories: {self.short_print(self.directories)}\n"\
+            f"With length {len(self.directories)}\n\n"
         return print_value
 
     def short_print(self, alist):
@@ -60,6 +67,8 @@ class Amber:
         os.chdir(cwd)
 
     def should_skip(self):
+        if not os.path.isfile('input.ceon'):
+            return True
         inputceon = open("input.ceon", 'r').read()
         flag_check_str = "exc_state_init=-"
         if flag_check_str in inputceon:

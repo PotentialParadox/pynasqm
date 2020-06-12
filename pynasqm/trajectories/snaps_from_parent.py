@@ -1,11 +1,14 @@
 import subprocess
-from functools import singledispatch
 from pynasqm.trajectories.combine_trajectores import combine_trajectories
-from pynasqm.trajectories.utils import check_trajins, traj_indices, snap_indices
+from pynasqm.trajectories.utils import traj_indices, snap_indices
+from pynasqm.trajectories.check_trajins import check_trajins
 from pynasqm.cpptraj import create_restarts
 from pynasqm.utils import mkdir
 from pynasqm.trajectories.fluorescence import Fluorescence
 from pynasqm.trajectories.absorption import Absorption
+from pynasqm.trajectories.get_reference_job import get_reference_job
+from pynasqm.trajectories.get_reference_job import get_n_trajs_of_reference
+from pynasqm.trajectories.get_reference_job import get_n_ref_runs
 
 def snaps_from_parent(traj_data):
     ref_job = get_reference_job(traj_data)
@@ -13,13 +16,13 @@ def snaps_from_parent(traj_data):
     n_ref_trajs = get_n_trajs_of_reference(traj_data)
     n_ref_runs = get_n_ref_runs(traj_data)
     combine_trajectories(ref_job, n_ref_trajs, n_ref_runs)
-    ref_trajs = [f"{ref_job}/traj_{traj}/nasqm_{ref_job}_{traj}.nc"
+    ref_trajs = [(traj, f"{ref_job}/traj_{traj}/nasqm_{ref_job}_{traj}.nc")
                        for traj in range(1, traj_data.number_trajectories+1)]
-    outputs = [f"{job}/traj_{traj}/{ref_job}_t{traj}_snap" for traj in range(1, traj_data.number_trajectories+1)]
-    check_trajins(ref_trajs)
+    ref_trajs = check_trajins(traj_data, ref_trajs)
+    outputs = [f"{job}/traj_{traj}/{ref_job}_t{traj}_snap" for (traj, _) in ref_trajs]
     restart_step = 1
     for trajin, output in zip(ref_trajs, outputs):
-        create_restarts(amber_inputfile=trajin, start=cpptraj_start_index(traj_data),
+        create_restarts(amber_inputfile=trajin[1], start=cpptraj_start_index(traj_data),
                         output=output, step=restart_step)
     move_restarts(traj_data, job, ref_job)
 
@@ -53,38 +56,7 @@ def final_snaps(traj_data, job):
             for traj in traj_indices(traj_data)
             for snap_id in snap_indices(traj_data)]
 
-@singledispatch
-def get_reference_job(traj_data):
-    raise NotImplementedError(f"traj_data type not supported by get_refer\n"\
-                              f"{traj_data}")
-@get_reference_job.register(Fluorescence)
-def _(traj_data):
-    return "qmexcited"
-@get_reference_job.register(Absorption)
-def _(traj_data):
-    return "qmground"
 
-@singledispatch
-def get_n_trajs_of_reference(traj_data):
-    raise NotImplementedError(f"traj_data type not supported by get_ntrajs_of_reference\n"\
-                              f"{traj_data}")
-@get_n_trajs_of_reference.register(Fluorescence)
-def _(traj_data):
-    return traj_data.user_input.n_snapshots_ex
-@get_n_trajs_of_reference.register(Absorption)
-def _(traj_data):
-    return traj_data.user_input.n_snapshots_qmground
-
-@singledispatch
-def get_n_ref_runs(traj_data):
-    raise NotImplementedError(f"traj_data type not supported by get_nref_runs\n"\
-                              f"{traj_data}")
-@get_n_ref_runs.register(Fluorescence)
-def _(traj_data):
-    return traj_data.user_input.n_exc_runs
-@get_n_ref_runs.register(Absorption)
-def _(traj_data):
-    return traj_data.user_input.n_qmground_runs
 
 
 

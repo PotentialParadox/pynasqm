@@ -18,6 +18,7 @@ from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
 from pynasqm.nmr.update_nmr_info import update_nmr_info
 from pynasqm.trajectories.create_amber import create_amber
 from pynasqm.trajectories.create_slurm import create_slurm
+from pynasqm.trajectories.copy_bondorder_connectdat import copy_bondorder_connectdat
 import pytraj as pt
 
 class Trajectories(ABC):
@@ -45,11 +46,13 @@ class Trajectories(ABC):
         self.gen_inputfiles()
         self.print_header("Running {} Dynamics".format(self.job_suffix))
         (amber, slurm) = self.prepareScript()
+        print(amber)
         self.runDynamics(amber, slurm)
 
     def gen_inputfiles(self):
         create_restarts_from_parent(self.traj_data, 0, override=True)
         create_inputceon_copies(self.traj_data)
+        copy_bondorder_connectdat(self.traj_data)
         self.input_ceons = self.traj_data.input_ceons
         if self.user_input.number_nearest_solvents > 0:
             update_nmr_info(self.traj_data)

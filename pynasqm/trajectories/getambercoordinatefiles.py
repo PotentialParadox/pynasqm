@@ -38,9 +38,9 @@ def _(traj_data):
     return ["snap_for_{}_t{}_r{}.rst".format(traj_data.job_suffix, traj, traj_data.user_input.restart_attempt)
             for traj in traj_indices(traj_data)]
 
-@pc_coordinate_files.register(QmGround)
-@pc_coordinate_files.register(QmExcited)
+@pc_coordinate_files.register(Absorption)
+@pc_coordinate_files.register(Fluorescence)
 def _(traj_data):
     return [f"snap_{snap_id}_for_{traj_data.job_suffix}_t{traj}.rst"
-            for traj in self.traj_indices()
-            for snap_id in self.snap_indices()]
+            for traj in traj_indices(traj_data)
+            for snap_id in snap_indices(traj_data)]
