@@ -11,7 +11,7 @@ from pynasqm.nmr.restrictedatoms import RestrictedAtoms
 from pynasqm.nmr.trajdistance import TrajDistance
 from pynasqm.nmr.closestreader import ClosestReader
 from pynasqm.utils import mkdir, copy_file, is_empty_file
-from pynasqm.cpptraj import create_restarts
+from pynasqm. import create_restarts
 from pynasqm.trajectories.create_restarts import create_restarts_from_parent
 from pynasqm.trajectories.set_initial_input import set_initial_input
 from pynasqm.trajectories.create_inputceon_copies import create_inputceon_copies
@@ -46,7 +46,6 @@ class Trajectories(ABC):
         self.gen_inputfiles()
         self.print_header("Running {} Dynamics".format(self.job_suffix))
         (amber, slurm) = self.prepareScript()
-        print(amber)
         self.runDynamics(amber, slurm)
 
     def gen_inputfiles(self):

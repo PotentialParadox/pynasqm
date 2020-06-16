@@ -22,6 +22,7 @@ def copy_bondorder_connectdat(traj_data):
 def _(traj_data):
     pass
 
+@copy_bondorder_connectdat.register(Absorption)
 @copy_bondorder_connectdat.register(Fluorescence)
 def _(traj_data):
     if not os.path.isfile('connect.dat'):
@@ -35,5 +36,4 @@ def _(traj_data):
                    for snap_id in snap_indices(traj_data)]
     for d in directories:
         copy_file('connect.dat', d, force=True)
-    exit()
 

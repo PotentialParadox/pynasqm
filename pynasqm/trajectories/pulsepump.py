@@ -8,6 +8,7 @@ import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
 from pynasqm.inputceon import InputCeon
 from pynasqm.trajectories.ppump import PPump
+from pynasqm.trajectories.utils import traj_indices
 
 class PulsePump(QmExcitedStateTrajectories):
 
@@ -32,7 +33,7 @@ class PulsePump(QmExcitedStateTrajectories):
 
     def write_pulse_pump_states(self):
         pulse_pump_outputs = ["pulse_pump/traj_{0}/restart_0/muab.out".format(traj)
-                              for traj in self.traj_indices()]
+                              for traj in traj_indices(self)]
         nstates = self.user_input.n_exc_states_propagate_ex_param
         sms = [self.find_sm(filename, nstates) for filename in pulse_pump_outputs]
         with open('pulse_pump_states.txt', 'w') as fout:

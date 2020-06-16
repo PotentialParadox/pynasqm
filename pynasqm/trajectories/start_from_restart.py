@@ -1,5 +1,7 @@
 import os
 from pynasqm.utils import mkdir, copy_file, is_empty_file
+from pynasqm.trajectories.create_restarts import test1
+# from pynasqm.trajectories.create_restarts import create_restarts
 
 def start_from_restart(job_data, override):
     restart = job_data.user_input.restart_attempt

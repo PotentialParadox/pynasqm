@@ -13,10 +13,13 @@ class InputceonManager:
         self.velocities = self._reader.velocities
         self.coeffs = self._reader.coeffs
 
-    def set_excited_state(self, state, states_to_prop):
+    def set_excited_state(self, state, states_to_prop, coeffs=None):
         self.moldyn.set_value('exc_state_init', state)
         self.moldyn.set_value('n_exc_states_propagate', states_to_prop)
-        self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
+        if coeffs:
+            self.coeffs = coeffs
+        else:
+            self.coeffs = self.generate_initial_coeffs(state, states_to_prop)
 
     def set_calcxdens(self, set_val):
         if set_val:

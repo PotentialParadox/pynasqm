@@ -179,8 +179,8 @@ def run_absorption_collection(user_input):
     file
     '''
     title_print("Absorption Parsing")
-    write_spectra_input(user_input, 'abs')
-    energies, strengths = get_energies_and_strenghts('spectra_abs.input')
+    write_spectra_input(user_input, 'absorption')
+    energies, strengths = get_energies_and_strenghts('spectra_absorption.input')
     print_energies_and_strengths(energies, strengths)
 
 def print_energies_and_strengths(energies, strengths):

@@ -19,8 +19,8 @@ class InputCeon:
         self.inputceonmanager = InputceonManager('{}/input.ceon'.format(directory))
         self.log = ''
 
-    def set_excited_state(self, state, states_to_prop):
-        self.inputceonmanager.set_excited_state(state, states_to_prop)
+    def set_excited_state(self, state, states_to_prop, coeffs=None):
+        self.inputceonmanager.set_excited_state(state, states_to_prop, coeffs)
         self.inputceonmanager.write()
 
     def set_nexmd_seed(self, seed):

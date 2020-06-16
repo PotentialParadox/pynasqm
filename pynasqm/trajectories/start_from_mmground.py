@@ -1,4 +1,3 @@
-import pynasqm.cpptraj as nasqm_cpptraj
 from pynasqm.trajectories.check_trajins import check_trajins
 from pynasqm.trajectories.utils import initial_snaps
 import subprocess
@@ -7,7 +6,7 @@ def start_from_mmground(traj_data):
     mm_traj = "mmground/nasqm_ground.nc"
     check_trajins(traj_data, [mm_traj])
     restart_step = int(traj_data.number_frames_in_parent / traj_data.number_trajectories)
-    nasqm_cpptraj.create_restarts(amber_inputfile=mm_traj,
+    create_restarts(amber_inputfile=mm_traj,
                                     output=traj_data.parent_restart_root, step=restart_step)
     move_restarts(traj_data)
 
