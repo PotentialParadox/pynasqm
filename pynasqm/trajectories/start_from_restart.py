@@ -1,7 +1,6 @@
 import os
 from pynasqm.utils import mkdir, copy_file, is_empty_file
-from pynasqm.trajectories.create_restarts import test1
-# from pynasqm.trajectories.create_restarts import create_restarts
+from pynasqm.trajectories.extract_snaps_from_trajectory import extract_snaps_from_trajectory
 
 def start_from_restart(job_data, override):
     restart = job_data.user_input.restart_attempt
@@ -18,6 +17,6 @@ def start_from_restart(job_data, override):
                                                                                 traj,
                                                                                 restart)
         if os.path.isfile(source_path) and not is_empty_file(source_path):
-            create_restarts(source_path, output_path, override=override)
+            extract_snaps_from_trajectory(source_path, output_path, override=override)
         if os.path.isfile(source_path) and is_empty_file(source_path):
             copy_file(source_path, output_path, override)

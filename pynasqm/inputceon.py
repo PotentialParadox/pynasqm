@@ -19,7 +19,7 @@ class InputCeon:
         self.inputceonmanager = InputceonManager('{}/input.ceon'.format(directory))
         self.log = ''
 
-    def set_excited_state(self, state, states_to_prop, coeffs=None):
+    def set_excited_state(self, state, states_to_prop, coeffs=[]):
         self.inputceonmanager.set_excited_state(state, states_to_prop, coeffs)
         self.inputceonmanager.write()
 

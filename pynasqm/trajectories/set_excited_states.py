@@ -11,6 +11,7 @@ from pynasqm.trajectories.get_reference_job import get_reference_job
 from pynasqm.trajectories.get_reference_job import get_n_trajs_of_reference
 from pynasqm.trajectories.get_reference_job import get_n_ref_runs
 from pynasqm.trajectories.initialexcitedstates import get_n_initial_states_w_laser_energy_and_fwhm
+from pynasqm.trajectories.read_coeffs import read_coeffs
 
 @singledispatch
 def set_excited_states(job_data, inputceons):
@@ -25,13 +26,18 @@ def _(job_data, inputceons):
 @set_excited_states.register(QmExcited)
 def _(job_data, inputceons):
     print("Setting Initial Excited States")
+    init_coeffs = []
     if job_data.user_input.restart_attempt > 0:
         print("From Restarts")
         r_attempt = job_data.user_input.restart_attempt
-        init_state_info = [get_state_from_restart(r_attempt, traj_id)
-                           for traj_id in job_data.traj_indices()]
-        init_states = [i[0] for i in init_state_info]
-        init_coeffs = [i[1] for i in init_state_info]
+        init_states = [get_state_from_restart(r_attempt, traj_id)
+                       for traj_id in traj_indices(job_data)]
+        init_coeffs = [get_coeffs_from_restart(r_attempt,
+                                               traj_id,
+                                               n_states = job_data.user_input.n_exc_states_propagate_ex_param)
+                       for traj_id in traj_indices(job_data)]
+        print("Dustin all init_coeffs")
+        print(init_coeffs)
     elif doing_laser_excitation(job_data):
         init_states = get_n_initial_states_w_laser_energy_and_fwhm(job_data.number_trajectories,
                                                                     'spectra_abs.input',
@@ -41,22 +47,35 @@ def _(job_data, inputceons):
         init_states = get_sm_states()
     else:
         init_states = [job_data.user_input.exc_state_init_ex_param for _ in range(job_data.number_trajectories)]
-    for inputceon, state in zip(inputceons, init_states):
-        inputceon.set_excited_state(state, job_data.user_input.n_exc_states_propagate_ex_param)
-
+    if init_coeffs != []:
+        for inputceon, state, coeffs in zip(inputceons, init_states, init_coeffs):
+            print("Dustin updating coeffs with")
+            print(coeffs)
+            inputceon.set_excited_state(state,
+                                        job_data.user_input.n_exc_states_propagate_ex_param,
+                                        coeffs)
+    else:
+        for inputceon, state in zip(inputceons, init_states):
+            inputceon.set_excited_state(state, job_data.user_input.n_exc_states_propagate_ex_param)
     print("Finished Setting Initial Excited States")
     return inputceons
 
 def doing_laser_excitation(job_data):
     return job_data.user_input.exc_state_init_ex_param == -1
 
-def get_state_from_restart(self, restart_attempt, traj_id):
+def get_state_from_restart(restart_attempt, traj_id):
     refference_restart = restart_attempt - 1
     coeffn_file = f"qmexcited/traj_{traj_id}/restart_{refference_restart}/coeff-n.out"
     if os.path.isfile(coeffn_file):
         coeffn_data = open(coeffn_file, 'r').readlines()
-        return (int(coeffn_data[-1].split()[0]), coeffn_data[-1].split()[2:-1])
-    return (-1, None)
+        return int(coeffn_data[-1].split()[0])
+    return None
+
+def get_coeffs_from_restart(restart_attempt, traj_id, n_states):
+    refference_restart = restart_attempt - 1
+    coefficient_file = f"qmexcited/traj_{traj_id}/restart_{refference_restart}/coefficient.out"
+    return read_coeffs(coefficient_file)[-n_states:]
+
 
 def get_sm_states():
     pulse_pump_text = open("pulse_pump_states.txt").readlines()
