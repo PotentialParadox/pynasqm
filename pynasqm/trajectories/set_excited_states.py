@@ -49,8 +49,6 @@ def _(job_data, inputceons):
         init_states = [job_data.user_input.exc_state_init_ex_param for _ in range(job_data.number_trajectories)]
     if init_coeffs != []:
         for inputceon, state, coeffs in zip(inputceons, init_states, init_coeffs):
-            print("Dustin updating coeffs with")
-            print(coeffs)
             inputceon.set_excited_state(state,
                                         job_data.user_input.n_exc_states_propagate_ex_param,
                                         coeffs)
