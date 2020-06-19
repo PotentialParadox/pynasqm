@@ -36,8 +36,6 @@ def _(job_data, inputceons):
                                                traj_id,
                                                n_states = job_data.user_input.n_exc_states_propagate_ex_param)
                        for traj_id in traj_indices(job_data)]
-        print("Dustin all init_coeffs")
-        print(init_coeffs)
     elif doing_laser_excitation(job_data):
         init_states = get_n_initial_states_w_laser_energy_and_fwhm(job_data.number_trajectories,
                                                                     'spectra_abs.input',

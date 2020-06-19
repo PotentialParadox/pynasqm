@@ -1,6 +1,6 @@
 '''
 Class in charge of controling the input files for NASQM
-FIXME This should be refactored in oredered to be testable
+FIXME This should be refactored to be testable
 '''
 import re
 from shutil import copyfile, SameFileError
@@ -29,6 +29,13 @@ class InputCeon:
 
     def set_istully(self, isTully, qsteps=0):
         self.inputceonmanager.set_istully(isTully, qsteps)
+        self.inputceonmanager.write()
+
+    def set_printcharges(self, is_printcharges):
+        """
+        Set the verbosity for both amber and naesmd
+        """
+        self.inputceonmanager.set_printcharges(is_printcharges)
         self.inputceonmanager.write()
 
     def calc_transition_dipoles(self, should_calc):
@@ -115,14 +122,6 @@ class InputCeon:
         sed_inplace('input.ceon', r'verbosity=\d*', 'verbosity=' + str(verbosity))
         sed_inplace(self.amber_input, r'verbosity\s*=\s*\d*', 'verbosity=' + str(verbosity))
 
-    def set_printcharges(self, is_printcharges):
-        """
-        Set the verbosity for both amber and naesmd
-        """
-        if is_printcharges:
-            sed_inplace('input.ceon', r'printcharges=\d*', 'printcharges=1')
-        else:
-            sed_inplace('input.ceon', r'printcharges=\d*', 'printcharges=0')
 
     def set_periodic(self, periodic, constant_value):
         '''

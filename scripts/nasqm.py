@@ -22,6 +22,7 @@ from pynasqm.trajectories.fluorescencesnaps import FluorescenceSnaps
 from pynasqm.sed import sed_inplace, sed_global
 from pynasqm.nasqmslurm import restart_nasqm
 from pynasqm.trajectories.combine_trajectories import combine_trajectories
+from pynasqm.collect_coeffs import collect_coeffs
 import subprocess
 
 
@@ -133,8 +134,9 @@ def restart_for_pc(job_id, restart_attempt):
 def manage_restart(job_id, user_input, restart_attempt):
     runs = [user_input.n_ground_runs, user_input.n_qmground_runs, user_input.n_exc_runs]
     n_runs = runs[job_id]
+    job_desciption = ["mmground", "qmground", "qmexcited"]
     if should_restart(n_runs, restart_attempt):
-        print("restarting with", job_id)
+        print(f"restarting with {job_desciption[job_id]\n")
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
 
@@ -225,6 +227,10 @@ def run_fluorescence_collection(user_input):
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
     n_completed = write_spectra_flu_input(user_input)
     write_omega_vs_time(n_trajectories=n_completed, n_states=exc_state_init)
+    collect_coeffs(
+        number_trajectories=user_input.n_snapshots_ex,
+        number_restarts=user_input.n_exc_runs - 1
+    )
     if user_input.is_tully:
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 

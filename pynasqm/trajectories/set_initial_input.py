@@ -66,6 +66,7 @@ def _(traj_data):
     input_ceon.set_excited_state(1, user_input.n_flu_exc)
     input_ceon.set_n_steps_to_print(1)
     input_ceon.set_verbosity(1)
+    input_ceon.set_printcharges(1)
     input_ceon.set_time_step(user_input.exc_time_step)
     input_ceon.set_random_velocities(False)
     input_ceon.calc_transition_dipoles(False)

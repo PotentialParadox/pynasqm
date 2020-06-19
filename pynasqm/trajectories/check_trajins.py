@@ -21,12 +21,12 @@ def _(traj_data, trajins):
                            f"                                    -> pulse_pump \n")
     return f_trajins
 
-# @check_trajins.register(QmGround)
-# @check_trajins.register(QmExcited)
-# @check_trajins.register(PPump)
-# def _(traj_data, trajins):
-#     for trajin in trajins:
-#         if not os.path.isfile(trajin):
-#             raise RuntimeError(f"{trajin} was not found, make sure you ran the previous step: \n"\
-#                                 f"mm_ground_state ->  qm_ground_state ->  absorption -> excited_state -> fluorescence\n"\
-#                                 f"                                    -> pulse_pump \n")
+@check_trajins.register(QmGround)
+@check_trajins.register(QmExcited)
+@check_trajins.register(PPump)
+def _(traj_data, trajins):
+    for trajin in trajins:
+        if not os.path.isfile(trajin):
+            raise RuntimeError(f"{trajin} was not found, make sure you ran the previous step: \n"\
+                                f"mm_ground_state ->  qm_ground_state ->  absorption -> excited_state -> fluorescence\n"\
+                                f"                                    -> pulse_pump \n")

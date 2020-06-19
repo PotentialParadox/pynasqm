@@ -41,6 +41,12 @@ class InputceonManager:
     def set_timestep(self, timestep):
         self.moldyn.set_value('time_step', timestep)
 
+    def set_printcharges(self, printcharges):
+        if printcharges:
+            self.qmmm.set_value('printcharges', 1)
+        else:
+            self.qmmm.set_value('printcharges', 0)
+
     @staticmethod
     def generate_initial_coeffs(state, states_to_prop):
         A =  np.zeros((states_to_prop, 2), dtype=float)
