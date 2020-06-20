@@ -1,6 +1,6 @@
 from pynasqm.trajectories.trajectories import Trajectories
 from pynasqm.amber import Amber
-from pynasqm.trajectories.combine_trajectores import combine_trajectories
+from pynasqm.trajectories.combine_trajectories import combine_trajectories
 import pynasqm.cpptraj as nasqm_cpptraj
 import pytraj as pt
 import pynasqm.nasqmslurm as nasqm_slurm

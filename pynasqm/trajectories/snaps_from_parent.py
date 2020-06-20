@@ -1,5 +1,5 @@
 import subprocess
-from pynasqm.trajectories.combine_trajectores import combine_trajectories
+from pynasqm.trajectories.combine_trajectories import combine_trajectories
 from pynasqm.trajectories.utils import traj_indices, snap_indices
 from pynasqm.trajectories.check_trajins import check_trajins
 from pynasqm.cpptraj import create_restarts
