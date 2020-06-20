@@ -91,7 +91,7 @@ initinputceon = ""\
 "verbosity=3, ! NEXMD output verbosity (0-minimum, 3-maximum)\n"\
 "! [2 for dynamics, 3 for optimization and single-point]\n"\
 "out_data_steps=1, ! Number of steps to write data [1]\n"\
-"out_coords_steps=10, ! Number of steps to write the restart file [10]\n"\
+"out_coords_steps=1, ! Number of steps to write the restart file [10]\n"\
 "out_data_cube=0, ! Write (1) or do not write (0) view files to generate cubes [0]\n"\
 "out_count_init=0, ! Initial count for view files [0]\n"\
 "&endmoldyn\n"\

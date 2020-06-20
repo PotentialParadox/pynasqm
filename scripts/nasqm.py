@@ -136,7 +136,7 @@ def manage_restart(job_id, user_input, restart_attempt):
     n_runs = runs[job_id]
     job_desciption = ["mmground", "qmground", "qmexcited"]
     if should_restart(n_runs, restart_attempt):
-        print(f"restarting with {job_desciption[job_id]\n")
+        print(f"restarting with {job_desciption[job_id]}\n")
         restart(user_input, job_id, restart_attempt+1)
     user_input.restart_attempt = 0
 
