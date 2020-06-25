@@ -151,7 +151,8 @@ pynasqmin = ''\
 '# Change here the energy of the laser used for excitation?\n'\
 '    "laser_energy": "4.2",\n'\
 '# Change here the full width half max of the laser in fs\n'\
-'# Note that 100fs FWHM of a laser will correspond to a 0.162eV FWHM FC broadening\n'\
+'# Note that 100fs FWHM of a laser will correspond to a 0.1621eV FWHM FC broadening\n'\
+'# Conversion is E_ev = 16.21 / E_fs\n'\
 '    "fwhm": "100",\n'\
 '############################################################\n'\
 '#                  Fluorescence\n'\
