@@ -5,7 +5,7 @@ import os
 from pynasqm.utils import copy_file
 import subprocess
 
-def create_restarts(amber_inputfile, output, start=1, last="last", step=None, override=None):
+def create_restarts(amber_inputfile, output, start=1, last="last", step=None, override=None, center=True):
     '''
     Create amber restart files using cpptraj
     '''
@@ -15,10 +15,12 @@ def create_restarts(amber_inputfile, output, start=1, last="last", step=None, ov
             ctc += f"trajin {amber_inputfile} {start} {last} {step}\n"
         else:
             ctc += f"trajin {amber_inputfile}\n"
-        ctc += f"center :1\n" \
-            f"trajout {output} restart\n" \
-            f"image\n" \
-            f"run\n" \
+        if center:
+            ctc += "center :1\n"
+        ctc += f"trajout {output} restart\n"
+        if center:
+            ctc += f"image\n"
+        ctc += f"run\n" \
             f"quit"
         open('convert_to_crd.in', 'w').write(ctc)
         print("Creating restarts from", amber_inputfile)

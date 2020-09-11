@@ -50,7 +50,7 @@ def plotter(args, x_ev, x_nm, ys, units):
     sns.set()
     sns.set_style("white")
     sns.set_style("ticks")
-    colors = sns.color_palette()
+    colors = sns.color_palette()*20
 
     fig, ax = plt.subplots()
     ax.spines['right'].set_visible(False)

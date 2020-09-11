@@ -1,6 +1,6 @@
 '''
 get_n_initial_states_w_laser_energy_and_fwhm generates a list of initial excited states
-using information supplied by abs_spectra, which is a file in the format with each line [e1 f1 e2 e2].
+using information supplied by abs_spectra, which is a file in the format with each line [e1 f1 e2 f2].
 '''
 import numpy as np
 import math

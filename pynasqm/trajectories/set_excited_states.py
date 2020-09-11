@@ -38,7 +38,7 @@ def _(job_data, inputceons):
                        for traj_id in traj_indices(job_data)]
     elif doing_laser_excitation(job_data):
         init_states = get_n_initial_states_w_laser_energy_and_fwhm(job_data.number_trajectories,
-                                                                    'spectra_abs.input',
+                                                                    'spectra_absorption.input',
                                                                     job_data.user_input.laser_energy,
                                                                     job_data.user_input.fwhm)
     elif job_data.user_input.is_pulse_pump:

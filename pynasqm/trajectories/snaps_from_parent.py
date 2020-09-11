@@ -23,7 +23,7 @@ def snaps_from_parent(traj_data):
     restart_step = 1
     for trajin, output in zip(ref_trajs, outputs):
         create_restarts(amber_inputfile=trajin[1], start=cpptraj_start_index(traj_data),
-                        output=output, step=restart_step)
+                        output=output, step=restart_step, center=False)
     move_restarts(traj_data, job, ref_job)
 
 def cpptraj_start_index(traj_data):

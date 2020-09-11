@@ -198,6 +198,7 @@ def run_pulse_pump_prep(input_ceon, user_input):
 def run_pulse_pump_prep_collection(input_ceon, user_input):
     title_print("Performing  Pulse Pump Collection")
     PulsePump(user_input, input_ceon).write_pulse_pump_states()
+    write_spectra_input(user_input, 'pulse_pump')
 
 def run_excited_state_trajectories(input_ceon, user_input):
     '''
@@ -207,6 +208,10 @@ def run_excited_state_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
     QmExcitedStateTrajectories(user_input, input_ceon).run()
     manage_restart(2, user_input, user_input.restart_attempt)
+    collect_coeffs(
+        number_trajectories=user_input.n_snapshots_ex,
+        number_restarts=user_input.n_exc_runs - 1
+    )
 
 def run_fluorescence_snaps(input_ceon, user_input):
     '''
@@ -227,10 +232,6 @@ def run_fluorescence_collection(user_input):
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
     n_completed = write_spectra_flu_input(user_input)
     write_omega_vs_time(n_trajectories=n_completed, n_states=exc_state_init)
-    collect_coeffs(
-        number_trajectories=user_input.n_snapshots_ex,
-        number_restarts=user_input.n_exc_runs - 1
-    )
     if user_input.is_tully:
         write_average_coeffs(n_trajectories=user_input.n_snapshots_ex, n_states=exc_state_prop)
 
