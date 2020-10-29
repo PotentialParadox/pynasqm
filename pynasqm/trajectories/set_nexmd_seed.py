@@ -1,4 +1,5 @@
 from functools import singledispatch
+import random
 from pynasqm.trajectories.qmground import QmGround
 from pynasqm.trajectories.qmexcited import QmExcited
 from pynasqm.trajectories.fluorescence import Fluorescence
@@ -16,4 +17,6 @@ def set_nexmd_seed(job_data, inputceons):
 @set_nexmd_seed.register(PPump)
 @set_nexmd_seed.register(Absorption)
 def _(job_data, inputceons):
+    for inputceon in inputceons:
+        inputceon.set_nexmd_seed(random.randint(0, 100000))
     return inputceons

@@ -311,7 +311,12 @@ class UserInput:
         new_frames = self.make_divisible(total_frames, divisor)
         new_time = self.frames_to_time(new_frames, time_step, n_print_trajs)
         if new_time / total_frames > 1.1:
-            raise ValueError("Input values would require an adjustment to given time by more than 1.1.\n"\
+            raise ValueError(f"Input values would require an adjustment to given time by more than 1.1.\n"\
+                             f"run_time = {run_time}\n"\
+                             f"time_step = {time_step}\n"\
+                             f"n_runs = {n_runs}\n"\
+                             f"n_print_trajs = {n_print_trajs}\n"\
+                             f"n_trajs = {n_trajs}\n"\
                              "Please adjust you inputs to allow an even distribution of time among restarts")
         if new_time != run_time:
             print("Had to adjust runtime to allow for even distribution\n"\

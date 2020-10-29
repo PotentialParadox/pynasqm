@@ -19,6 +19,8 @@ def collect_coeffs(number_trajectories, number_restarts):
 
     for traj in range(1, number_trajectories + 1):
         src1 = f"qmexcited/traj_{traj}/restart_0/coeff-n.out"
+        if not os.path.isfile(src1):
+            continue
         first_run_data = np.loadtxt(src1)
         first_time = first_run_data[1,1]
         last_time = first_run_data[-1,1]

@@ -208,10 +208,11 @@ def run_excited_state_trajectories(input_ceon, user_input):
     print("!!!!!!!!!!!!!!!!!!!! Running Excited States !!!!!!!!!!!!!!!!!!!!")
     QmExcitedStateTrajectories(user_input, input_ceon).run()
     manage_restart(2, user_input, user_input.restart_attempt)
-    collect_coeffs(
-        number_trajectories=user_input.n_snapshots_ex,
-        number_restarts=user_input.n_exc_runs - 1
-    )
+    if user_input.is_tully:
+        collect_coeffs(
+            number_trajectories=user_input.n_snapshots_ex,
+            number_restarts=user_input.n_exc_runs - 1
+        )
 
 def run_fluorescence_snaps(input_ceon, user_input):
     '''
