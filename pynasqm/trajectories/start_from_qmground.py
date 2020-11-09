@@ -1,4 +1,5 @@
 import os
+from functools import singledispatch
 from pynasqm.utils import mkdir, copy_files, is_empty_file
 from pynasqm.trajectories.utils import traj_indices
 
@@ -9,10 +10,10 @@ def start_from_qmground(traj_data, override):
 
 def copy_nmr_from_qmground(traj_data):
     source_files = ["qmground/traj_{}/nmr/rst_{}.dist".format(t, t) for t in traj_indices(traj_data)]
-    output_files = ["qmexcited/traj_{}/nmr/rst_{}.dist".format(t, t) for t in traj_indices(traj_data)]
+    output_files = [f"{traj_data.job_suffix}/traj_{t}/nmr/rst_{t}.dist" for t in traj_indices(traj_data)]
     copy_files(source_files, output_files)
     source_files = ["qmground/traj_{}/nmr/closest_{}.txt".format(t, t) for t in traj_indices(traj_data)]
-    output_files = ["qmexcited/traj_{}/nmr/closest_{}.txt".format(t, t) for t in traj_indices(traj_data)]
+    output_files = [f"{traj_data.job_suffix}/traj_{t}/nmr/closest_{t}.txt" for t in traj_indices(traj_data)]
     copy_files(source_files, output_files)
 
 def copy_restarts_from_qmground(traj_data, override):
