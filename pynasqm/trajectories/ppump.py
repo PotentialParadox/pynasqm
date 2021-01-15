@@ -7,6 +7,7 @@ class PPump:
         self.child_root = 'nasqm_pulse_pump_'
         self.job_suffix = 'pulse_pump'
         self.parent_restart_root = 'nasqm_qmground_'
+        self.n_snapshots_per_trajectory = 0
         self.amber_restart = True
 
     def __str__(self):

@@ -228,7 +228,7 @@ def run_fluorescence_collection(user_input):
     file
     '''
     print("!!!!!!!!!!!!!!!!!!!! Parsing Fluorescences !!!!!!!!!!!!!!!!!!!!")
-    combine_trajectories("flu", user_input.n_snapshots_ex, user_input.n_exc_runs)
+    # combine_trajectories("qmexcited", user_input.n_snapshots_ex, user_input.n_exc_runs)
     exc_state_init = user_input.exc_state_init_ex_param
     exc_state_prop = user_input.n_exc_states_propagate_ex_param
     n_completed = write_spectra_flu_input(user_input)
