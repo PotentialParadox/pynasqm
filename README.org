@@ -1,7 +1,7 @@
 #+TITLE: Pynasqm
 * Installation
 PYNASQM requires the following prerequisites
--SANDER-NEXMD
+- SANDER-NEXMD
 - Pytraj
 
 Clone this repository to the directory of your choosing.
@@ -424,6 +424,14 @@ pmemd.cuda -O \
        #+END_SRC
        Keep running box_eq.sh until completion.
 *** Preparing PyNAQM
-    
-    
-    
+    I've already included appropriate  =input.ceon=, =pynasqm.in=, and =md_qmmm_amb.in= files in the directory, so skip use of =nasqm.py --init=.
+    To run the ground state open =pynasqm.in= and set 
+    #+begin_src 
+# Do you want to run ground state dynamics
+    "run_ground_state_dynamics": "True",
+    #+end_src
+    Then run
+    #+begin_src 
+nasqm.py
+    #+end_src
+    This will create the files needed to run the ground state trajectory. It will also create a file called

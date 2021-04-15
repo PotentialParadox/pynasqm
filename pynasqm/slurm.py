@@ -78,7 +78,7 @@ def run_slurm(slurm_script):
     if slurm_script:
         file_name = 'nasqm.sbatch'
         slurm_id = submit_job(file_name, slurm_script)
-    wait_for_job(slurm_id)
+    # wait_for_job(slurm_id)
 
 def wait_for_job(slurm_id):
     print("Waiting for {}".format(slurm_id))
@@ -88,7 +88,7 @@ def wait_for_job(slurm_id):
 def submit_job(file_name, slurm_script):
     subprocess.call(['mkdir', '-p', 'Reports'])
     open(file_name, 'w').write(slurm_script)
-    print(f"Please modify {file_name} to work on your sytem, then run")
+    print(f"Please modify {file_name} to work on your system job manager. Run the task, then continue.")
     # p_id = re.compile(r'\d+')
     # try:
     #     proc = subprocess.Popen(['sbatch {}'.format(file_name)], shell=True, stdout=subprocess.PIPE,
