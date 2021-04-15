@@ -88,15 +88,16 @@ def wait_for_job(slurm_id):
 def submit_job(file_name, slurm_script):
     subprocess.call(['mkdir', '-p', 'Reports'])
     open(file_name, 'w').write(slurm_script)
-    p_id = re.compile(r'\d+')
-    try:
-        proc = subprocess.Popen(['sbatch {}'.format(file_name)], shell=True, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE, universal_newlines=True)
-        stdout_value, stderr_value = proc.communicate()
-        slurm_id = str(re.findall(p_id, stdout_value)[0])
-    except IndexError:
-        raise ValueError("File {} could not be submitted to slurm. Make sure slurm is installed.")
-    if stderr_value == "Error":
-        raise RuntimeError("Was unable to submit {} to slurm".format(file_name))
-    print("Submitted {} Job: {}".format(file_name, slurm_id))
-    return slurm_id
+    print(f"Please modify {file_name} to work on your sytem, then run")
+    # p_id = re.compile(r'\d+')
+    # try:
+    #     proc = subprocess.Popen(['sbatch {}'.format(file_name)], shell=True, stdout=subprocess.PIPE,
+    #                             stderr=subprocess.PIPE, universal_newlines=True)
+    #     stdout_value, stderr_value = proc.communicate()
+    #     slurm_id = str(re.findall(p_id, stdout_value)[0])
+    # except IndexError:
+    #     raise ValueError("File {} could not be submitted to slurm. Make sure slurm is installed.")
+    # if stderr_value == "Error":
+    #     raise RuntimeError("Was unable to submit {} to slurm".format(file_name))
+    # print("Submitted {} Job: {}".format(file_name, slurm_id))
+    # return slurm_id

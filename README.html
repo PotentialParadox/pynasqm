@@ -3,12 +3,12 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2020-02-20 Thu 10:39 -->
+<!-- 2021-04-15 Thu 12:34 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Pynasqm</title>
 <meta name="generator" content="Org mode" />
-<meta name="author" content="dustin" />
+<meta name="author" content="Dustin Tracy" />
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
   .title  { text-align: center;
@@ -40,7 +40,7 @@
   }
   pre.src {
     position: relative;
-    overflow: visible;
+    overflow: auto;
     padding-top: 1.2em;
   }
   pre.src:before {
@@ -52,7 +52,7 @@
     padding: 3px;
     border: 1px solid black;
   }
-  pre.src:hover:before { display: inline;}
+  pre.src:hover:before { display: inline; margin-top: 14px;}
   /* Languages per Org manual */
   pre.src-asymptote:before { content: 'Asymptote'; }
   pre.src-awk:before { content: 'Awk'; }
@@ -194,50 +194,26 @@
   /*]]>*/-->
 </style>
 <script type="text/javascript">
-/*
-@licstart  The following is the entire license notice for the
-JavaScript code in this tag.
-
-Copyright (C) 2012-2020 Free Software Foundation, Inc.
-
-The JavaScript code in this tag is free software: you can
-redistribute it and/or modify it under the terms of the GNU
-General Public License (GNU GPL) as published by the Free Software
-Foundation, either version 3 of the License, or (at your option)
-any later version.  The code is distributed WITHOUT ANY WARRANTY;
-without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
-
-As additional permission under GNU GPL version 3 section 7, you
-may distribute non-source (e.g., minimized or compacted) forms of
-that code without the copy of the GNU GPL normally required by
-section 4, provided you include this license notice and a URL
-through which recipients can access the Corresponding Source.
-
-
-@licend  The above is the entire license notice
-for the JavaScript code in this tag.
-*/
+// @license magnet:?xt=urn:btih:e95b018ef3580986a04669f1b5879592219e2a7a&dn=public-domain.txt Public Domain
 <!--/*--><![CDATA[/*><!--*/
- function CodeHighlightOn(elem, id)
- {
-   var target = document.getElementById(id);
-   if(null != target) {
-     elem.cacheClassElem = elem.className;
-     elem.cacheClassTarget = target.className;
-     target.className = "code-highlighted";
-     elem.className   = "code-highlighted";
-   }
- }
- function CodeHighlightOff(elem, id)
- {
-   var target = document.getElementById(id);
-   if(elem.cacheClassElem)
-     elem.className = elem.cacheClassElem;
-   if(elem.cacheClassTarget)
-     target.className = elem.cacheClassTarget;
- }
-/*]]>*///-->
+     function CodeHighlightOn(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.add("code-highlighted");
+         target.classList.add("code-highlighted");
+       }
+     }
+     function CodeHighlightOff(elem, id)
+     {
+       var target = document.getElementById(id);
+       if(null != target) {
+         elem.classList.remove("code-highlighted");
+         target.classList.remove("code-highlighted");
+       }
+     }
+    /*]]>*///-->
+// @license-end
 </script>
 </head>
 <body>
@@ -247,68 +223,87 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgafa84d2">1. Installation</a></li>
-<li><a href="#orgd893595">2. Usage</a></li>
-<li><a href="#orge6b3b73">3. SANDER-NEXMD</a>
+<li><a href="#org740d959">1. Installation</a></li>
+<li><a href="#orgad3ddbd">2. Pytraj</a></li>
+<li><a href="#orgde68d03">3. Usage</a>
 <ul>
-<li><a href="#orgc159a04">3.1. Installation</a></li>
-<li><a href="#org5f6f868">3.2. SANDER-NEXMD Single Trajectory Run</a></li>
-<li><a href="#org936692c">3.3. AMBER Coordinate File</a></li>
-<li><a href="#orgdfebdd8">3.4. AMBER prmtop</a></li>
-<li><a href="#org6136e2d">3.5. Creating a QM/MM System for SANDER-NEXMD&#xa0;&#xa0;&#xa0;<span class="tag"><span class="METHOD">METHOD</span></span></a></li>
+<li><a href="#org7565ba6">3.1. Capabilities</a></li>
+<li><a href="#orgd4abf54">3.2. Initializing a System</a></li>
+<li><a href="#org23a00cd">3.3. Plotting an Absorption Spectra</a></li>
+<li><a href="#org5586498">3.4. Plotting Populations</a></li>
 </ul>
 </li>
-<li><a href="#org486fecc">4. Pytraj</a></li>
+<li><a href="#org2693876">4. Tutorials</a>
+<ul>
+<li><a href="#org33e2112">4.1. PPV3NO2 In Methanol. Absorption and Fluorescence</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgafa84d2" class="outline-2">
-<h2 id="orgafa84d2"><span class="section-number-2">1</span> Installation</h2>
+<div id="outline-container-org740d959" class="outline-2">
+<h2 id="org740d959"><span class="section-number-2">1</span> Installation</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 PYNASQM requires the following prerequisites
+-SANDER-NEXMD
 </p>
 <ul class="org-ul">
-<li><a href="#orge6b3b73">3</a></li>
-<li><a href="#org486fecc">4</a></li>
+<li>Pytraj</li>
 </ul>
 
 <p>
 Clone this repository to the directory of your choosing.
 </p>
-<pre class="example">
+<pre class="example" id="org5e5e8a8">
 git clone https://github.com/PotentialParadox/pynasqm.git
 cd pynasqm
 python setup install
 </pre>
 </div>
 </div>
-<div id="outline-container-orgd893595" class="outline-2">
-<h2 id="orgd893595"><span class="section-number-2">2</span> Usage</h2>
+<div id="outline-container-orgad3ddbd" class="outline-2">
+<h2 id="orgad3ddbd"><span class="section-number-2">2</span> Pytraj</h2>
 <div class="outline-text-2" id="text-2">
 <p>
-Pynasqm is currently capable of automating the following actions
+<a href="https://amber-md.github.io/pytraj/latest/index.html">Pytraj</a> is a python program the wraps around cpptraj, a molecular dynamics
+analyzer and editor. 
+</p>
+
+<p>
+I've had a lot of issues using conda or pip to install pytraj. I found it best to build from source.
+Make sure that you've activated your python environment, then
+</p>
+<pre class="example">
+git clone https://github.com/Amber-MD/pytraj
+cd pytraj
+python ./setup.py install
+</pre>
+</div>
+</div>
+<div id="outline-container-orgde68d03" class="outline-2">
+<h2 id="orgde68d03"><span class="section-number-2">3</span> Usage</h2>
+<div class="outline-text-2" id="text-3">
+</div>
+<div id="outline-container-org7565ba6" class="outline-3">
+<h3 id="org7565ba6"><span class="section-number-3">3.1</span> Capabilities</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Pynasqm is currently capable of automating the following actions using NEXMD and SANDER
 </p>
 <ul class="org-ul">
 <li>Single MM-Ground State Trajectory</li>
 <li>QM-Ground State Trajectories originating from MM-Ground-State</li>
 <li>Absorption calculations using snapshots from the QM-Ground State Trajectories</li>
-<li>PulsePump SinglePoint Calculations</li>
-<li>QM-Excited State Trajectory
-<ul class="org-ul">
-<li>Franck-Condon Excitations</li>
-<li>Pule Pump Simulations</li>
-<li>Capable of performing Non-Adiabatic using the isTully option</li>
-</ul></li>
+<li>QM-Excited State Trajectory</li>
+<li>Non-Adiabatic using the Non-Adiabatic Dyanmics</li>
 </ul>
-
-
-<div class="figure">
-<p><img src="images/trajectories.png" alt="trajectories.png" />
-</p>
+</div>
 </div>
 
-
+<div id="outline-container-orgd4abf54" class="outline-3">
+<h3 id="orgd4abf54"><span class="section-number-3">3.2</span> Initializing a System</h3>
+<div class="outline-text-3" id="text-3-2">
 <p>
 Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
 AMBER parameter/topology (prmtop) file and an AMBER coordinate (inpcrd) file.
@@ -322,7 +317,7 @@ Copy your prmtop and inpcrd file to that directory, renaming the files to
 <p>
 You can initialize the other input files with
 </p>
-<pre class="example">
+<pre class="example" id="org303132f">
 nasqm.py --init
 </pre>
 <p>
@@ -353,374 +348,358 @@ systems employing the slurm array feature.
 Once your input files are setup, run the program by executing the following in
 your working directory containing the input files.
 </p>
-<pre class="example">
+<pre class="example" id="org770f93e">
 nasqm.py
 </pre>
 </div>
 </div>
 
-<div id="outline-container-orge6b3b73" class="outline-2">
-<h2 id="orge6b3b73"><span class="section-number-2">3</span> SANDER-NEXMD</h2>
-<div class="outline-text-2" id="text-3">
-</div>
-<div id="outline-container-orgc159a04" class="outline-3">
-<h3 id="orgc159a04"><span class="section-number-3">3.1</span> Installation</h3>
-<div class="outline-text-3" id="text-3-1">
-<p>
-Installation of the SANDER-NEXMD installation will require the following as well
-as their dependencies:
-</p>
-
-<ul class="org-ul">
-<li>NEXMD (Git Access)</li>
-<li>Amber (Git Access)</li>
-</ul>
-
-<p>
-We also strongly encourage the use of the intel/2017 compiler w/ mkl. GNU is
-supported but users will have better performance with the intel compiler.
-</p>
-
-<p>
-First install NEXMD. Access to the NEXMD git is restricted. Please contact
-either Adrian Roitberg (roitberg@ufl.edu) or Sergei Tretiak (serg@lanl.gov) for
-permission.
-</p>
-
-<p>
-CD to your application director, then pull the NEXMD git using. 
-</p>
-
-<pre class="example">
-git clone https://github.com/roitberg/nexmd.git
-</pre>
-
-
-<p>
-And check-in to the amber-nexmd-na branch.
-</p>
-
-<pre class="example">
-cd nexmd 
-git checkout amber-nexmd-na 
-</pre>
-
-<p>
-Try to install the standalone NEXMD program. Activate your chosen compiler, then use either: 
-</p>
-
-<pre class="example">
-make ic_mkl # For intel w/ mkl 
-make gnu_mkl # For gnu w/ mkl 
-make gnu # For gnu wo/ mkl (not recommended) 
-</pre>
-
-<p>
-If this fails, refer to the documentation included in the NEXMD git. Please contact either Dustin Tracy (dtracy@ufl.edu) or Benjamin Nebgen (bnebgen@lanl.gov) for further questions regarding compilation of NEXMD. Once we’ve successfully installed NEXMD, we need to flush the standalone temp files so AMBER can build the Library files. 
-</p>
-
-<pre class="example">
-make clean 
-</pre>
-
-<p>
-Now we need to set a variable so AMBER knows where to find NEXMD. 
-</p>
-
-<pre class="example">
-export NAESMDHOME=`pwd` 
-</pre>
-
-<p>
-Note that currently NAESMDHOME is used here, not NEXMDHOME. The new name will be
-updated soon. We are now done with prepping NEXMD.
-</p>
-
-<p>
-We now need to install AMBERTOOLS. We are currently using a restricted git for
-development. Please contact Dustin Tracy (dtracy@ufl.edu) for access to a tar
-file.
-</p>
-
-<p>
-CD into your application directory and extract the tar file. 
-</p>
-
-<pre class="example">
-tar -xvf amber_na.tar.gz 
-</pre>
-
-<p>
-Try to build the standalone AMBER program.  
-</p>
-
-<pre class="example">
-cd amber 
-export AMBERHOME=`pwd` 
-
-./configure –noX11 --skip-python -norism  intel mkl # for intel  w/ mkl 
-
-./configure –noX11 --skip-python -norism  gnu mkl # for gnu  w/ mkl 
-
-./configure –noX11 --skip-python -norism  gnu # for gnu 
-</pre>
-
-<p>
-Use the same configuration you used for your NEXMD build. 
-</p>
-
-<p>
-Then install 
-</p>
-
-<pre class="example">
-source ./amber.sh 
-
-make install 
-</pre>
-
-<p>
-If this fails please refer to the amber manual (<a href="https://ambermd.org/Manuals.php">https://ambermd.org/Manuals.php</a>)
-for troubleshooting and contact information. Once successful installation and
-testing of the standalone AmberTools packages is completed cd back into
-AMBERHOME and configure AMBER to link to the NEXMD package.
-</p>
-
-<pre class="example">
-cd $AMBERHOME 
-
-./configure –noX11 --skip-python -norism -naesmd intel mkl # for intel  w/ mkl 
-
-./configure –noX11 --skip-python -norism -naesmd gnu mkl # for gnu  w/ mkl 
-
-./configure –noX11 --skip-python -norism -naesmd gnu # for gnu 
-</pre>
-
-<p>
-We don’t need to rebuild all AMBER now, only SANDER, so we CD into SANDER and build from there. 
-</p>
-
-<pre class="example">
-cd AmberTools/src/sander 
-
-make install 
-</pre>
-
-<p>
-To test successful installation (python3 required) 
-</p>
-
-<pre class="example">
-cd $NAESMDHOME/testscripts/amber_nexmd_testscripts 
-
-python run_tests.py 
-</pre>
-</div>
-</div>
-
-<div id="outline-container-org5f6f868" class="outline-3">
-<h3 id="org5f6f868"><span class="section-number-3">3.2</span> SANDER-NEXMD Single Trajectory Run</h3>
-<div class="outline-text-3" id="text-3-2">
-<p>
-Though our implementation of the simulation of non-adiabatic dynamics requires a
-large number of independent trajectories, the SANDER-NEXMD interface can only
-manage a single trajectory. Another script (to be introduced later) controls the
-characteristics of the swarm. Each single SANDER-NEXMD trajectory will require a
-number of inputs.
-</p>
-
-<ul class="org-ul">
-<li>Amber Input (mdin)</li>
-
-<li>NEXMD Input (input.ceon)</li>
-
-<li>Amber Coordinate File (mdcrd)</li>
-
-<li>Amber Parameter File (prmtop)</li>
-</ul>
-
-<p>
-Full examples can be found in $NAESMDHOME/tests/amber<sub>nexmd</sub>/. Refer to the the
-included README in that directory to determine the type of trajectory for each
-test.
-</p>
-
-<p>
-Amber Input 
-</p>
-
-<pre class="example">
-300K constant temp QMMMMD 
- &amp;cntrl 
-  ** Normal Amber Input (Check manual) ** 
-  ifqnt=1 
- / 
-
- &amp;qmmm 
-  verbosity=5, 
-  qmmask=':1', 
-  nae=1 
- / 
-</pre>
-
-<p>
-No special behavior is needed from cntrl besides the activation of qm/mm (setting ifqnt=1). Most QM/MM behavior is controlled by the input.ceon file for the exception of the verbosity, the atoms the include in the qm calculations (qmmask) and the referral to nexmd (nae). Please refer the AMBER manual for information regarding the parameters found in &amp;cntrl. 
-</p>
-
-<p>
-NEXMD Input 
-</p>
-
-<pre class="example">
-&amp;qmmm 
-  maxcyc=0, ! Optimization must be turned off
- ** Normal NEXMD Input **  
- ** Include all of AMBER’s qm/mm flags besides verbosity, qmmask ** 
-&amp;endqmmm 
-
-&amp;moldyn 
-  ** Normal NEXMD Input ** 
-&amp;endmoldyn 
-&amp;coord 
-  ** Block must be included but is ignored ** 
-&amp;endcoord 
-&amp;veloc 
-  ** Block must be included but is ignored ** 
-&amp;endveloc 
-&amp;coeff 
-  ** Normal NEXMD Input ** 
-&amp;endcoeff 
-</pre>
-
-<p>
-The NEXMD-SANDER interface is designed to be able to read an unmodified nexmd
-file. For most users, little to no modification will be required beyond setting
-the qmewald parameters. Note that the initial coordinates and velocities are
-read from the amber intput files and any values included in the input.ceon file
-will be ignored.
-</p>
-</div>
-</div>
-
-<div id="outline-container-org936692c" class="outline-3">
-<h3 id="org936692c"><span class="section-number-3">3.3</span> AMBER Coordinate File</h3>
+<div id="outline-container-org23a00cd" class="outline-3">
+<h3 id="org23a00cd"><span class="section-number-3">3.3</span> Plotting an Absorption Spectra</h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
-Amber coordinate files are needed to run the SANDER-NEXMD interface. These can
-be created using tleap, or through a converter built into PyNASQM. To use the
-pynasqm converter
+If the setting <code>run_absorption_collection</code> is set to true, then after the
+absorption snapshots are finished, pynasqm will output the average excited state
+energies and their corresponding oscillator strengths to a file
+<code>spectra_abs.in</code>. The format of <code>spectra_abs.in</code> is
 </p>
 
-<pre class="example">
-amber-nexmd-converter.py input.ceon mdcrd
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">S<sub>1</sub>-S<sub>0</sub> energy</td>
+<td class="org-left">S<sub>1</sub>-S<sub>0</sub> Oscillator Strength</td>
+<td class="org-left">&#x2026;</td>
+<td class="org-left">S<sub>n</sub>-S<sub>0</sub> energy</td>
+<td class="org-left">S<sub>n</sub>-S<sub>0</sub> Oscillator Strength</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+ This can be converted into a gaussian broadened spectra using
+the function <code>hist_spectra_lifetime.py</code> which is installed with the installation
+of pynasqm. Most included scripts use the python library argparse and will
+output a helper with called with the flag <code>--help</code>. The helper for
+<code>hist_spectra_lifetime</code> is as follows:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-shell-script">hist_spectra_lifetime --help
+
+
+usage: hist_spectra_lifetime.py <span style="color: #51afef;">[</span>-h<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--input INPUT<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--output OUTPUT<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--number_states NUMBER_STATES<span style="color: #51afef;">]</span>
+                                <span style="color: #51afef;">[</span>--number_gauss NUMBER_GAUSS<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--fwhm FWHM<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--number_bins NUMBER_BINS<span style="color: #51afef;">]</span>
+                                <span style="color: #51afef;">[</span>--xmin XMIN<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--xmax XMAX<span style="color: #51afef;">]</span>
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --input INPUT, -i INPUT
+                        The input file
+  --output OUTPUT, -o OUTPUT
+                        The output file
+  --number_states NUMBER_STATES
+                        The number of excited states you want to extract
+  --number_gauss NUMBER_GAUSS
+                        The number of gaussians
+  --fwhm FWHM           Full witdh half max of the broadening <span style="color: #51afef;">(</span>eV<span style="color: #51afef;">)</span>
+  --number_bins NUMBER_BINS
+                        The number of bins you wish to distribute over
+  --xmin XMIN           The minimum energy<span style="color: #51afef;"> in</span> eV
+  --xmax XMAX           The maximum energy<span style="color: #51afef;"> in</span> eV
 </pre>
+</div>
 
 <p>
-Further instruction for prepping a job can be found in the Creating a System
-section.
-</p>
-</div>
-</div>
-
-<div id="outline-container-orgdfebdd8" class="outline-3">
-<h3 id="orgdfebdd8"><span class="section-number-3">3.4</span> AMBER prmtop</h3>
-<div class="outline-text-3" id="text-3-4">
-<p>
-AMBER prmtop files can be generated using tleap. Refer to the AMBER manual for
-this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
-</p>
-</div>
-</div>
-
-<div id="outline-container-org6136e2d" class="outline-3">
-<h3 id="org6136e2d"><span class="section-number-3">3.5</span> Creating a QM/MM System for SANDER-NEXMD&#xa0;&#xa0;&#xa0;<span class="tag"><span class="METHOD">METHOD</span></span></h3>
-<div class="outline-text-3" id="text-3-5">
-<ol class="org-ol">
-<li>Build your solute using either Avogadro or Gaussview</li>
-<li>Create pepi files for each using antechamber that came with AMBER for each of
-the following commands <code>$molecule=molecule name</code></li>
-<li>Generate your mol and frcmod files. There are two methods.
-<ol class="org-ol">
-<li><p>
-If you have fully parameterized pdb file or don't need accurate charges.
-(Most likely your main solute)
-</p>
-<pre class="example">
-# Generates a prepfile
-antechamber -fi pdb -fo prepi -i $molecule.pdb -o o2.prepi
-# Generate frcmod file
-parmchk2 -f prepi -i $molecule.prepi -o $molecule.frcmod 
-# Generate mol2 file
-antechamber -fi pdb -fo mol2 -i $molecule.pdb -o $molecule.mol2 -rn $molecule -c bcc -pf y 
-</pre></li>
-<li><p>
-If you need accurate charges (Most likely a self generated solvent)
+Our example
 </p>
 <div class="org-src-container">
-<pre class="src src-shell-script"><span style="color: #2aa1ae; background-color: #ecf3ec;"># </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Create a gaussian file to calculate resp charges</span>
-antechamber -i $<span style="color: #715ab1;">molecule</span>.pdb <span style="color: #2d9574;">\</span>
-            -fi pdb <span style="color: #2d9574;">\</span>
-            -o $<span style="color: #3a81c3;">{</span><span style="color: #715ab1;">molecule</span><span style="color: #3a81c3;">}</span>_char.com <span style="color: #2d9574;">\</span>
-            -fo gcrt <span style="color: #2d9574;">\</span>
-            -gv <span style="color: #4e3163;">1</span> <span style="color: #2d9574;">\</span>
-            -ge $<span style="color: #715ab1;">molecule</span>.gesp
-<span style="color: #2aa1ae; background-color: #ecf3ec;"># </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Run the gaussian file</span>
-g09 $<span style="color: #3a81c3;">{</span><span style="color: #715ab1;">molecule</span><span style="color: #3a81c3;">}</span>_char.com &gt; $<span style="color: #3a81c3;">{</span><span style="color: #715ab1;">molecule</span><span style="color: #3a81c3;">}</span>_char.log
-<span style="color: #2aa1ae; background-color: #ecf3ec;"># </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Use the generated esp file to create mol2</span>
-antechamber -i $<span style="color: #715ab1;">molecule</span>.esp <span style="color: #2d9574;">\</span>
-            -fi gesp <span style="color: #2d9574;">\</span>
-            -o $<span style="color: #715ab1;">molecule</span>.mol2 <span style="color: #2d9574;">\</span>
-            -fo mol2 <span style="color: #2d9574;">\</span>
-            -c resp <span style="color: #2d9574;">\</span>
-            -eq <span style="color: #4e3163;">0</span> <span style="color: #2d9574;">\</span>
-            -a gaff <span style="color: #2d9574;">\</span>
-            -rn $<span style="color: #715ab1;">molecule</span>
-<span style="color: #2aa1ae; background-color: #ecf3ec;"># </span><span style="color: #2aa1ae; background-color: #ecf3ec;">Use mol2 file to generate frcmod</span>
-parmchk -i $<span style="color: #715ab1;">molecule</span>.mol2 -f mol2 -o m1.frcmod
+<pre class="src src-shell-script">hist_spectra_lifetime.py --number_states 9 <span style="color: #98be65;">\</span>
+                         -i spectra_abs.input <span style="color: #98be65;">\</span>
+                         -o spectra_abs.out <span style="color: #98be65;">\</span>
+                         --xmin 1.5 <span style="color: #98be65;">\</span>
+                         --xmax 5 <span style="color: #98be65;">\</span>
+                         --number_bins 1000 <span style="color: #98be65;">\</span>
+                         --number_gauss 100
 </pre>
-</div></li>
-</ol></li>
+</div>
+<p>
+would produce an output <code>spectra_abs.out</code> containing the spectra information in
+a format
+</p>
 
-<li><p>
-run tleap with
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Energy (eV)</td>
+<td class="org-left">Energy (nm)</td>
+<td class="org-left">Absorption S<sub>0</sub>-S<sub>1</sub></td>
+<td class="org-left">&#x2026;</td>
+<td class="org-left">Absorption S<sub>0</sub>-S<sub>n</sub></td>
+</tr>
+</tbody>
+</table>
+
+<p>
+We can plot this file using <code>naesmd_spectra_plotter.py</code>
+</p>
+<div class="org-src-container">
+<pre class="src src-shell-script">usage: naesmd_spectra_plotter.py <span style="color: #51afef;">[</span>-h<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--title TITLE<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--number_states NUMBER_STATES<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--labels LABELS <span style="color: #c678dd;">[</span>LABELS ...<span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>
+                                 <span style="color: #51afef;">[</span>--ylabel YLABEL<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--inputfile INPUTFILE<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--outputfile OUTPUTFILE<span style="color: #51afef;">]</span>
+                                 <span style="color: #51afef;">[</span>--letter LETTER<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--comparison COMPARISON<span style="color: #51afef;">]</span> <span style="color: #51afef;">[</span>--x_units X_UNITS<span style="color: #51afef;">]</span>
+                                 <span style="color: #51afef;">[</span>--range RANGE <span style="color: #c678dd;">[</span>RANGE ...<span style="color: #c678dd;">]</span><span style="color: #51afef;">]</span>
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --title TITLE         The title of the graph
+  --number_states NUMBER_STATES
+                        The number of states you want to include.
+  --labels LABELS <span style="color: #51afef;">[</span>LABELS ...<span style="color: #51afef;">]</span>, -l LABELS <span style="color: #51afef;">[</span>LABELS ...<span style="color: #51afef;">]</span>
+                        labels of the data
+  --ylabel YLABEL       labels for you y axis
+  --inputfile INPUTFILE, -i INPUTFILE
+                        The input file
+  --outputfile OUTPUTFILE, -o OUTPUTFILE
+                        The output file
+  --letter LETTER       The letter<span style="color: #51afef;"> in</span> the paper
+  --comparison COMPARISON, -c COMPARISON
+                        Are you comparing spectra?
+  --x_units X_UNITS, -x X_UNITS
+                        0-Ev or 1-nm
+  --range RANGE <span style="color: #51afef;">[</span>RANGE ...<span style="color: #51afef;">]</span>, -r RANGE <span style="color: #51afef;">[</span>RANGE ...<span style="color: #51afef;">]</span>
+                        Provide two numbers,the minimum and maximum values<span style="color: #51afef;"> in</span> the units you prefer
+</pre>
+</div>
+
+<p>
+And example could be
+</p>
+<div class="org-src-container">
+<pre class="src src-shell-script">naesmd_spectra_plotter.py <span style="color: #98be65;">\</span>
+    -i 0.out <span style="color: #98be65;">\</span>
+    -o test.png <span style="color: #98be65;">\</span>
+    --title <span style="color: #98be65;">"Test Absorption"</span> <span style="color: #98be65;">\</span>
+    --labels S1 S2 S3 S4 S5 S6 <span style="color: #98be65;">\</span>
+    --number_states 6 <span style="color: #98be65;">\</span>
+    --x_units 0 <span style="color: #98be65;">\</span>
+    --range 2.5 4
+</pre>
+</div>
+
+
+<div id="orgf9c3c67" class="figure">
+<p><img src="./images/abs_test.png" alt="abs_test.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org5586498" class="outline-3">
+<h3 id="org5586498"><span class="section-number-3">3.4</span> Plotting Populations</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+After running your excited state trajectories with the Tully setting turned on,
+you may want to plot the populations of the excited state for analysis. For this
+task we can use <code>population_plotter.py</code>
+<code>population_plotter.py --help</code>
 </p>
 <pre class="example">
+usage: population_plotter.py [-h] [--pulsepump] [--files FILES [FILES ...]]
+			     [--muab_files MUAB_FILES [MUAB_FILES ...]] [--min_energy MIN_ENERGY]
+			     [--max_energy MAX_ENERGY] [--min_strength MIN_STRENGTH]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --pulsepump           simulating a pulse pump experiment
+  --files FILES [FILES ...], -l FILES [FILES ...]
+			coeff-n.out files
+  --muab_files MUAB_FILES [MUAB_FILES ...]
+			the muab files whose energies and oscillators strengths will be used to filter
+  --min_energy MIN_ENERGY
+			minimum energy differece (ev) from ground state for state S_m
+  --max_energy MAX_ENERGY
+			maximum energy differece (ev) from ground state for state S_m
+  --min_strength MIN_STRENGTH
+			minimum oscillator from S1 for state S_m
+</pre>
+
+<p>
+One of the easier methods that create a list of files would be to export the ls
+command of the directories containing the coeffs-n.out files.
+</p>
+
+<pre class="example">
+export coeffs=`ls {trajs}/{restarts}/coeff*.out`
+</pre>
+
+<p>
+Then you can generate a table of the containing the populations using
+</p>
+
+<pre class="example">
+population_plotter --files=$coeffs &gt; pops.out
+</pre>
+
+<p>
+You could then use any plotting software to looks at the <code>pops.out</code> file. The
+<code>pops.out</code> file is formatted as
+</p>
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">Time (fs)</td>
+<td class="org-left">Initial State Population</td>
+<td class="org-left">Pop S<sub>1</sub></td>
+<td class="org-left">&#x2026;</td>
+<td class="org-left">Pop S<sub>n</sub></td>
+</tr>
+</tbody>
+</table>
+
+<p>
+If you wish to filter the included trajectories using the outputs from the
+pulsepump single point trajectories, you can include a list of muab<sub>files</sub> as follows.
+Note that now we need to make sure the files are paired with each other, so lets
+first copy the files and give each a unique id.
+</p>
+
+<pre class="example">
+mkdir coeffs
+for i in {1...$n_trajs}; do cp qmexcited/traj_$i/restart_0/coeff-n.out coeffs/coeff_$i.out; done
+export coeffs=`for i in {1...$n_trajs}; do echo coeffs/coeff_$i.out
+mkdir muabs
+for i in {1...$n_trajs}; do cp pulsepump/traj_$i/restart_0/muab.out muab/muab_$i.out; done
+export muabs=`for i in {1...$n_trajs}; do echo muabs/muab_$i.out
+</pre>
+
+<div class="org-src-container">
+<pre class="src src-shell-script">population_plotter --files=$<span style="color: #dcaeea;">coeffs</span> <span style="color: #98be65;">\</span>
+                   --muab_files=$<span style="color: #dcaeea;">muab_files</span> <span style="color: #98be65;">\</span>
+                   --min_energy=1.2 <span style="color: #98be65;">\</span>
+                   --max_energy=2.4 <span style="color: #98be65;">\</span>
+                   --min_strength=1 &gt; pops.out
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org2693876" class="outline-2">
+<h2 id="org2693876"><span class="section-number-2">4</span> Tutorials</h2>
+<div class="outline-text-2" id="text-4">
+</div>
+<div id="outline-container-org33e2112" class="outline-3">
+<h3 id="org33e2112"><span class="section-number-3">4.1</span> PPV3NO2 In Methanol. Absorption and Fluorescence</h3>
+<div class="outline-text-3" id="text-4-1">
+<p>
+Copy the directory tutorials/ppv3no2<sub>in</sub><sub>ch3oh</sub> to a working directory.
+cd into the directory.
+You should see two xyz files <code>ppv3no.xyz</code> and <code>ch3oh.xyz</code>
+You will need to convert these to amber coordinate and parameter files.
+</p>
+
+<p>
+Run the following to get the prep files needed by t-leap
+</p>
+<pre class="example">
+obabel -ixyz ch3oh.xyz -ogau ch3oh.log &gt; ch3oh.log   
+obabel -ixyz ppv3no2.xyz -ogau ppv3no2.log &gt; ppv3no2.log 
+
+antechamber -i ch3oh.log -fi gcrt -o ch3oh.mol2 -fo mol2 -nc 0 -eq 0 -rn ch3oh
+antechamber -i ppv3no2.log -fi gcrt -o ppv3no2.mol2 -fo mol2 -nc 0 -eq 0 -rn ppv3no2
+
+parmchk2 -i ch3oh.mol2 -f mol2 -o ch3oh.frcmod
+parmchk2 -i ppv3no2.mol2 -f mol2 -o ppv3no2.frcmod
+</pre>
+
+<p>
+Create the tleap bash script <code>create_box.sh</code>
+</p>
+<pre class="example">
+boxsize=30
+solvent=ch3oh
+solute=ppv3no2
 cat &lt;&lt; EOF &gt; leap.in
 source leaprc.gaff
-source leaprc.water.tip3p
 loadamberparams $solute.frcmod
-loadamberparams $solution.frcmod
+loadamberparams $solvent.frcmod
 $solute=loadmol2 $solute.mol2
-$solution=loadmol2 $solution.mol2
-solvatebox $solute $solution 30
-saveamberparm $solute $solute.prmtop $solute.inpcrd
+$solvent=loadmol2 $solvent.mol2
+solvatebox $solute $solvent $boxsize
+saveamberparm $solute m1.prmtop m1.inpcrd
 quit
 EOF
 tleap -f leap.in
 </pre>
+
 <p>
-Note that the line <code>solvatebox $solute $solution 30</code> is the size of the
- box, you can change this to anything but the system will crash if the box
- isn't twice the length of the QM box.
-</p></li>
-<li><p>
-You should now have the following 2 files. A parameter files <code>$solute.prmtop</code>
-and <code>$solute.inpcrd</code>. We now want to equilibrate this system. Create the
-following files
+Run with
 </p>
-<pre class="example">
-m1_min1.in
-</pre>
 
 <pre class="example">
+bash create_box.sh
+</pre>
+
+<p>
+The Amber parmater file (m1.prmtop) and coordinate file (m1.inpcrd) should have been created.
+</p>
+
+<p>
+Now equilibrate the system
+    Create the following files
+    <code>touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in</code>
+    For all of these files make sure there's an extra line at the end.
+</p>
+<div class="org-src-container">
+<pre class="src src-shell-script"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">m1_min1.in</span>
 initial minimization solvent + ions
 &amp;cntrl
-  imin   = 1,
-  maxcyc = 1000,
-  ncyc   = 500,
-  ntb    = 1,
-  ntr    = 1,
-  cut    = 10.0
+  <span style="color: #dcaeea;">imin</span>   = 1,
+  <span style="color: #dcaeea;">maxcyc</span> = 1000,
+  <span style="color: #dcaeea;">ncyc</span>   = 500,
+  <span style="color: #dcaeea;">ntb</span>    = 1,
+  <span style="color: #dcaeea;">ntr</span>    = 1,
+  <span style="color: #dcaeea;">cut</span>    = 10.0
 /
 Hold Solute fixed
 500.0
@@ -728,51 +707,47 @@ ATM 1 &lt;number of solute atoms&gt;
 END
 END
 </pre>
+</div>
 <p>
 Note : The line <code>ATM 1 &lt;number of solute atoms&gt;</code> should be from 1 to Number of atoms in solute.
 </p>
 
-<pre class="example">
-m1_min2.in
-</pre>
-
-<pre class="example">
+<div class="org-src-container">
+<pre class="src src-shell-script"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">m1_min2.in</span>
 initial minimization solvent + ions
 &amp;cntrl
-  imin   = 1,
-  maxcyc = 2500,
-  ncyc   = 1000,
-  ntb    = 1,
-  ntr    = 0,
-  cut    = 10.0
+  <span style="color: #dcaeea;">imin</span>   = 1,
+  <span style="color: #dcaeea;">maxcyc</span> = 2500,
+  <span style="color: #dcaeea;">ncyc</span>   = 1000,
+  <span style="color: #dcaeea;">ntb</span>    = 1,
+  <span style="color: #dcaeea;">ntr</span>    = 0,
+  <span style="color: #dcaeea;">cut</span>    = 10.0
 /
 </pre>
+</div>
 
-<pre class="example">
-m1_md1.in
-</pre>
-
-<pre class="example">
+<div class="org-src-container">
+<pre class="src src-shell-script"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">m1_md1.in</span>
 MD Equilibration STEP
 &amp;cntrl
-  imin   = 0,
-  irest  = 0,
-  ntx    = 1,
-  ig     =-1,
-  ntb    = 1,
-  cut    = 10.0,
-  ntr    = 1,
-  ntc    = 2,
-  ntf    = 2,
-  tempi  = 0.0,
-  temp0  = 300.0,
-  ntt    = 3,
-  gamma_ln = 2.0,
-  nstlim = 5000, 
-  dt = 0.002,
-  ntpr = 100,
-  ntwx = 100,
-  ntwr = 1000
+  <span style="color: #dcaeea;">imin</span>   = 0,
+  <span style="color: #dcaeea;">irest</span>  = 0,
+  <span style="color: #dcaeea;">ntx</span>    = 1,
+  <span style="color: #dcaeea;">ig</span>     =-1,
+  <span style="color: #dcaeea;">ntb</span>    = 1,
+  <span style="color: #dcaeea;">cut</span>    = 10.0,
+  <span style="color: #dcaeea;">ntr</span>    = 1,
+  <span style="color: #dcaeea;">ntc</span>    = 2,
+  <span style="color: #dcaeea;">ntf</span>    = 2,
+  <span style="color: #dcaeea;">tempi</span>  = 0.0,
+  <span style="color: #dcaeea;">temp0</span>  = 300.0,
+  <span style="color: #dcaeea;">ntt</span>    = 3,
+  <span style="color: #dcaeea;">gamma_ln</span> = 2.0,
+  <span style="color: #dcaeea;">nstlim</span> = 5000, 
+  <span style="color: #dcaeea;">dt</span> = 0.002,
+  <span style="color: #dcaeea;">ntpr</span> = 100,
+  <span style="color: #dcaeea;">ntwx</span> = 100,
+  <span style="color: #dcaeea;">ntwr</span> = 1000
 /
 Keep fixed with weak restraints
 10.0
@@ -780,234 +755,120 @@ ATM 1 &lt;number of solute atoms&gt;
 END
 END
 </pre>
+</div>
 <p>
 Note : The line <code>ATM 1 &lt;number of solute atoms&gt;</code> should be from 1 to Number of atoms in solute.
 </p>
 
-<pre class="example">
-m_md2.in
-</pre>
-
-<pre class="example">
+<div class="org-src-container">
+<pre class="src src-shell-script"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">m1_md2.in</span>
 Constant Pressure Relaxation
 &amp;cntrl
-  imin = 0, 
-  irest = 1,
-  ntx = 5,
-  ntb = 2,
-  pres0 = 1.0,
-  ntp = 1,
-  ig = -1,
-  taup = 2.0,
-  cut = 10.0,
-  ntr = 0,
-  ntc = 2,
-  ntf = 2,
-  tempi = 300.0,
-  temp0 = 300.0,
-  ntt = 3,
-  gamma_ln = 2.0,
-  nstlim = 100000,
-  dt = 0.002,
-  ntpr = 100,
-  ntwx = 100,
-  ntwv = -1,
-  ntwr = 1000
+  <span style="color: #dcaeea;">imin</span> = 0, 
+  <span style="color: #dcaeea;">irest</span> = 1,
+  <span style="color: #dcaeea;">ntx</span> = 5,
+  <span style="color: #dcaeea;">ntb</span> = 2,
+  <span style="color: #dcaeea;">pres0</span> = 1.0,
+  <span style="color: #dcaeea;">ntp</span> = 1,
+  <span style="color: #dcaeea;">ig</span> = -1,
+  <span style="color: #dcaeea;">taup</span> = 2.0,
+  <span style="color: #dcaeea;">cut</span> = 10.0,
+  <span style="color: #dcaeea;">ntr</span> = 0,
+  <span style="color: #dcaeea;">ntc</span> = 2,
+  <span style="color: #dcaeea;">ntf</span> = 2,
+  <span style="color: #dcaeea;">tempi</span> = 300.0,
+  <span style="color: #dcaeea;">temp0</span> = 300.0,
+  <span style="color: #dcaeea;">ntt</span> = 3,
+  <span style="color: #dcaeea;">gamma_ln</span> = 2.0,
+  <span style="color: #dcaeea;">nstlim</span> = 100000,
+  <span style="color: #dcaeea;">dt</span> = 0.002,
+  <span style="color: #dcaeea;">ntpr</span> = 100,
+  <span style="color: #dcaeea;">ntwx</span> = 100,
+  <span style="color: #dcaeea;">ntwv</span> = -1,
+  <span style="color: #dcaeea;">ntwr</span> = 1000
 /
-</pre></li>
-<li><p>
+</pre>
+</div>
+
+<p>
 Now we want to create our equilibrated system create a file
 </p>
-<pre class="example">
-box_eq.sh
+<div class="org-src-container">
+<pre class="src src-shell-script"><span style="color: #5B6268;"># </span><span style="color: #5B6268;">box_eq.sh</span>
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'m1_min1'</span>
+sander -O <span style="color: #98be65;">\</span>
+   -i m1_min1.in <span style="color: #98be65;">\</span>
+   -o m1_min1.out <span style="color: #98be65;">\</span>
+   -r m1_min1.rst <span style="color: #98be65;">\</span>
+   -c m1.inpcrd <span style="color: #98be65;">\</span>
+   -p m1.prmtop <span style="color: #98be65;">\</span>
+   -ref m1.inpcrd
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'m1_min2'</span>
+sander -O <span style="color: #98be65;">\</span>
+   -i m1_min2.in <span style="color: #98be65;">\</span>
+   -o m1_min2.out <span style="color: #98be65;">\</span>
+   -r m1_min2.rst <span style="color: #98be65;">\</span>
+   -c m1_min1.rst <span style="color: #98be65;">\</span>
+   -p m1.prmtop
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'m1_md1'</span>
+sander -O <span style="color: #98be65;">\</span>
+   -i m1_md1.in <span style="color: #98be65;">\</span>
+   -o m1_md1.out <span style="color: #98be65;">\</span>
+   -r m1_md1.rst <span style="color: #98be65;">\</span>
+   -c m1_min2.rst <span style="color: #98be65;">\</span>
+   -p m1.prmtop <span style="color: #98be65;">\</span>
+   -ref m1_min2.rst
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'m1_md2'</span>
+sander -O <span style="color: #98be65;">\</span>
+   -i m1_md2.in <span style="color: #98be65;">\</span>
+   -o m1_md2.out <span style="color: #98be65;">\</span>
+   -r m1_md2.rst <span style="color: #98be65;">\</span>
+   -c m1_md1.rst <span style="color: #98be65;">\</span>
+   -p m1.prmtop
+<span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'finished'</span>
 </pre>
+</div>
+<p>
+Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
+dramatically improve performance. pmemd.cuda requires a GPU.
+</p>
 
-<pre class="example">
-echo 'm1_min'
-sander -O -i m1_min.in -o m1_min.out -r m1_min.rst -c m1.inpcrd -p m1.prmtop -ref m1.inpcrd
-echo 'm1_min1'
-sander -O -i m1_min2.in -o m1_min2.out -r m1_min2.rst -c m1_min.rst -p m1.prmtop
-echo 'm1_md1'
-sander -O -i m1_md1.in -o m1_md1.out -r m1_md1.rst -c m1_min2.rst -p m1.prmtop -ref m1_min2.rst
-echo 'm1_md2'
-sander -O -i m1_md2.in -o m1_md2.out -r m1_md2.rst -c m1_md1.rst -p m1.prmtop
-echo 'finished'
-</pre></li>
-<li><p>
+<p>
 Run this with
 </p>
-<pre class="example">
-./box_eq.sh
+<pre class="example" id="orgcbcbcb4">
+bash box_eq.sh
 </pre>
 <p>
 This will leave you with an equilibrated geometry file <code>m1_md2.rst</code>.
-</p></li>
-<li><p>
-We now only need the NEXMD input and SANDER input file to begin. 
-</p>
-<pre class="example">
-md_qmmm_amb.in
-</pre>
-
-<pre class="example">
-300K constant temp QMMMMD
-&amp;cntrl
-  imin=0,
-  iwrap=1,
-  irest=0,
-  ntx=5,
-  ntb=1,
-  ntp=0,
-  ig=-1,
-  taup=2.0,
-  cut=16.0,
-  ntr=0,
-  tempi=300.0,
-  temp0=300.0,
-  ntt=3, ! Use Langevin
-  gamma_ln=2.0, ! Lavenvin constant
-  nstlim=20000, ! Number of Step
-  dt=0.0005,
-  ntpr=10, ! print every 10 steps
-  ntwx=10, ! print coords every 10 steps
-  ntwv=-1, ! save velocities every time coords are saved
-  ifqnt=1 ! Do QM calculations
-/
-&amp;qmmm
-  verbosity=1,
-  qmmask=':1', ! Only use QM on the solute
-  nae=1 ! Activate NEXMD Looks for input.ceon file
-/
-</pre>
-<pre class="example">
-input.ceon
-</pre>
-
-<pre class="example">
-&amp;qmmm
-  qm_theory='AM1',
-  diag_routine=1,
-  qmcharge=0,
-  qmshake=0,
-  qm_ewald=0,
-  qm_pme=0,
-  scfconv=1.0000E-10,
-  printcharges=1,
-  printdipole=0,
-  printbondorders=0,
-  density_predict=0,
-  itrmax=300,
-  diag_routine=1,
-  exst_method=2,
-  dav_guess=0,
-  ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
-  ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
-  dav_maxcyc=200,
-  calcxdens=.false.,
-  maxcyc=0,
-  ntpr=1,
-  grms_tol=1.0000E-02,
-  solvent_model=0,
-  potential_type=1,
-  ceps=10,
-  linmixparam=1,
-  cosmo_scf_ftol=1.0000E-05,
-  EF=0,
-  Ex=0.0000E+00,
-  Ez=0.0000E+00, 
-  Ey=0.0000E+00,  !1.000E-02
-  onsager_radius=2,
-&amp;endqmmm
-&amp;moldyn
-  !***** General parameters
-  rnd_seed=1, ! seed for the random number generator
-  bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
-  exc_state_init=0, ! initial excited state (0 - ground state) [0]
-  n_exc_states_propagate=0, ! number of excited states [0]
-
-  !***** Dynamics parameters
-  time_init=0.d0, ! initial time, fs [0.0]
-  time_step=0.5, !time step, fs [0.1]
-  n_class_steps=0, !number of classical steps [1]
-  n_quant_steps=0, ! number of quantum steps for each classical step [4]
-  moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
-  num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
-  rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
-
-  !***** Non-adiabatic parameters
-  quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
-  decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
-  decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
-  decoher_c=0.d0, ! decoherence parameter C [0.1]
-  dotrivial=1
-
-  !***** Thermostat parameters
-  therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
-  therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
-  therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
-  berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
-  heating=0, ! heating (1) or equilibrated(0) [0]
-  heating_steps_per_degree=100, ! number of steps per degree during heating [100]
-
-  !***** Output &amp; Log parameters
-  verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
-  out_data_steps=100, ! number of steps to write data [1]
-  out_coords_steps=100, ! number of steps to write the restart file [10]
-  out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
-  out_count_init=0, ! the initial count for output files [0]
-&amp;endmoldyn
-
-&amp;coord
-&amp;endcoord
-
-&amp;veloc
-&amp;endveloc
-
-&amp;coeff
-      0.0000000000000000       0.0000000000000000
-      0.0000000000000000       0.0000000000000000
-&amp;endcoeff
-
-</pre>
-
-<p>
-Note that the coord and veloc must be there, but there values will be
-overridden by amber during dynamics.
-</p></li>
-<li><p>
-Run the md with the command
-</p>
-<pre class="example">
-sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
-</pre></li>
-</ol>
-</div>
-</div>
-</div>
-<div id="outline-container-org486fecc" class="outline-2">
-<h2 id="org486fecc"><span class="section-number-2">4</span> Pytraj</h2>
-<div class="outline-text-2" id="text-4">
-<p>
-<a href="https://amber-md.github.io/pytraj/latest/index.html">Pytraj</a> is a python program the wraps around cpptraj, a molecular dynamics
-analyzer and editor. 
 </p>
 
 <p>
-I've had a lot of issues using conda or pip to install pytraj. I found it best to build from source.
-Make sure that you've activated your python environment, then
+Running with pmemd, there's a chance you'll receive
+<code>ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.</code>
+If you receive this error, change <code>box_eq.sh</code> to the following.
 </p>
-<pre class="example">
-git clone https://github.com/Amber-MD/pytraj
-cd pytraj
-python ./setup.py install
+<div class="org-src-container">
+<pre class="src src-shell-script">pmemd.cuda -O <span style="color: #98be65;">\</span>
+            -i m1_md2.in <span style="color: #98be65;">\</span>
+            -o m1_md2.out <span style="color: #98be65;">\</span>
+            -r m1_md2.rst <span style="color: #98be65;">\</span>
+            -c m1_md2.rst <span style="color: #98be65;">\</span>
+            -p m1.prmtop
+ <span style="color: #c678dd;">echo</span> <span style="color: #98be65;">'finished'</span>
 </pre>
+</div>
+<p>
+Keep running box<sub>eq.sh</sub> until completion.
+</p>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
-<p class="author">Author: dustin</p>
-<p class="date">Created: 2020-02-20 Thu 10:39</p>
-<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+<p class="author">Author: Dustin Tracy</p>
+<p class="date">Created: 2021-04-15 Thu 12:34</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
 </html>

@@ -24,7 +24,7 @@ def _(traj_data):
 @copy_bondorder_connectdat.register(QmExcited)
 def _(traj_data):
     if not os.path.isfile('connect.dat'):
-        pass
+        return
     directories = [f"qmexcited/traj_{traj}/restart_0"
                    for traj in traj_indices(traj_data)]
     for d in directories:

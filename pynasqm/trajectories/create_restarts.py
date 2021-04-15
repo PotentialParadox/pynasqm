@@ -38,7 +38,6 @@ def _(traj_data, restart, override=False):
     create_directories(traj_data)
     start_from_qmground(traj_data, override)
 
-@create_restarts_from_parent.register(Fluorescence)
 @create_restarts_from_parent.register(Absorption)
 def _(traj_data, restart, override=False):
     create_directories(traj_data)

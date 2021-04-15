@@ -25,6 +25,8 @@
     "n_steps_to_print_qmgmcrd": "5",
     "n_steps_to_print_qmground": "4",
     "n_qmground_exc": "5",
+    "run_absorption_snapshots": "False",
+    "n_abs_exc": "10",
     "run_absorption_collection": "False",
     "absorption_time_delay": "000",
     "run_pulse_point_singlepoints": "False",
@@ -46,7 +48,6 @@
     "fluorescence_time_truncation": "0000",
     "restrain_solvents": "False",
     "mask_for_center": ":1",
-    "number_nearest_solvents": "0",
-    "run_absorption_snapshots": "False"
+    "number_nearest_solvents": "0"
 
 }

@@ -104,17 +104,9 @@ def remove_partial_trajectories(n_runs):
     call.extend(partial_trajs)
     subprocess.call(call)
 
-def combine_trajectories(n_runs):
-    trajs = ["mmground/restart_{}/nasqm_ground_r{}.nc".format(i, i)
-             for i in range(n_runs)]
-    prmtop = "mmground/restart_0/m1.prmtop"
-    traj = pt.load(trajs, top=prmtop)
-    pt.io.write_traj("mmground/nasqm_ground.nc", traj, velocity=True, overwrite=True)
-    remove_partial_trajectories(n_runs)
-
 def groundStateDynamics(md_qmmm_amb, user_input):
     create_restarts_from_parent(md_qmmm_amb, user_input)
     amber, slurm_files = prepareDynamics(user_input)
     runDynamics(user_input, amber, slurm_files)
-    if islastrun(user_input):
-        combine_trajectories(user_input.n_ground_runs)
+    # if islastrun(user_input):
+    #     combine_trajectories(user_input.n_ground_runs)

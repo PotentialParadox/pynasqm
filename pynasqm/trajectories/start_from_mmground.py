@@ -4,10 +4,10 @@ from pynasqm.trajectories.extract_snaps_from_trajectory import extract_snaps_fro
 import subprocess
 
 def start_from_mmground(traj_data):
-    mm_traj = "mmground/nasqm_ground.nc"
-    check_trajins(traj_data, [mm_traj])
+    mm_trajs = [f"mmground/restart_{r}/nasqm_ground_r{r}.nc" for r in range(traj_data.user_input.n_ground_runs)]
+    check_trajins(traj_data, mm_trajs)
     restart_step = int(traj_data.number_frames_in_parent / traj_data.number_trajectories)
-    extract_snaps_from_trajectory(amber_inputfile=mm_traj,
+    extract_snaps_from_trajectory(trajectory_files=mm_trajs,
                                     output=traj_data.parent_restart_root, step=restart_step)
     move_restarts(traj_data)
 

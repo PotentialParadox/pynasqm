@@ -1,8 +1,8 @@
 #+TITLE: Pynasqm
 * Installation
 PYNASQM requires the following prerequisites
-- [[SANDER-NEXMD]]
-- [[Pytraj]]
+-SANDER-NEXMD
+- Pytraj
 
 Clone this repository to the directory of your choosing.
 #+BEGIN_EXAMPLE 
@@ -10,39 +10,25 @@ git clone https://github.com/PotentialParadox/pynasqm.git
 cd pynasqm
 python setup install
 #+END_EXAMPLE
+* Pytraj
+[[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
+analyzer and editor. 
+
+I've had a lot of issues using conda or pip to install pytraj. I found it best to build from source.
+Make sure that you've activated your python environment, then
+#+BEGIN_SRC 
+git clone https://github.com/Amber-MD/pytraj
+cd pytraj
+python ./setup.py install
+#+END_SRC
 * Usage
 ** Capabilities
-   Pynasqm is currently capable of automating the following actions
+   Pynasqm is currently capable of automating the following actions using NEXMD and SANDER
    - Single MM-Ground State Trajectory
    - QM-Ground State Trajectories originating from MM-Ground-State
    - Absorption calculations using snapshots from the QM-Ground State Trajectories
-   - PulsePump SinglePoint Calculations
    - QM-Excited State Trajectory
-     - Franck-Condon Excitations
-     - Pule Pump Simulations
-     - Capable of performing Non-Adiabatic using the isTully option
-
-   #+BEGIN_SRC plantuml :file images/trajectories.png :exports results
-@startuml
-start
-
-:Single MM-Ground State Trajectory;
-:Many QM Ground-State Trajectories;
-if (Simulation Type) then (PulsePump)
-:Pulse Pump Single Points;
-else (Franck-Condon Excitation)
-:QM Ground-State SinglePoint Calculations;
-:Absorption Spectra Calculations;
-:Save spectra to "spectra_abs.in";
-endif
-:QM-Excited State Trajectories;
-end
-
-@enduml
-   #+END_SRC
-
-   #+RESULTS:
-   [[file:images/trajectories.png]]
+   - Non-Adiabatic using the Non-Adiabatic Dyanmics
 
 ** Initializing a System
    Follow instructions for Creating a QM/MM System for SANDER-NEXMD to create an
@@ -76,7 +62,7 @@ end
    #+BEGIN_EXAMPLE
    nasqm.py
    #+END_EXAMPLE
-
+   
 ** Plotting an Absorption Spectra
 If the setting =run_absorption_collection= is set to true, then after the
 absorption snapshots are finished, pynasqm will output the average excited state
@@ -238,436 +224,189 @@ export muabs=`for i in {1...$n_trajs}; do echo muabs/muab_$i.out
                      --min_strength=1 > pops.out
 #+END_SRC
 
-* SANDER-NEXMD
-** Installation
-Installation of the SANDER-NEXMD installation will require the following as well
-as their dependencies:
-
-- NEXMD (Git Access) 
-- Amber (Git Access) 
-
-We also strongly encourage the use of the intel/2017 compiler w/ mkl. GNU is
-supported but users will have better performance with the intel compiler.
-
-First install NEXMD. Access to the NEXMD git is restricted. Please contact
-either Adrian Roitberg (roitberg@ufl.edu) or Sergei Tretiak (serg@lanl.gov) for
-permission.
-
-CD to your application director, then pull the NEXMD git using. 
-
-#+BEGIN_EXAMPLE 
-git clone https://github.com/roitberg/nexmd.git
-#+END_EXAMPLE
-
-
-And check-in to the amber-nexmd-na branch.
-
-#+BEGIN_EXAMPLE 
-cd nexmd 
-git checkout amber-nexmd-na 
-#+END_EXAMPLE
-
-Try to install the standalone NEXMD program. Activate your chosen compiler, then use either: 
-
-#+BEGIN_EXAMPLE 
-make ic_mkl # For intel w/ mkl 
-make gnu_mkl # For gnu w/ mkl 
-make gnu # For gnu wo/ mkl (not recommended) 
-#+END_EXAMPLE
-
-If this fails, refer to the documentation included in the NEXMD git. Please contact either Dustin Tracy (dtracy@ufl.edu) or Benjamin Nebgen (bnebgen@lanl.gov) for further questions regarding compilation of NEXMD. Once we’ve successfully installed NEXMD, we need to flush the standalone temp files so AMBER can build the Library files. 
-
-A common problem with the mkl is that the environment variable MKLROOT is not
-set. Use the command
-#+BEGIN_EXAMPLE
-which icc
-#+END_EXAMPLE
-which should return something along the lines of
-#+BEGIN_EXAMPLE
-/opt/intel/compilers_and_libraries/linux/bin/intel64/icc
-#+END_EXAMPLE
-Set the MKLROOT directory to the intel directory, or in this case
-#+BEGIN_EXAMPLE
-export MKLROOT=/opt/intel
-#+END_EXAMPLE
-
-Clean the build directory now, so that AMBER can build its library without conflict.
-#+BEGIN_EXAMPLE 
-make clean 
-#+END_EXAMPLE
-
-Now we need to set a variable so AMBER knows where to find NEXMD. 
-
-#+BEGIN_EXAMPLE 
-export NAESMDHOME=`pwd` 
-#+END_EXAMPLE
-
-Note that currently NAESMDHOME is used here, not NEXMDHOME. The new name will be
-updated soon. We are now done with prepping NEXMD.
-
-We now need to install AMBERTOOLS. We are currently using a restricted git for
-development. Please contact Dustin Tracy (dtracy@ufl.edu) for access to a tar
-file.
-
-CD into your application directory and extract the tar file. 
-
-#+BEGIN_EXAMPLE 
-tar -xvf amber_na.tar.gz 
-#+END_EXAMPLE
-
-Try to build the standalone AMBER program.  
-
-#+BEGIN_EXAMPLE 
-cd amber 
-export AMBERHOME=`pwd` 
-
-./configure –noX11 --skip-python -norism  intel mkl # for intel  w/ mkl 
-
-./configure –noX11 --skip-python -norism  gnu mkl # for gnu  w/ mkl 
-
-./configure –noX11 --skip-python -norism  gnu # for gnu 
-#+END_EXAMPLE
-
-Use the same configuration you used for your NEXMD build. 
-
-Then install 
-
-#+BEGIN_EXAMPLE 
-source ./amber.sh 
-
-make install 
-#+END_EXAMPLE
-
-If this fails please refer to the amber manual (https://ambermd.org/Manuals.php)
-for troubleshooting and contact information. Once successful installation and
-testing of the standalone AmberTools packages is completed cd back into
-AMBERHOME and configure AMBER to link to the NEXMD package.
-
-#+BEGIN_EXAMPLE 
-cd $AMBERHOME 
-
-./configure –noX11 --skip-python -norism -naesmd intel mkl # for intel  w/ mkl 
-
-./configure –noX11 --skip-python -norism -naesmd gnu mkl # for gnu  w/ mkl 
-
-./configure –noX11 --skip-python -norism -naesmd gnu # for gnu 
-#+END_EXAMPLE
-
-We don’t need to rebuild all AMBER now, only SANDER, so we CD into SANDER and build from there. 
-
-#+BEGIN_EXAMPLE 
-cd AmberTools/src/sander 
-
-make install 
-#+END_EXAMPLE
-
-To test successful installation (python3 required) 
-
-#+BEGIN_EXAMPLE 
-cd $NAESMDHOME/testscripts/amber_nexmd_testscripts 
-
-python run_tests.py 
-#+END_EXAMPLE
-
-** SANDER-NEXMD Single Trajectory Run 
-
- Though our implementation of the simulation of non-adiabatic dynamics requires a
- large number of independent trajectories, the SANDER-NEXMD interface can only
- manage a single trajectory. Another script (to be introduced later) controls the
- characteristics of the swarm. Each single SANDER-NEXMD trajectory will require a
- number of inputs.
-
- - Amber Input (mdin) 
-
- - NEXMD Input (input.ceon) 
-
- - Amber Coordinate File (mdcrd)  
-
- - Amber Parameter File (prmtop) 
-
- Full examples can be found in $NAESMDHOME/tests/amber_nexmd/. Refer to the the
- included README in that directory to determine the type of trajectory for each
- test.
-
- Amber Input 
-
- #+BEGIN_EXAMPLE 
- 300K constant temp QMMMMD 
-  &cntrl 
-   ** Normal Amber Input (Check manual) ** 
-   ifqnt=1 
-  / 
-
-  &qmmm 
-   verbosity=5, 
-   qmmask=':1', 
-   nae=1 
-  / 
- #+END_EXAMPLE
-
- No special behavior is needed from cntrl besides the activation of qm/mm (setting ifqnt=1). Most QM/MM behavior is controlled by the input.ceon file for the exception of the verbosity, the atoms the include in the qm calculations (qmmask) and the referral to nexmd (nae). Please refer the AMBER manual for information regarding the parameters found in &cntrl. 
-
- NEXMD Input 
-
- #+BEGIN_EXAMPLE 
- &qmmm 
-   maxcyc=0, ! Optimization must be turned off
-  ** Normal NEXMD Input **  
-  ** Include all of AMBER’s qm/mm flags besides verbosity, qmmask ** 
- &endqmmm 
-
- &moldyn 
-   ** Normal NEXMD Input ** 
- &endmoldyn 
- &coord 
-   ** Block must be included but is ignored ** 
- &endcoord 
- &veloc 
-   ** Block must be included but is ignored ** 
- &endveloc 
- &coeff 
-   ** Normal NEXMD Input ** 
- &endcoeff 
- #+END_EXAMPLE
-
- The NEXMD-SANDER interface is designed to be able to read an unmodified nexmd
- file. For most users, little to no modification will be required beyond setting
- the qmewald parameters. Note that the initial coordinates and velocities are
- read from the amber intput files and any values included in the input.ceon file
- will be ignored.
-
-** AMBER Coordinate File 
-
-Amber coordinate files are needed to run the SANDER-NEXMD interface. These can
-be created using tleap, or through a converter built into PyNASQM. To use the
-pynasqm converter
-
-#+BEGIN_EXAMPLE 
-amber-nexmd-converter.py input.ceon mdcrd
-#+END_EXAMPLE
-
-Further instruction for prepping a job can be found in the Creating a System
-section.
-
-** AMBER prmtop
-
-AMBER prmtop files can be generated using tleap. Refer to the AMBER manual for
-this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
-
-** Creating a QM/MM System for SANDER-NEXMD                          :METHOD:
- 1) Build your solute using either Avogadro or Gaussview
- 2) Create pepi files for each using antechamber that came with AMBER for each of
-    the following commands =$molecule=molecule name=
- 3) Generate your mol and frcmod files. There are two methods.
-    1) If you have fully parameterized pdb file or don't need accurate charges.
-       (Most likely your main solute)
-       #+BEGIN_SRC shell-script
-               # Generates a prepfile
-               antechamber -fi pdb \
-                           -fo mol2 \
-                           -i $molecule.pdb \
-                           -o $molecule.mol2
-                           -at gaff
-               # Generate frcmod file
-               parmchk2 -f mol2 \
-                        -i $molecule.mol2 \
-                        -o $molecule.frcmod
-       #+END_SRC
-
-    2) If you need accurate charges (Most likely a self generated solvent)
-       #+BEGIN_SRC shell-script
-         # Create a gaussian file to calculate resp charges
-         antechamber -i $molecule.pdb \
-                     -fi pdb \
-                     -o ${molecule}_char.com \
-                     -fo gcrt \
-                     -gv 1 \
-                     -ge $molecule.gesp
-         # Run the gaussian file
-         g09 ${molecule}_char.com > ${molecule}_char.log
-         # Use the generated esp file to create mol2
-         antechamber -i $molecule.gesp \
-                     -fi gesp \
-                     -o $molecule.mol2 \
-                     -fo mol2 \
-                     -c resp \
-                     -eq 0 \
-                     -a gaff \
-                     -rn $molecule
-         # Use mol2 file to generate frcmod
-         parmchk -i $molecule.mol2 -f mol2 -o $molecule.frcmod
-       #+END_SRC
-
- 4) run tleap with
-    1) Using your own solvent
-      #+BEGIN_EXAMPLE
-      cat << EOF > leap.in
-      source leaprc.gaff
-      source leaprc.water.tip3p
-      loadamberparams $solute.frcmod
-      loadamberparams $solvent.frcmod
-      $solute=loadmol2 $solute.mol2
-      $solvent=loadmol2 $solvent.mol2
-      solvatebox $solute $solvent $boxsize
-      saveamberparm $solute m1.prmtop m1.inpcrd
-      quit
-      EOF
-      tleap -f leap.in
-      #+END_EXAMPLE
-
-    2) Using one of Amber's build in solvents
-      #+BEGIN_EXAMPLE
-      cat << EOF > leap.in
-      source leaprc.gaff
-      loadoff solvents.lib
-      loadamberparams $solute.frcmod
-      loadamberparams frcmod.$solvent
-      $solute=loadmol2 $solute.mol2
-      solvatebox $solute ${solvent}BOX $boxsize
-      saveamberparm $solute m1.prmtop m1.inpcrd
-      quit
-      EOF
-      #+END_EXAMPLE
-    Note that the line =$boxsize= is the size of the
-    box, you can change this to anything but the system will crash if the box
-    isn't twice the length of the QM box.
-    1) You should now have the following 2 files. A parameter files =m1.prmtop=
-       and an amber restart file =m1.inpcrd=. We now want to equilibrate this system. Create the
-       following files
-       =touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in=
-       For all of these files make sure there's an extra line at the end.
-      #+BEGIN_SRC shell-script
-      # m1_min1.in
-      initial minimization solvent + ions
-      &cntrl
-        imin   = 1,
-        maxcyc = 1000,
-        ncyc   = 500,
-        ntb    = 1,
-        ntr    = 1,
-        cut    = 10.0
-      /
-      Hold Solute fixed
-      500.0
-      ATM 1 <number of solute atoms>
-      END
-      END
-      #+END_SRC
+* Tutorials
+** PPV3NO2 In Methanol. Absorption and Fluorescence
+*** Preparing the system
+   Copy the directory tutorials/ppv3no2_in_ch3oh to a working directory.
+   cd into the directory.
+   You should see two xyz files =ppv3no.xyz= and =ch3oh.xyz=
+   You will need to convert these to amber coordinate and parameter files.
+
+   Run the following to get the prep files needed by t-leap
+   #+begin_src 
+obabel -ixyz ch3oh.xyz -ogau ch3oh.log > ch3oh.log   
+obabel -ixyz ppv3no2.xyz -ogau ppv3no2.log > ppv3no2.log 
+
+antechamber -i ch3oh.log -fi gcrt -o ch3oh.mol2 -fo mol2 -nc 0 -eq 0 -rn ch3oh
+antechamber -i ppv3no2.log -fi gcrt -o ppv3no2.mol2 -fo mol2 -nc 0 -eq 0 -rn ppv3no2
+
+parmchk2 -i ch3oh.mol2 -f mol2 -o ch3oh.frcmod
+parmchk2 -i ppv3no2.mol2 -f mol2 -o ppv3no2.frcmod
+   #+end_src
+
+   Create the tleap bash script =create_box.sh=
+   #+begin_src 
+boxsize=30
+solvent=ch3oh
+solute=ppv3no2
+cat << EOF > leap.in
+source leaprc.gaff
+loadamberparams $solute.frcmod
+loadamberparams $solvent.frcmod
+$solute=loadmol2 $solute.mol2
+$solvent=loadmol2 $solvent.mol2
+solvatebox $solute $solvent $boxsize
+saveamberparm $solute m1.prmtop m1.inpcrd
+quit
+EOF
+tleap -f leap.in
+   #+end_src
+
+   Run with
+
+   #+begin_src 
+bash create_box.sh
+   #+end_src
+
+The Amber parmater file (m1.prmtop) and coordinate file (m1.inpcrd) should have been created.
+
+Now equilibrate the system
+    Create the following files
+    =touch m1_min1.in m1_min2.in m1_md1.in m1_md2.in=
+    For all of these files make sure there's an extra line at the end.
+    #+BEGIN_SRC shell-script
+# m1_min1.in
+initial minimization solvent + ions
+&cntrl
+  imin   = 1,
+  maxcyc = 1000,
+  ncyc   = 500,
+  ntb    = 1,
+  ntr    = 1,
+  cut    = 10.0
+/
+Hold Solute fixed
+500.0
+ATM 1 50
+END
+END
+    #+END_SRC
       Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-      #+BEGIN_SRC shell-script
-      # m1_min2.in
-      initial minimization solvent + ions
-      &cntrl
-        imin   = 1,
-        maxcyc = 2500,
-        ncyc   = 1000,
-        ntb    = 1,
-        ntr    = 0,
-        cut    = 10.0
-      /
-      #+END_SRC
+    #+BEGIN_SRC shell-script
+# m1_min2.in
+initial minimization solvent + ions
+&cntrl
+  imin   = 1,
+  maxcyc = 2500,
+  ncyc   = 1000,
+  ntb    = 1,
+  ntr    = 0,
+  cut    = 10.0
+/
+    #+END_SRC
 
-      #+BEGIN_SRC shell-script
-      # m1_md1.in
-      MD Equilibration STEP
-      &cntrl
-        imin   = 0,
-        irest  = 0,
-        ntx    = 1,
-        ig     =-1,
-        ntb    = 1,
-        cut    = 10.0,
-        ntr    = 1,
-        ntc    = 2,
-        ntf    = 2,
-        tempi  = 0.0,
-        temp0  = 300.0,
-        ntt    = 3,
-        gamma_ln = 2.0,
-        nstlim = 5000, 
-        dt = 0.002,
-        ntpr = 100,
-        ntwx = 100,
-        ntwr = 1000
-      /
-      Keep fixed with weak restraints
-      10.0
-      ATM 1 <number of solute atoms>
-      END
-      END
-      #+END_SRC
+    #+BEGIN_SRC shell-script
+# m1_md1.in
+MD Equilibration STEP
+&cntrl
+  imin   = 0,
+  irest  = 0,
+  ntx    = 1,
+  ig     =-1,
+  ntb    = 1,
+  cut    = 10.0,
+  ntr    = 1,
+  ntc    = 2,
+  ntf    = 2,
+  tempi  = 0.0,
+  temp0  = 300.0,
+  ntt    = 3,
+  gamma_ln = 2.0,
+  nstlim = 5000, 
+  dt = 0.002,
+  ntpr = 100,
+  ntwx = 100,
+  ntwr = 1000
+/
+Keep fixed with weak restraints
+10.0
+ATM 1 50
+END
+END
+    #+END_SRC
       Note : The line =ATM 1 <number of solute atoms>= should be from 1 to Number of atoms in solute.
 
-      #+BEGIN_SRC shell-script
-      # m1_md2.in
-      Constant Pressure Relaxation
-      &cntrl
-        imin = 0, 
-        irest = 1,
-        ntx = 5,
-        ntb = 2,
-        pres0 = 1.0,
-        ntp = 1,
-        ig = -1,
-        taup = 2.0,
-        cut = 10.0,
-        ntr = 0,
-        ntc = 2,
-        ntf = 2,
-        tempi = 300.0,
-        temp0 = 300.0,
-        ntt = 3,
-        gamma_ln = 2.0,
-        nstlim = 100000,
-        dt = 0.002,
-        ntpr = 100,
-        ntwx = 100,
-        ntwv = -1,
-        ntwr = 1000
-      /
-      #+END_SRC
+    #+BEGIN_SRC shell-script
+# m1_md2.in
+Constant Pressure Relaxation
+&cntrl
+  imin = 0, 
+  irest = 1,
+  ntx = 5,
+  ntb = 2,
+  pres0 = 1.0,
+  ntp = 1,
+  ig = -1,
+  taup = 2.0,
+  cut = 10.0,
+  ntr = 0,
+  ntc = 2,
+  ntf = 2,
+  tempi = 300.0,
+  temp0 = 300.0,
+  ntt = 3,
+  gamma_ln = 2.0,
+  nstlim = 100000,
+  dt = 0.002,
+  ntpr = 100,
+  ntwx = 100,
+  ntwv = -1,
+  ntwr = 1000
+/
+    #+END_SRC
 
-    2) Now we want to create our equilibrated system create a file
-      #+BEGIN_SRC shell-script
-        # box_eq.sh
-        echo 'm1_min1'
-        sander -O \
-               -i m1_min1.in \
-               -o m1_min1.out \
-               -r m1_min1.rst \
-               -c m1.inpcrd \
-               -p m1.prmtop \
-               -ref m1.inpcrd
-        echo 'm1_min2'
-        sander -O \
-               -i m1_min2.in \
-               -o m1_min2.out \
-               -r m1_min2.rst \
-               -c m1_min1.rst \
-               -p m1.prmtop
-        echo 'm1_md1'
-        sander -O \
-               -i m1_md1.in \
-               -o m1_md1.out \
-               -r m1_md1.rst \
-               -c m1_min2.rst \
-               -p m1.prmtop \
-               -ref m1_min2.rst
-        echo 'm1_md2'
-        sander -O \
-               -i m1_md2.in \
-               -o m1_md2.out \
-               -r m1_md2.rst \
-               -c m1_md1.rst \
-               -p m1.prmtop
-        echo 'finished'
-      #+END_SRC
-      Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
-       dramatically improve performance.
-    3) Run this with
+    Now we want to create our equilibrated system create a file
+	#+BEGIN_SRC shell-script
+# box_eq.sh
+echo 'm1_min1'
+sander -O \
+   -i m1_min1.in \
+   -o m1_min1.out \
+   -r m1_min1.rst \
+   -c m1.inpcrd \
+   -p m1.prmtop \
+   -ref m1.inpcrd
+echo 'm1_min2'
+sander -O \
+   -i m1_min2.in \
+   -o m1_min2.out \
+   -r m1_min2.rst \
+   -c m1_min1.rst \
+   -p m1.prmtop
+echo 'm1_md1'
+sander -O \
+   -i m1_md1.in \
+   -o m1_md1.out \
+   -r m1_md1.rst \
+   -c m1_min2.rst \
+   -p m1.prmtop \
+   -ref m1_min2.rst
+echo 'm1_md2'
+sander -O \
+   -i m1_md2.in \
+   -o m1_md2.out \
+   -r m1_md2.rst \
+   -c m1_md1.rst \
+   -p m1.prmtop
+echo 'finished'
+	#+END_SRC
+	Note, if you have the pmemd installed, replaced sander with pmemd or pmemd.cuda to
+	dramatically improve performance. pmemd.cuda requires a GPU.
+
+ Run this with
        #+BEGIN_EXAMPLE
-       ./box_eq.sh
+bash box_eq.sh
        #+END_EXAMPLE
        This will leave you with an equilibrated geometry file =m1_md2.rst=.
 
@@ -675,149 +414,16 @@ this procedure or look at the Create a QM/MM System for SANDER-NEXMD.
        =ERROR: Calculation halted.  Periodic box dimensions have changed too much from their initial values.=
        If you receive this error, change =box_eq.sh= to the following.
        #+BEGIN_SRC shell-script
-       pmemd.cuda -O \
-                   -i m1_md2.in \
-                   -o m1_md2.out \
-                   -r m1_md2.rst \
-                   -c m1_md2.rst \
-                   -p m1.prmtop
-        echo 'finished'
+pmemd.cuda -O \
+            -i m1_md2.in \
+            -o m1_md2.out \
+            -r m1_md2.rst \
+            -c m1_md2.rst \
+            -p m1.prmtop
+ echo 'finished'
        #+END_SRC
        Keep running box_eq.sh until completion.
-    4) We now only need the NEXMD input and SANDER input file to begin. 
-        : md_qmmm_amb.in
-        #+BEGIN_EXAMPLE
-        300K constant temp QMMMMD
-        &cntrl
-          imin=0,
-          iwrap=1,
-          irest=0,
-          ntx=5,
-          ntb=1,
-          ntp=0,
-          ig=-1,
-          taup=2.0,
-          cut=8.0,
-          ntr=0,
-          tempi=300.0,
-          temp0=300.0,
-          ntt=3, ! Use Langevin
-          gamma_ln=2.0, ! Lavenvin constant
-          nstlim=20000, ! Number of Step
-          dt=0.0005,
-          ntpr=10, ! print every 10 steps
-          ntwx=10, ! print coords every 10 steps
-          ntwv=-1, ! save velocities every time coords are saved
-          ifqnt=1 ! Do QM calculations
-        /
-        &qmmm
-          verbosity=1,
-          qmmask=':1', ! Only use QM on the solute
-          nae=1 ! Activate NEXMD Looks for input.ceon file
-        /
-        #+END_EXAMPLE
-         : input.ceon
-      #+BEGIN_EXAMPLE
-      &qmmm
-        qm_theory='AM1',
-        diag_routine=1,
-        qmcharge=0,
-        qmshake=0,
-        qm_ewald=0,
-        qm_pme=0,
-        scfconv=1.0000E-10,
-        printcharges=1,
-        printdipole=0,
-        printbondorders=0,
-        density_predict=0,
-        itrmax=300,
-        diag_routine=1,
-        exst_method=2,
-        dav_guess=0,
-        ftol0=1.0000E-05, ! Acceptance Tolerance for Davidson (emin-eold)
-        ftol1=1.0000E-06, ! Acceptance Tolerance for Davidson (residual)
-        dav_maxcyc=200,
-        calcxdens=.false.,
-        maxcyc=0,
-        ntpr=1,
-        grms_tol=1.0000E-02,
-        solvent_model=0,
-        potential_type=1,
-        ceps=10,
-        linmixparam=1,
-        cosmo_scf_ftol=1.0000E-05,
-        EF=0,
-        Ex=0.0000E+00,
-        Ez=0.0000E+00, 
-        Ey=0.0000E+00,  !1.000E-02
-        onsager_radius=2,
-      &endqmmm
-      &moldyn
-        !***** General parameters
-        rnd_seed=1, ! seed for the random number generator
-        bo_dynamics_flag=1, ! 0-non-BO, 1-BO [1]
-        exc_state_init=0, ! initial excited state (0 - ground state) [0]
-        n_exc_states_propagate=0, ! number of excited states [0]
-
-        !***** Dynamics parameters
-        time_init=0.d0, ! initial time, fs [0.0]
-        time_step=0.5, !time step, fs [0.1]
-        n_class_steps=0, !number of classical steps [1]
-        n_quant_steps=0, ! number of quantum steps for each classical step [4]
-        moldyn_deriv_flag=1, ! 0-none, 1-analyt, 2-numeric [1]
-        num_deriv_step=1.d-5, ! displacement for numerical derivatives, A [1.d-3]
-        rk_tolerance=1.d-7, ! tolerance for the Runge-Kutta propagator [1.d-7]
-
-        !***** Non-adiabatic parameters
-        quant_step_reduction_factor=2.5d-2, ! quantum step reduction factor [0.1]
-        decoher_type=2, ! type of decoherence: Persico/Granucci (0), Truhlar(1) [0]
-        decoher_e0=0.d0, ! decoherence parameter E0 [0.1]
-        decoher_c=0.d0, ! decoherence parameter C [0.1]
-        dotrivial=1
-
-        !***** Thermostat parameters
-        therm_type=1, ! Thermostat type (0-no thermostat,1-Langevin,2-Berendsen) [0]
-        therm_temperature=300.d0, ! Thermostate temperature, K [300.0]
-        therm_friction=2.d0, ! thermostate friction coefficient, 1/ps [2.0]
-        berendsen_relax_const=0.4d0, ! bath relaxation constant, only for Berendsen [0.4]
-        heating=0, ! heating (1) or equilibrated(0) [0]
-        heating_steps_per_degree=100, ! number of steps per degree during heating [100]
-
-        !***** Output & Log parameters
-        verbosity=3, ! output verbosity (0-minimal, 3-highest) [2]
-        out_data_steps=100, ! number of steps to write data [1]
-        out_coords_steps=100, ! number of steps to write the restart file [10]
-        out_data_cube=0, ! write(1) or not(0) view files to generate cubes [0]
-        out_count_init=0, ! the initial count for output files [0]
-      &endmoldyn
-
-      &coord
-      &endcoord
-
-      &veloc
-      &endveloc
-
-      &coeff
-            0.0000000000000000       0.0000000000000000
-            0.0000000000000000       0.0000000000000000
-      &endcoeff
-
-      #+END_EXAMPLE
-
-      Note that the coord and veloc must be there, but there values will be
-      overridden by amber during dynamics.
-    5) Run the md with the command
-     #+BEGIN_EXAMPLE
-     sander -O -i md_qmmm_amb.in -o mdout -p m1.prmtop -c m1_md2.rst -x traj_file.nc
-     #+END_EXAMPLE
-* Pytraj
-[[https://amber-md.github.io/pytraj/latest/index.html][Pytraj]] is a python program the wraps around cpptraj, a molecular dynamics
-analyzer and editor. 
-
-I've had a lot of issues using conda or pip to install pytraj. I found it best to build from source.
-Make sure that you've activated your python environment, then
-#+BEGIN_SRC 
-git clone https://github.com/Amber-MD/pytraj
-cd pytraj
-python ./setup.py install
-#+END_SRC
+*** Preparing PyNAQM
+    
+    
+    

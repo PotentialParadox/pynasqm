@@ -5,6 +5,8 @@ def initial_snaps(traj_data):
     return ["{}.{}".format(traj_data.parent_restart_root, x)
             for x in range(1, traj_data.number_trajectories + 1)]
 
+def restart_indices(job_data):
+    return range(job_data.number_restarts)
 
 def traj_indices(job_data):
     return range(1, job_data.number_trajectories+1)

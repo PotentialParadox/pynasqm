@@ -7,7 +7,7 @@ pynasqmin = ''\
 '# or an HPC with SLURM\n'\
 '    "is_hpc": "False",\n'\
 '# If on hpc, what is the name of your job?\n'\
-'    "job_name": "vac",\n'\
+'    "job_name": "job_name",\n'\
 '# How many nodes will you be working on?\n'\
 '    "number_nodes": "1",\n'\
 '# How many processors will be on a node?\n'\
@@ -20,9 +20,9 @@ pynasqmin = ''\
 '# 0h:0m:0s\n'\
 '    "walltime": "95:00:00",\n'\
 '# Whats queue do you want the job to go to\n'\
-'    "qos": "roitberg-b",\n'\
+'    "qos": "YourQOS",\n'\
 '# These are your email options for the slurm interface\n'\
-'    "email": "dtracy.uf@gmail.com",\n'\
+'    "email": "YourEmail",\n'\
 '# Additive Choice: 1-Begin, 2-End, 4-Fail\n'\
 '    "email_options": "3",\n'\
 '############################################################\n'\
@@ -83,7 +83,8 @@ pynasqmin = ''\
 '# Change here how often you want to print the absorption trajectories\n'\
 '    "n_steps_to_print_qmground": "4",\n'\
 '# Change here the number of states you wish to\n'\
-'# calculate in the absorption singlpoint calculations\n'\
+'# include in the qmground state trajectories.\n'\
+'# If unsure, this should be 0\n'\
 '    "n_qmground_exc": "5",\n'\
 '############################################################\n'\
 '#                  Absorption\n'\
@@ -101,21 +102,6 @@ pynasqmin = ''\
 '# We don\'t want to include this data in the calculation\n'\
 '# We therefore set a time delay in fs.\n'\
 '    "absorption_time_delay": "000",\n'\
-'############################################################\n'\
-'#                  Pump Pulse Simulation\n'\
-'############################################################\n'\
-'# Do you want to run the pulse pump singlepoins?\n'\
-'    "run_pulse_point_singlepoints": "False",\n'\
-'# How many excited states do you want to include?\n'\
-'    "n_pulsepump_excited_states": "25",\n'\
-'# Whats the minimum energy of the pump pulse state Sm?\n'\
-'    "pump_pulse_min_energy": "0",\n'\
-'# Whats the maximum energy of the pump pulse state Sm?\n'\
-'    "pump_pulse_max_energy": "0",\n'\
-'# Whats the minimum oscillator strength from S1 of the pump pulse state Sm?\n'\
-'    "pump_pulse_min_strength": "0",\n'\
-'# Do you want to run the pulse pump collection routine?\n'\
-'    "run_pulse_point_collection": "False",\n'\
 '############################################################\n'\
 '#                  Excited State Calculation\n'\
 '############################################################\n'\
@@ -157,9 +143,6 @@ pynasqmin = ''\
 '############################################################\n'\
 '#                  Fluorescence\n'\
 '############################################################\n'\
-'    "run_fluorescence_snapshots": "False",\n'\
-'# How many excited states do you want in your fluorescence calculations\n'\
-'    "n_flu_exc": "1",\n'\
 '# Do you want to collect the data from the exctied state trajectory\n'\
 '# calculations?\n'\
 '    "run_fluorescence_collection": "False",\n'\

@@ -16,7 +16,7 @@ def start_from_restart(job_data, override):
                                                                                 job,
                                                                                 traj,
                                                                                 restart)
-        if os.path.isfile(source_path) and not is_empty_file(source_path):
-            extract_snaps_from_trajectory(source_path, output_path, override=override)
-        if os.path.isfile(source_path) and is_empty_file(source_path):
-            copy_file(source_path, output_path, override)
+        # if os.path.isfile(source_path) and not is_empty_file(source_path):
+        #     extract_snaps_from_trajectory(source_path, output_path, override=override)
+        # if os.path.isfile(source_path) and is_empty_file(source_path):
+        copy_file(source_path, output_path, override)

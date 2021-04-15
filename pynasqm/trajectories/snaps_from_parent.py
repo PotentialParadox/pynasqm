@@ -1,8 +1,9 @@
 import subprocess
+import os
 from pynasqm.trajectories.combine_trajectories import combine_trajectories
 from pynasqm.trajectories.utils import traj_indices, snap_indices
 from pynasqm.trajectories.check_trajins import check_trajins
-from pynasqm.cpptraj import create_restarts
+from pynasqm.trajectories.extract_snaps_from_trajectory import extract_snaps_from_trajectory
 from pynasqm.utils import mkdir
 from pynasqm.trajectories.fluorescence import Fluorescence
 from pynasqm.trajectories.absorption import Absorption
@@ -15,16 +16,27 @@ def snaps_from_parent(traj_data):
     job = traj_data.job_suffix
     n_ref_trajs = get_n_trajs_of_reference(traj_data)
     n_ref_runs = get_n_ref_runs(traj_data)
-    combine_trajectories(ref_job, n_ref_trajs, n_ref_runs)
-    ref_trajs = [(traj, f"{ref_job}/traj_{traj}/nasqm_{ref_job}_{traj}.nc")
-                       for traj in range(1, traj_data.number_trajectories+1)]
-    ref_trajs = check_trajins(traj_data, ref_trajs)
+    ref_trajs = []
+    for traj in traj_indices(traj_data):
+        trajs = [f"{ref_job}/traj_{traj}/restart_{r}/nasqm_{ref_job}_t{traj}_r{r}.nc"
+                 for r in range(n_ref_runs)]
+        if not have_trajs_completed(trajs):
+            continue
+        ref_trajs.append((traj, trajs))
     outputs = [f"{job}/traj_{traj}/{ref_job}_t{traj}_snap" for (traj, _) in ref_trajs]
     restart_step = 1
     for trajin, output in zip(ref_trajs, outputs):
-        create_restarts(amber_inputfile=trajin[1], start=cpptraj_start_index(traj_data),
-                        output=output, step=restart_step, center=False)
+        extract_snaps_from_trajectory(trajectory_files=trajin[1], start=cpptraj_start_index(traj_data),
+                                      output=output, step=restart_step, center=False)
     move_restarts(traj_data, job, ref_job)
+
+def have_trajs_completed(trajs):
+    for traj in trajs:
+        print(traj)
+        if not os.path.isfile(traj):
+            return False
+        return True
+
 
 def cpptraj_start_index(traj_data):
     n_frames = traj_data.number_frames_in_parent

@@ -19,6 +19,7 @@ def main():
     parser.add_argument("--number_states", help="The number of states you want to include.",
                         default=1, type=int)
     parser.add_argument("--labels", "-l", help="labels of the data", nargs="+")
+    parser.add_argument("--figsize", "-s", help="height and width", nargs="+", type=float)
     parser.add_argument("--ylabel", help="labels for you y axis", default="")
     parser.add_argument("--inputfile", "-i", help="The input file", default=None)
     parser.add_argument("--outputfile", "-o", help="The output file", default=None)
@@ -47,12 +48,28 @@ def plotter(args, x_ev, x_nm, ys, units):
     ys = normalize_individuals(ys) if args.comparison else normalize_set(ys)
     x = x_ev if units == 0 else x_nm
 
+    csv_string = "EnergyEV,EnergyNM,"
+    for state in range(ys.shape[1]):
+        csv_string += f"S{state+1},"
+    csv_string = csv_string[:-1] + "\n"
+
+    for ev, nm, y in zip(x_ev, x_nm, ys):
+        csv_string += f"{ev:10.4f},{nm:10.4f},"
+        for s in y:
+            csv_string += f"{s:18.10f},"
+        csv_string = csv_string[:-1] + "\n"
+    open("spectra.csv", 'w').write(csv_string)
+
     sns.set()
     sns.set_style("white")
     sns.set_style("ticks")
     colors = sns.color_palette()*20
 
-    fig, ax = plt.subplots()
+    if args.figsize:
+        print(args.figsize)
+        fig, ax = plt.subplots(figsize=(args.figsize[0], args.figsize[1]))
+    else:
+        fig, ax = plt.subplots(figsize=(10,20))
     ax.spines['right'].set_visible(False)
     ax.spines['top'].set_visible(False)
     for i in range(args.number_states):
@@ -68,13 +85,13 @@ def plotter(args, x_ev, x_nm, ys, units):
         x_max = x_ev_max if units == 0 else x_nm_max
         ax.axvline(x=x_max, linestyle="dashed", linewidth=1, color=colors[i])
     xlabel = "Energy (eV)" if args.x_units == 0 else "Wavelength (nm)"
-    ax.set_title(args.title)
+    ax.set_title("")
     ax.set_xlabel(xlabel)
     ax.set_ylabel(args.ylabel)
-    ax.legend(frameon=False)
+    ax.legend(frameon=True)
     ax.axes.get_yaxis().set_ticks([])
     ax.set_ylim((0, 1.5))
-    ax.text(-0.05, 0.95, args.letter, transform=ax.transAxes,
+    ax.text(-0.08, 0.95, args.letter, transform=ax.transAxes,
             fontsize=17, fontweight='bold', va='top')
     fig.savefig(args.outputfile, bbox_inches='tight')
     plt.show()

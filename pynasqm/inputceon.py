@@ -164,6 +164,7 @@ class InputCeon:
             sed_inplace(self.amber_input, r'irest\s*=\s*\d+', 'irest=1')
         if is_random_velocities is True:
             sed_inplace(self.amber_input, r'ntx\s*=\s*\d+\.?\d*', 'ntx=1')
+            sed_inplace(self.amber_input, r'irest\s*=\s*\d+', 'irest=0')
 
     def set_mask(self, mask):
         '''

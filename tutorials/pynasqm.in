@@ -1,0 +1,163 @@
+# -*- Mode: json -*-
+############################################################
+#                  HPC Info (Slurm Supported)
+############################################################
+# Change here whether you are working on your personal computer
+# or an HPC with SLURM
+    "is_hpc": "True",
+# If on hpc, what is the name of your job?
+    "job_name": "CH3OH",
+# How many nodes will you be working on?
+    "number_nodes": "1",
+# How many processors will be on a node?
+    "processors_per_node": "16",
+# How much memory per node, provide string
+    "memory_per_node": "2000mb",
+# What is the maximum amount of jobs you want to run at once?
+    "max_jobs": "4",
+# What do you want to set as your default walltime?
+# 0h:0m:0s
+    "walltime": "95:00:00",
+# Whats queue do you want the job to go to
+    "qos": "YourQOS",
+# These are your email options for the slurm interface
+    "email": "YourEmail",
+# Additive Choice: 1-Begin, 2-End, 4-Fail
+    "email_options": "3",
+############################################################
+#                  General Job Type
+############################################################
+# Change here whether your simulation is qmmm
+    "is_qmmm": "True",
+# If periodic what type of constant value are you using?
+# 1-constant volume, 2-constant pressure
+    "constant_value": "1",
+# Are you performing tully surface hopping?
+    "is_tully": "False",
+# If you are using tully, how many quantum steps should be performed for every classical?
+    "qsteps": "4",
+# Change here the time step, in fs, that will be shared by
+# each trajectory
+    "time_step": "0.5",
+############################################################
+#                  MM Ground State Calculation
+############################################################
+# Do you want to run ground state dynamics
+    "run_ground_state_dynamics": "True",
+# Change here the runtime, in ps, of the initial ground state MD
+    "ground_state_run_time": "320",
+# Change here the time step, in fs, that will be used by
+# the mm ground state trajectory
+    "ground_state_time_step": "0.5",
+# Change here the number of restarts of length ground_state_run_time you wish to run
+    "n_ground_runs": "1",
+# Change here how often you want to print the ground state trajectory files
+    "n_steps_to_print_gmcrd": "1000",
+# Change here how often you want to print the ground state trajectory
+    "n_steps_to_print_gs": "1000",
+############################################################
+#                  QM Ground State Calculation
+############################################################
+# Do you want to run the trajectories used for the abjorption specta
+    "run_qmground_trajectories": "False",
+# Change here the number of snapshots you wish to take
+# from the initial ground state trajectory to run the
+# further ground state dynamics
+    "n_snapshots_qmground": "128",
+# File listing the trajectories you wish to run
+# Leave black to run all
+    "qmground_traj_index_file": "",
+# Change here the runtime in PS for the the trajectories
+# used to create calculated the absorption
+    "qmground_run_time": "10",
+# Change here the time step, in fs, that will be used by
+# the qm ground state trajectory
+    "qmground_time_step": "0.5",
+# Number of restarts = this number - 1. Controls how you want to segmentate
+# the runs for shorter run times, and to allow restarting if failure arises
+    "n_qmground_runs": "1",
+# Change here how often you want to print the absorption trajectory files
+# Use -1 to skip
+    "n_steps_to_print_qmgmcrd": "10",
+# Change here how often you want to print the absorption trajectories
+    "n_steps_to_print_qmground": "10",
+# Change here the number of states you wish to use in the ground state
+# If unsure, the should be 0.
+    "n_qmground_exc": "0",
+############################################################
+#                  Absorption
+############################################################
+# Do you want to run the single point snapshots from these
+# absorption
+    "run_absorption_snapshots": "False",
+# How many excited states do you want to include in the absorption
+# calculation
+    "n_abs_exc": "10",
+# Do you want to collect the data from the absorption calculations?
+    "run_absorption_collection": "False",
+# Some time will be needed for the molecule to equilibrate
+# from jumping from the MM to QM
+# We don't want to include this data in the calculation
+# We therefore set a time delay in fs.
+    "absorption_time_delay": "4000",
+############################################################
+#                  Excited State Calculation
+############################################################
+# Do you want to run the exctied state trajectories?
+    "run_excited_state_trajectories": "False",
+# Change here the number of snapshots you wish to take
+# from the initial ground state trajectory to run the
+# new excited state dynamics. Needs to be <= n_snapshots_gs
+    "n_snapshots_ex": "128",
+# File listing the trajectories you wish to run
+# Leave black to run all
+    "qmexcited_traj_index_file": "",
+# Change here the runtime, in ps, for the the trajectories
+# used to create calculated the fluorescence
+    "exc_run_time": "10",
+# Change here the time step, in fs, that will be used by
+# the qm excited state trajectory
+    "exc_time_step": "0.5",
+# Number of restarts = this number - 1. Controls how you want to segmentate
+# the runs for shorter run times, and to allow restarting if failure arises
+    "n_exc_runs": "1",
+# Change here how often you want to print the excited state trajectory files
+# Use -1 to skip
+    "n_steps_to_print_emcrd": "10",
+# Change here how often you want to print the excited state trajectories
+    "n_steps_to_print_exc": "10",
+# Change here the number of excited states you
+# with to have in the CIS calculation
+    "n_exc_states_propagate": "1",
+# Change here the initial state, set to "-1" if you want to simulate laser exitation.
+# Change to -2 for pump pulse simulation
+    "exc_state_init": "1",
+# Change here the energy of the laser used for excitation?
+    "laser_energy": "4.2",
+# Change here the full width half max of the laser in fs
+# Note that 100fs FWHM of a laser will correspond to a 0.1621eV FWHM FC broadening
+# Conversion is E_ev = 16.21 / E_fs
+    "fwhm": "100",
+############################################################
+#                  Fluorescence
+############################################################
+# Do you want to collect the data from the exctied state trajectory
+# calculations?
+    "run_fluorescence_collection": "False",
+# Some time will be needed for the molecule to equilibrate
+# from jumping from the ground state to the excited state.
+# We don't want to include this data in the calculation
+# of the fluorescence. We therefore set a time delay in fs.
+    "fluorescence_time_delay": "4000",
+# Truncation will remove so many fs off the back of the trajectory
+    "fluorescence_time_truncation": "0000",
+############################################################
+#                  QM Solvents
+############################################################
+# Do you want to restrain the closest solvents?
+    "restrain_solvents": "False",
+# The amber mask to determine the center of your system
+    "mask_for_center": ":1",
+# Number of solvents closest to mask to include in qm
+    "number_nearest_solvents": "0"
+
